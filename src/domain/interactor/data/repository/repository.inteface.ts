@@ -7,4 +7,5 @@ export interface IFeedRepository {
 
 export interface IUserRepository {
   findAll(): Promise<UserVo[]>;
+  signUp(userData: {}): Promise<void>;
 }

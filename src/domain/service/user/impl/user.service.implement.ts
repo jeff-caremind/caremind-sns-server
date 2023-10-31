@@ -7,7 +7,7 @@ import {
 import {
   IFeedRepository,
   IUserRepository,
-} from 'src/domain/interactor/data/repository/feed.repository.inteface';
+} from 'src/domain/interactor/data/repository/repository.inteface';
 import { UserVo } from 'src/infra/data/typeorm/vo/user.vo';
 import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
 
@@ -24,5 +24,9 @@ export class UserServiceImpl implements IUserService {
 
   async getFeedsBy(): Promise<FeedVo[]> {
     return await this.feedRepository.findAll();
+  }
+
+  async signUp(userData: {}): Promise<void> {
+    return await this.userRepository.signUp(userData);
   }
 }

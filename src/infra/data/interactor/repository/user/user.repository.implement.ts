@@ -1,5 +1,5 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { IUserRepository } from 'src/domain/interactor/data/repository/feed.repository.inteface';
+import { Body, Inject, Injectable } from '@nestjs/common';
+import { IUserRepository } from 'src/domain/interactor/data/repository/repository.inteface';
 import { USER_TYPEORM_REPOSITORY } from 'src/infra/data/typeorm/repository/ioc';
 import { UserVo } from 'src/infra/data/typeorm/vo/user.vo';
 import { Repository } from 'typeorm';
@@ -13,5 +13,11 @@ export class UserRepositoryImpl implements IUserRepository {
 
   async findAll(): Promise<UserVo[]> {
     return await this.userTypeormRepository.find();
+  }
+
+  async signUp(userData: {}): Promise<void> {
+    // void : 리턴값이 없다.
+    const user = this.userTypeormRepository.create(userData);
+    await this.userTypeormRepository.save(user);
   }
 }
