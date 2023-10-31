@@ -1,14 +1,14 @@
 import { Controller, Get, Post, Inject, Req } from '@nestjs/common';
 import { Request } from 'express';
 
-import { UserServiceImpl } from 'src/domain/service/user/impl/user.service.implement';
+import { USER_SERVICE } from 'src/domain/service/ioc';
 import { IUserService } from 'src/domain/service/user/user.service.interface';
 import { UserVo } from 'src/infra/data/typeorm/vo/user.vo';
 
 @Controller('/user')
 export class UserController {
   constructor(
-    @Inject(UserServiceImpl) private readonly userService: IUserService,
+    @Inject(USER_SERVICE) private readonly userService: IUserService,
   ) {}
 
   @Get()
