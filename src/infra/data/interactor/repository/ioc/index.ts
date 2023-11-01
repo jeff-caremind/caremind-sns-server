@@ -1,9 +1,7 @@
 import { Provider } from '@nestjs/common';
 import { FeedRepositoryImpl } from '../feed/feed.repository.implement';
-import {
-  IFeedRepository,
-  IUserRepository,
-} from 'src/domain/interactor/data/repository/repository.inteface';
+import { IFeedRepository } from 'src/domain/interactor/data/repository/feed.repository.interface';
+import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
 import { UserRepositoryImpl } from '../user/user.repository.implement';
 
 export const FEED_REPOSITORY = Symbol.for('FEED_REPOSITORY');

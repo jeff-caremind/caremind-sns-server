@@ -16,7 +16,7 @@ export class UserController {
     return await this.userService.getAll();
   }
 
-  @Post('login')
+  @Post('/login')
   async login(@Req() req: Request): Promise<any> {
     const { email, password } = req.body;
     return await this.userService.login(email, password);

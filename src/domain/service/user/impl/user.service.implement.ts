@@ -8,12 +8,20 @@ import {
   FEED_REPOSITORY,
   USER_REPOSITORY,
 } from 'src/infra/data/interactor/repository/ioc';
-import {
-  IFeedRepository,
-  IUserRepository,
-} from 'src/domain/interactor/data/repository/repository.inteface';
+import { IFeedRepository } from 'src/domain/interactor/data/repository/feed.repository.interface';
+import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
 import { UserVo } from 'src/infra/data/typeorm/vo/user.vo';
 import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
+
+interface LoginUserDto {
+  token: string;
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    phoneNumber: string;
+  };
+}
 
 @Injectable()
 export class UserServiceImpl implements IUserService {
@@ -31,10 +39,10 @@ export class UserServiceImpl implements IUserService {
     return await this.feedRepository.findAll();
   }
 
-  async login(email: string, password: string): Promise<any> {
+  async login(email: string, password: string): Promise<LoginUserDto> {
     if (!email) throw new Error('KEY_ERROR');
     if (!password) throw new Error('KEY_ERROR');
-    const user = await this.userRepository.findOneBy({ email: email });
+    const user = await this.userRepository.findOneByEmail(email);
     if (!user) throw new Error('USER_NOT_FOUND');
     const { password: hashed, ...userInfo } = user;
     const comparison = await bcrypt.compare(password, hashed);
@@ -42,6 +50,7 @@ export class UserServiceImpl implements IUserService {
     const token = await this.JwtService.signAsync({
       aud: userInfo.id,
     });
+    this.userRepository.findOneByEmail(email);
     return { token: token, user: userInfo };
   }
 }

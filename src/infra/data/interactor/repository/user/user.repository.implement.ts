@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { IUserRepository } from 'src/domain/interactor/data/repository/repository.inteface';
+import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
 import { USER_TYPEORM_REPOSITORY } from 'src/infra/data/typeorm/repository/ioc';
 import { UserVo } from 'src/infra/data/typeorm/vo/user.vo';
-import { ObjectLiteral, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserRepositoryImpl implements IUserRepository {
@@ -15,7 +15,7 @@ export class UserRepositoryImpl implements IUserRepository {
     return await this.userTypeormRepository.find();
   }
 
-  async findOneBy(where: ObjectLiteral): Promise<UserVo | null> {
-    return await this.userTypeormRepository.findOneBy(where);
+  async findOneByEmail(email: string): Promise<UserVo | null> {
+    return await this.userTypeormRepository.findOneBy({ email: email });
   }
 }

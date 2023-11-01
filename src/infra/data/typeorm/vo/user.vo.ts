@@ -41,41 +41,6 @@ export class UserVo extends BaseEntity {
   })
   phoneNumber: string;
 
-  @Column({
-    type: 'varchar',
-    length: 200,
-    default: '',
-  })
-  description: string;
-
-  @Column({
-    type: 'varchar',
-    length: 1000,
-    default: '',
-  })
-  about: string;
-
-  @Column({
-    type: 'varchar',
-    length: 200,
-    default: '',
-  })
-  location: string;
-
-  @Column({
-    type: 'varchar',
-    length: 200,
-    default: '',
-  })
-  address: string;
-
-  @Column({
-    type: 'varchar',
-    length: 2000,
-    default: '',
-  })
-  profileImageUrl: string;
-
   @CreateDateColumn({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',
