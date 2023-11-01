@@ -49,8 +49,6 @@ export class UserServiceImpl implements IUserService {
 
     userData.password = encodedPassword;
 
-    console.log('userData::::::::::::', userData);
-
     return await this.userRepository.createUser(userData);
   }
 }
