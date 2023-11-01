@@ -4,6 +4,7 @@ import { Request } from 'express';
 import { USER_SERVICE } from 'src/domain/service/ioc';
 import { IUserService } from 'src/domain/service/user/user.service.interface';
 import { UserVo } from 'src/infra/data/typeorm/vo/user.vo';
+import { LoginDto } from 'src/types/user.dto';
 
 @Controller('/user')
 export class UserController {
@@ -17,7 +18,7 @@ export class UserController {
   }
 
   @Post('/login')
-  async login(@Req() req: Request): Promise<any> {
+  async login(@Req() req: Request): Promise<LoginDto> {
     const { email, password } = req.body;
     return await this.userService.login(email, password);
   }

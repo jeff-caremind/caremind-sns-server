@@ -12,16 +12,7 @@ import { IFeedRepository } from 'src/domain/interactor/data/repository/feed.repo
 import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
 import { UserVo } from 'src/infra/data/typeorm/vo/user.vo';
 import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
-
-interface LoginUserDto {
-  token: string;
-  user: {
-    id: number;
-    name: string;
-    email: string;
-    phoneNumber: string;
-  };
-}
+import { LoginDto } from 'src/types/user.dto';
 
 @Injectable()
 export class UserServiceImpl implements IUserService {
@@ -39,7 +30,7 @@ export class UserServiceImpl implements IUserService {
     return await this.feedRepository.findAll();
   }
 
-  async login(email: string, password: string): Promise<LoginUserDto> {
+  async login(email: string, password: string): Promise<LoginDto> {
     if (!email) throw new Error('KEY_ERROR');
     if (!password) throw new Error('KEY_ERROR');
     const user = await this.userRepository.findOneByEmail(email);
