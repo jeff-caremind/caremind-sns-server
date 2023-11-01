@@ -12,7 +12,7 @@ import { IFeedRepository } from 'src/domain/interactor/data/repository/feed.repo
 import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
 import { UserVo } from 'src/infra/data/typeorm/vo/user.vo';
 import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
-import { LoginDto } from 'src/types/user.dto';
+import { LoginDto } from 'src/domain/service/dto/user.dto';
 
 @Injectable()
 export class UserServiceImpl implements IUserService {
