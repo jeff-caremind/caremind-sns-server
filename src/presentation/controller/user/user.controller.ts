@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Inject, Req } from '@nestjs/common';
+import { Controller, Get, Post, Inject, Req, HttpCode } from '@nestjs/common';
 import { Request } from 'express';
 
 import { USER_SERVICE } from 'src/domain/service/ioc';
@@ -18,6 +18,7 @@ export class UserController {
   }
 
   @Post('/login')
+  @HttpCode(200)
   async login(@Req() req: Request): Promise<LoginDto> {
     const { email, password } = req.body;
     return await this.userService.login(email, password);

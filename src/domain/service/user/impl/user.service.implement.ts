@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { JwtService } from '@nestjs/jwt';
@@ -31,13 +31,14 @@ export class UserServiceImpl implements IUserService {
   }
 
   async login(email: string, password: string): Promise<LoginDto> {
-    if (!email) throw new Error('KEY_ERROR');
-    if (!password) throw new Error('KEY_ERROR');
+    if (!email) throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
+    if (!password) throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
     const user = await this.userRepository.findOneByEmail(email);
-    if (!user) throw new Error('USER_NOT_FOUND');
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
     const { password: hashed, ...userInfo } = user;
     const comparison = await bcrypt.compare(password, hashed);
-    if (!comparison) throw new Error('INVALID_PASSWORD');
+    if (!comparison)
+      throw new HttpException('INVALID_PASSWORD', HttpStatus.BAD_REQUEST);
     const token = await this.JwtService.signAsync({
       aud: userInfo.id,
     });
