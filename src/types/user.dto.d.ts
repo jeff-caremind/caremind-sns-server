@@ -1,11 +1,11 @@
-export interface LoginDto {
+export type LoginDto = {
   token: string;
   user: UserInfo;
-}
+};
 
-export interface UserInfo {
+export type UserInfo = {
   id: number;
   name: string;
   email: string;
   phoneNumber: string;
-}
+};
