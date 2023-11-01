@@ -29,8 +29,9 @@ export class UserController {
     @Body() userData: { name?: string; email: string; password: string },
   ): Promise<void> {
     if (!userData || !userData.email || !userData.password) {
-      throw new HttpException('KEY ERROR', HttpStatus.BAD_REQUEST);
+      throw new HttpException('KEY ERROR(not input)', HttpStatus.BAD_REQUEST);
     }
+
     return await this.userService.signUp(userData);
   }
 }
