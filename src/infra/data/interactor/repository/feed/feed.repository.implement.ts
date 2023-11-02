@@ -12,8 +12,8 @@ export class FeedRepositoryImpl implements IFeedRepository {
   ) {}
 
   async findAll(): Promise<FeedVo[]> {
-    const queryBuilder = this.feedTypeormRepository.createQueryBuilder('feed');
-    return queryBuilder
+    return this.feedTypeormRepository
+      .createQueryBuilder('feed')
       .leftJoin('feed.author', 'user')
       .addSelect(['user.id', 'user.name'])
       .leftJoin('feed.images', 'images')
