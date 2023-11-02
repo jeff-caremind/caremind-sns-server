@@ -14,6 +14,6 @@ export const FeedTypeormRepository: Provider<Repository<FeedVo>> = {
 export const USER_TYPEORM_REPOSITORY = Symbol.for('USER_TYPEORM_REPOSITORY');
 export const UserTypeormRepository: Provider<Repository<UserVo>> = {
   provide: USER_TYPEORM_REPOSITORY,
-  useFactory: (dataSource: DataSource) => dataSource.getRepository(UserVo),
+  useFactory: (dataSource: DataSource) => dataSource.getRepository(UserVo), // useFactory : 함수공장(화살표함수처럼), dataSource라는 키(DataSource라는 타입)를 넣으면 => 뒤의 함수를 실행
   inject: [DATA_SOURCE],
 };

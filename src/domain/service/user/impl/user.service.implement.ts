@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { JwtService } from '@nestjs/jwt';
@@ -12,7 +12,10 @@ import { IFeedRepository } from 'src/domain/interactor/data/repository/feed.repo
 import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
 import { UserVo } from 'src/infra/data/typeorm/vo/user.vo';
 import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
-import { LoginDto } from 'src/domain/service/dto/user.dto';
+import {
+  LoginResponseDto,
+  SignUpRequestDto,
+} from 'src/domain/service/dto/user.dto';
 
 @Injectable()
 export class UserServiceImpl implements IUserService {
@@ -30,7 +33,28 @@ export class UserServiceImpl implements IUserService {
     return await this.feedRepository.findAll();
   }
 
-  async login(email: string, password: string): Promise<LoginDto> {
+  async signUp(userData: SignUpRequestDto): Promise<void> {
+    // 이메일 : ., @ 포함 필수, 2자 이상
+    const emailRegex = /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/;
+    if (!emailRegex.test(userData.email)) {
+      throw new HttpException('KEY ERROR(email)', HttpStatus.BAD_REQUEST);
+    }
+
+    // 비밀번호 : 숫자, 소문자, 대문자, 특수문자, 8자 이상
+    const passwordRegex =
+      /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,}$/;
+    if (!passwordRegex.test(userData.password)) {
+      throw new HttpException('KEY ERROR(password)', HttpStatus.BAD_REQUEST);
+    }
+
+    const encodedPassword = await bcrypt.hash(userData.password, 10);
+
+    userData.password = encodedPassword;
+
+    return await this.userRepository.create(userData);
+  }
+
+  async login(email: string, password: string): Promise<LoginResponseDto> {
     if (!email) throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
     if (!password) throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
     const user = await this.userRepository.findOneByEmail(email);
