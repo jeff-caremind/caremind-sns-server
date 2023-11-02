@@ -12,12 +12,25 @@ export class FeedRepositoryImpl implements IFeedRepository {
   ) {}
 
   async findAll(): Promise<FeedVo[]> {
-    return await this.feedTypeormRepository
-      .createQueryBuilder('feed')
-      .leftJoinAndSelect('feed.images', 'images')
-      .leftJoinAndSelect('feed.video', 'video')
+    const queryBuilder = this.feedTypeormRepository.createQueryBuilder('feed');
+    return queryBuilder
       .leftJoin('feed.author', 'user')
       .addSelect(['user.id', 'user.name'])
+      .leftJoin('feed.images', 'images')
+      .addSelect(['images.imageUrl'])
+      .leftJoin('feed.video', 'video')
+      .addSelect(['video.videoUrl'])
+      .leftJoin('feed.likes', 'feed_like')
+      .leftJoin('feed_like.liker', 'liker')
+      .addSelect(['feed_like.id', 'liker.id', 'liker.name'])
+      .leftJoin('feed.comments', 'feed_comment')
+      .leftJoin('feed_comment.commenter', 'commenter')
+      .addSelect([
+        'feed_comment.id',
+        'feed_comment.content',
+        'commenter.id',
+        'commenter.name',
+      ])
       .getMany();
   }
 }

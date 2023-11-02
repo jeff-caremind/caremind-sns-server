@@ -1,5 +1,5 @@
-import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
+import { FeedsListDto } from '../dto/feed.dto';
 
 export interface IFeedService {
-  getAll(): Promise<FeedVo[]>;
+  getAll(): Promise<FeedsListDto>;
 }
