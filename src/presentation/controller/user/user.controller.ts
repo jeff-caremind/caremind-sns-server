@@ -7,14 +7,17 @@ import {
   HttpException,
   HttpStatus,
   Req,
-  HttpCode
+  HttpCode,
 } from '@nestjs/common';
 import { Request } from 'express';
 
 import { USER_SERVICE } from 'src/domain/service/ioc';
 import { IUserService } from 'src/domain/service/user/user.service.interface';
 import { UserVo } from 'src/infra/data/typeorm/vo/user.vo';
-import { LoginDto } from 'src/domain/service/dto/user.dto';
+import {
+  LoginResponseDto,
+  SignUpRequestDto,
+} from 'src/domain/service/dto/user.dto';
 
 @Controller('/user')
 export class UserController {
@@ -30,9 +33,7 @@ export class UserController {
   }
 
   @Post('/signup')
-  async signUp(
-    @Body() userData: { name?: string; email: string; password: string },
-  ): Promise<void> {
+  async signUp(@Body() userData: SignUpRequestDto): Promise<void> {
     if (!userData || !userData.email || !userData.password) {
       throw new HttpException('KEY ERROR(not input)', HttpStatus.BAD_REQUEST);
     }
@@ -42,7 +43,7 @@ export class UserController {
 
   @Post('/login')
   @HttpCode(200)
-  async login(@Req() req: Request): Promise<LoginDto> {
+  async login(@Req() req: Request): Promise<LoginResponseDto> {
     const { email, password } = req.body;
     return await this.userService.login(email, password);
   }

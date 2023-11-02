@@ -12,7 +12,10 @@ import { IFeedRepository } from 'src/domain/interactor/data/repository/feed.repo
 import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
 import { UserVo } from 'src/infra/data/typeorm/vo/user.vo';
 import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
-import { LoginDto } from 'src/domain/service/dto/user.dto';
+import {
+  LoginResponseDto,
+  SignUpRequestDto,
+} from 'src/domain/service/dto/user.dto';
 
 @Injectable()
 export class UserServiceImpl implements IUserService {
@@ -30,11 +33,7 @@ export class UserServiceImpl implements IUserService {
     return await this.feedRepository.findAll();
   }
 
-  async signUp(userData: {
-    name?: string;
-    email: string;
-    password: string;
-  }): Promise<void> {
+  async signUp(userData: SignUpRequestDto): Promise<void> {
     // 이메일 : ., @ 포함 필수, 2자 이상
     const emailRegex = /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/;
     if (!emailRegex.test(userData.email)) {
@@ -55,7 +54,7 @@ export class UserServiceImpl implements IUserService {
     return await this.userRepository.create(userData);
   }
 
-  async login(email: string, password: string): Promise<LoginDto> {
+  async login(email: string, password: string): Promise<LoginResponseDto> {
     if (!email) throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
     if (!password) throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
     const user = await this.userRepository.findOneByEmail(email);
