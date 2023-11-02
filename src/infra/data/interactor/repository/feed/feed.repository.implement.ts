@@ -11,7 +11,13 @@ export class FeedRepositoryImpl implements IFeedRepository {
     private readonly feedTypeormRepository: Repository<FeedVo>,
   ) {}
 
-  async findAll(): Promise<any> {
-    return await this.feedTypeormRepository.find();
+  async findAll(): Promise<FeedVo[]> {
+    return await this.feedTypeormRepository
+      .createQueryBuilder('feed')
+      .leftJoinAndSelect('feed.images', 'images')
+      .leftJoinAndSelect('feed.video', 'video')
+      .leftJoin('feed.author', 'user')
+      .addSelect(['user.id', 'user.name'])
+      .getMany();
   }
 }

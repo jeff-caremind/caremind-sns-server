@@ -3,48 +3,29 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { FeedVo } from './feed.vo';
 
 @Entity({
-  name: 'user',
+  name: 'feed_video',
 })
-export class UserVo extends BaseEntity {
+export class FeedVideoVo extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({
     type: 'varchar',
-    length: 100,
-    unique: true,
+    length: 2000,
   })
-  email: string;
+  videoUrl: string;
 
-  @Column({
-    type: 'varchar',
-    length: 100,
-    default: 'User',
-  })
-  name: string;
-
-  @Column({
-    type: 'varchar',
-    length: 200,
-  })
-  password: string;
-
-  @Column({
-    type: 'varchar',
-    length: 20,
-    default: '',
-  })
-  phoneNumber: string;
-
-  @OneToMany(() => FeedVo, (feed) => feed.author)
-  feeds: FeedVo[];
+  @OneToOne(() => FeedVo, (feed) => feed.video)
+  @JoinColumn()
+  feed: FeedVo;
 
   @CreateDateColumn({
     type: 'timestamp',
