@@ -1,6 +1,6 @@
 import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
 
-export class FeedVoWithCounts extends FeedVo {
+class FeedVoWithCounts extends FeedVo {
   constructor() {
     super();
   }
