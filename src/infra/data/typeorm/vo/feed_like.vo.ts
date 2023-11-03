@@ -4,11 +4,13 @@ import {
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 
 @Entity({
   name: 'feed_like',
 })
+@Unique(['likerId', 'likedFeedId'])
 export class FeedLikeVo extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;

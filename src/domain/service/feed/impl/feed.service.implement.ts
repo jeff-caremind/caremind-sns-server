@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 
 import { IFeedService } from '../feed.service.interface';
 import {
@@ -22,6 +22,14 @@ export class FeedServiceImpl implements IFeedService {
   }
 
   async likeFeed(feedLikeDto: FeedLikeDto): Promise<void> {
+    if (
+      typeof feedLikeDto.likedFeedId !== 'number' ||
+      typeof feedLikeDto.likerId !== 'number'
+    )
+      throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
+    const existingLike = await this.feedLikeRepository.findLike(feedLikeDto);
+    if (existingLike)
+      throw new HttpException('DUPLICATE_LIKE', HttpStatus.BAD_REQUEST);
     return await this.feedLikeRepository.createLike(feedLikeDto);
   }
 }

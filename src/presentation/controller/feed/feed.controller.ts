@@ -20,13 +20,13 @@ export class FeedController {
 
   @Post('/:feedId/like')
   async likeFeed(
-    @Param('feedId') feedId: number,
+    @Param('feedId') feedId: string,
     @Headers('authorization') token: string,
   ): Promise<void> {
     const decodedToken = this.varifyToken(token);
     const feedLikeDto: FeedLikeDto = {
       likerId: decodedToken.aud,
-      likedFeedId: feedId,
+      likedFeedId: parseInt(feedId),
     };
     return await this.feedService.likeFeed(feedLikeDto);
   }

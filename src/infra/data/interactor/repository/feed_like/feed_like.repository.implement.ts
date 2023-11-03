@@ -17,4 +17,8 @@ export class FeedLikeRepositoryImpl implements IFeedLikeRepository {
     await this.feedLikeTypeormRepository.save(feedLikeDto);
     return;
   }
+
+  async findLike(feedLikeDto: FeedLikeDto): Promise<FeedLikeVo | null> {
+    return await this.feedLikeTypeormRepository.findOneBy(feedLikeDto);
+  }
 }
