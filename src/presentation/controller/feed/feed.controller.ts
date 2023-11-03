@@ -1,4 +1,8 @@
-import { Controller, Get, Inject } from '@nestjs/common';
+import { Controller, Get, Inject, Param, Post, Headers } from '@nestjs/common';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { JwtService } from '@nestjs/jwt';
+import { FeedLikeDto } from 'src/domain/service/dto/feed.dto';
+
 import { IFeedService } from 'src/domain/service/feed/feed.service.interface';
 import { FEED_SERVICE } from 'src/domain/service/ioc';
 
@@ -6,10 +10,29 @@ import { FEED_SERVICE } from 'src/domain/service/ioc';
 export class FeedController {
   constructor(
     @Inject(FEED_SERVICE) private readonly feedService: IFeedService,
+    private readonly JwtService: JwtService,
   ) {}
 
   @Get()
   async getAll(): Promise<any> {
     return await this.feedService.getAll();
+  }
+
+  @Post('/:feedId/like')
+  async likeFeed(
+    @Param('feedId') feedId: number,
+    @Headers('authorization') token: string,
+  ): Promise<void> {
+    const decodedToken = this.varifyToken(token);
+    const feedLikeDto: FeedLikeDto = {
+      likerId: decodedToken.aud,
+      likedFeedId: feedId,
+    };
+    return await this.feedService.likeFeed(feedLikeDto);
+  }
+
+  varifyToken(token: string): { aud: number } {
+    const decoded = this.JwtService.verify(token);
+    return decoded;
   }
 }
