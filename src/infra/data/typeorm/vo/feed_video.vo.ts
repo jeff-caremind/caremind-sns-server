@@ -3,12 +3,9 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { FeedVo } from './feed.vo';
 
 @Entity({
   name: 'feed_video',
@@ -22,10 +19,6 @@ export class FeedVideoVo extends BaseEntity {
     length: 2000,
   })
   videoUrl: string;
-
-  @OneToOne(() => FeedVo, (feed) => feed.video)
-  @JoinColumn()
-  feed: FeedVo;
 
   @CreateDateColumn({
     type: 'timestamp',

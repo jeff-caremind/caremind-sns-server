@@ -12,10 +12,13 @@ export class FeedServiceImpl implements IFeedService {
 
   async getAll() {
     const feeds = await this.feedRepository.findAll();
-    const feedsList = feeds as FeedsListDto;
-    feedsList.forEach((feed) => {
-      feed.likesCount = feed.likes.length;
-      feed.commentsCount = feed.comments.length;
+    // const feedsList = feeds as FeedsListDto;
+    const feedsList: FeedsListDto = feeds.map((feed) => {
+      return {
+        ...feed,
+        likesCount: feed.likes.length,
+        commentsCount: feed.comments.length,
+      };
     });
     return feedsList;
   }

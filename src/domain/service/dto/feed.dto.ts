@@ -1,11 +1,28 @@
-import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
+export type FeedListItem = {
+  id: number;
+  content: string;
+  createdAt: Date;
+  updatedAt: Date;
+  author: { id: number; name: string };
+  images: { imageUrl: string }[];
+  video: { videoUrl: string } | null;
+  likes: {
+    id: number;
+    name: string;
+  }[];
+  comments: {
+    id: number;
+    content: string;
+    commenter: {
+      id: number;
+      name: string;
+    };
+  }[];
+};
 
-class FeedVoWithCounts extends FeedVo {
-  constructor() {
-    super();
-  }
+export type FeedListItemWithcount = FeedListItem & {
   likesCount: number;
   commentsCount: number;
-}
+};
 
-export type FeedsListDto = FeedVoWithCounts[];
+export type FeedsListDto = FeedListItemWithcount[];
