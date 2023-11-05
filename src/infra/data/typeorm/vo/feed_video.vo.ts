@@ -8,38 +8,17 @@ import {
 } from 'typeorm';
 
 @Entity({
-  name: 'user',
+  name: 'feed_video',
 })
-export class UserVo extends BaseEntity {
+export class FeedVideoVo extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({
     type: 'varchar',
-    length: 100,
-    unique: true,
+    length: 2000,
   })
-  email: string;
-
-  @Column({
-    type: 'varchar',
-    length: 100,
-    default: 'User',
-  })
-  name: string;
-
-  @Column({
-    type: 'varchar',
-    length: 200,
-  })
-  password: string;
-
-  @Column({
-    type: 'varchar',
-    length: 20,
-    default: '',
-  })
-  phoneNumber: string;
+  videoUrl: string;
 
   @CreateDateColumn({
     type: 'timestamp',

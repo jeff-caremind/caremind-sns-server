@@ -3,11 +3,19 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
+  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { UserVo } from './user.vo';
+import { FeedImageVo } from './feed_image.vo';
+import { FeedVideoVo } from './feed_video.vo';
+import { FeedCommentVo } from './feed_comment.vo';
 
 @Entity({
   name: 'feed',
@@ -23,8 +31,23 @@ export class FeedVo extends BaseEntity {
   })
   content: string;
 
-  @ManyToOne(() => UserVo, (user) => user.feeds)
+  @ManyToOne(() => UserVo)
+  @JoinColumn()
   author: UserVo;
+
+  @ManyToMany(() => UserVo)
+  @JoinTable()
+  likes: UserVo[];
+
+  @OneToMany(() => FeedImageVo, (feedImage) => feedImage.feed)
+  images: FeedImageVo[];
+
+  @OneToMany(() => FeedCommentVo, (feedComment) => feedComment.commentedFeed)
+  comments: FeedCommentVo[];
+
+  @OneToOne(() => FeedVideoVo)
+  @JoinColumn()
+  video: FeedVideoVo;
 
   @CreateDateColumn({
     type: 'timestamp',

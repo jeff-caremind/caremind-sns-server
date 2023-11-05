@@ -3,43 +3,27 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { FeedVo } from './feed.vo';
 
 @Entity({
-  name: 'user',
+  name: 'feed_image',
 })
-export class UserVo extends BaseEntity {
+export class FeedImageVo extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({
     type: 'varchar',
-    length: 100,
-    unique: true,
+    length: 2000,
   })
-  email: string;
+  imageUrl: string;
 
-  @Column({
-    type: 'varchar',
-    length: 100,
-    default: 'User',
-  })
-  name: string;
-
-  @Column({
-    type: 'varchar',
-    length: 200,
-  })
-  password: string;
-
-  @Column({
-    type: 'varchar',
-    length: 20,
-    default: '',
-  })
-  phoneNumber: string;
+  @ManyToOne(() => FeedVo, (feed) => feed.images)
+  feed: FeedVo;
 
   @CreateDateColumn({
     type: 'timestamp',
