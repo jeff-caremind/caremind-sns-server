@@ -4,6 +4,8 @@ import { IFeedRepository } from 'src/domain/interactor/data/repository/feed.repo
 import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
 import { FeedRepositoryImpl } from '../feed/feed.repository.implement';
 import { UserRepositoryImpl } from '../user/user.repository.implement';
+import { IFeedCommentRepository } from 'src/domain/interactor/data/repository/feed_comment.repository.interface';
+import { FeedCommentRepositoryImpl } from '../feed_comment/feed_comment.repository.implement';
 
 export const FEED_REPOSITORY = Symbol.for('FEED_REPOSITORY');
 export const FeedRepository: Provider<IFeedRepository> = {
@@ -15,4 +17,10 @@ export const USER_REPOSITORY = Symbol.for('USER_REPOSITORY');
 export const UserRepository: Provider<IUserRepository> = {
   provide: USER_REPOSITORY,
   useClass: UserRepositoryImpl,
+};
+
+export const FEED_COMMENT_REPOSITORY = Symbol.for('FEED_COMMENT_REPOSITORY');
+export const FeedCommentRepository: Provider<IFeedCommentRepository> = {
+  provide: FEED_COMMENT_REPOSITORY,
+  useClass: FeedCommentRepositoryImpl,
 };

@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { JwtService } from '@nestjs/jwt';
+import { FeedCommentDto } from 'src/domain/service/dto/feed.dto';
 
 import { IFeedService } from 'src/domain/service/feed/feed.service.interface';
 import { FEED_SERVICE } from 'src/domain/service/ioc';
@@ -25,14 +26,19 @@ export class FeedController {
     return await this.feedService.getAll();
   }
 
-  @Post('/:postId/comment')
+  @Post('/:feedId/comment')
   async createComment(
     @Body() body: any,
-    @Param() postId: number,
+    @Param('feedId') feedId: number,
     @Headers('authorization') token: string,
   ): Promise<void> {
     const decoded = this.verifyToken(token);
-    return await this.feedService.createComment();
+    const feedCommentDto: FeedCommentDto = {
+      userId: decoded.aud,
+      feedId: Number(feedId),
+      content: body.content,
+    };
+    return await this.feedService.createComment(feedCommentDto);
   }
 
   verifyToken(token: string): { aud: number } {

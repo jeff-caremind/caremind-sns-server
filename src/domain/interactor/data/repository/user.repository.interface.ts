@@ -5,4 +5,5 @@ export interface IUserRepository {
   findAll(): Promise<UserVo[]>;
   create(userData: SignUpRequestDto): Promise<void>;
   findOneByEmail(email: string): Promise<UserVo | null>;
+  findOneById(id: number): Promise<UserVo | null>;
 }

@@ -28,7 +28,9 @@ export class FeedVo extends BaseEntity {
   @ManyToOne(() => UserVo, (user) => user.feeds)
   author: UserVo;
 
-  @OneToMany(() => FeedCommentVo, (feedComment) => feedComment.commentedFeed)
+  @OneToMany(() => FeedCommentVo, (feedComment) => feedComment.commentedFeed, {
+    cascade: true,
+  })
   comments: FeedCommentVo[];
 
   @CreateDateColumn({
