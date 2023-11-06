@@ -34,7 +34,7 @@ export class FeedController {
   ): Promise<void> {
     if (!body.content && !body.images && !body.video)
       throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
-    const decodedToken = this.varifyToken(token);
+    const decodedToken = this.verifyToken(token);
     const feedCreateDto = {
       userId: decodedToken.aud,
       content: body.content,
@@ -44,7 +44,7 @@ export class FeedController {
     return await this.feedService.createFeed(feedCreateDto);
   }
 
-  varifyToken(token: string): { aud: number } {
+  verifyToken(token: string): { aud: number } {
     const decoded = this.JwtService.verify(token);
     return decoded;
   }
