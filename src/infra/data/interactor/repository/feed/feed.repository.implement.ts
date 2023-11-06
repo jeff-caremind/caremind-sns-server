@@ -15,7 +15,7 @@ export class FeedRepositoryImpl implements IFeedRepository {
     return await this.feedTypeormRepository.find();
   }
 
-  async createFeed(): Promise<void> {
-    
+  async createFeed(feed: FeedVo): Promise<void> {
+    await this.feedTypeormRepository.save(feed);
   }
 }

@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Inject, Post, Headers } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Post,
+  Headers,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { JwtService } from '@nestjs/jwt';
 import { FeedCreateDto } from 'src/domain/service/dto/feed.dto';
@@ -23,10 +32,14 @@ export class FeedController {
     @Body() body: Partial<FeedCreateDto>,
     @Headers('authorization') token: string,
   ): Promise<void> {
+    if (!body.content && !body.images && !body.video)
+      throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
     const decodedToken = this.varifyToken(token);
     const feedCreateDto = {
-      ...body,
       userId: decodedToken.aud,
+      content: body.content,
+      images: body.images,
+      video: body.video,
     };
     return await this.feedService.createFeed(feedCreateDto);
   }
