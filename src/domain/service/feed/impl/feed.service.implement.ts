@@ -10,6 +10,7 @@ import { IFeedRepository } from 'src/domain/interactor/data/repository/feed.repo
 import { FeedLikeDto } from '../../dto/feed.dto';
 import { IFeedLikeRepository } from 'src/domain/interactor/data/repository/feed_like.repository.interface';
 import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
+import { FeedLikeVo } from 'src/infra/data/typeorm/vo/feed_like.vo';
 
 @Injectable()
 export class FeedServiceImpl implements IFeedService {
@@ -39,6 +40,9 @@ export class FeedServiceImpl implements IFeedService {
     if (!liker || !likedFeed)
       throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
 
-    return await this.feedLikeRepository.createLike(liker, likedFeed);
+    const newFeedLike = new FeedLikeVo();
+    newFeedLike.liker = liker;
+    newFeedLike.likedFeed = likedFeed;
+    return await this.feedLikeRepository.createLike(newFeedLike);
   }
 }

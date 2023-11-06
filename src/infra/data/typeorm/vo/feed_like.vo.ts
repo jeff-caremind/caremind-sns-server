@@ -20,7 +20,7 @@ export class FeedLikeVo extends BaseEntity {
   @ManyToOne(() => FeedVo, (feed) => feed.likes)
   likedFeed: FeedVo;
 
-  @ManyToOne(() => UserVo, (user) => user.likes)
+  @ManyToOne(() => UserVo)
   liker: UserVo;
 
   @CreateDateColumn({
