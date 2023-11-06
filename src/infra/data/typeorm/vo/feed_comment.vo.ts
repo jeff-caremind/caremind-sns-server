@@ -20,7 +20,7 @@ export class FeedCommentVo extends BaseEntity {
   @ManyToOne(() => FeedVo, (feed) => feed.id)
   commentedFeed: FeedVo;
 
-  @ManyToOne(() => UserVo, (user) => user.id)
+  @ManyToOne(() => UserVo)
   commenter: UserVo;
 
   @Column({
