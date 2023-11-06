@@ -22,7 +22,7 @@ export class FeedImageVo extends BaseEntity {
   })
   imageUrl: string;
 
-  @ManyToOne(() => FeedVo, (feed) => feed.images)
+  @ManyToOne(() => FeedVo)
   feed: FeedVo;
 
   @CreateDateColumn({
