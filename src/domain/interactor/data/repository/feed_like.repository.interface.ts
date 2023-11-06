@@ -1,5 +1,6 @@
-import { FeedLikeDto } from 'src/domain/service/dto/feed.dto';
+import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
+import { UserVo } from 'src/infra/data/typeorm/vo/user.vo';
 
 export interface IFeedLikeRepository {
-  createLike(feedLikeDto: FeedLikeDto): Promise<void>;
+  createLike(liker: UserVo, likedFeed: FeedVo): Promise<void>;
 }

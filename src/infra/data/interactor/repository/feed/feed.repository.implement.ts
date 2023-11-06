@@ -20,4 +20,8 @@ export class FeedRepositoryImpl implements IFeedRepository {
   async findAll(): Promise<any> {
     return await this.feedTypeormRepository.find();
   }
+
+  async findOneById(id: number): Promise<FeedVo | null> {
+    return await this.feedTypeormRepository.findOneBy({ id: id });
+  }
 }

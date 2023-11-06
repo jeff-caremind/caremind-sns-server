@@ -13,8 +13,8 @@ import {
 import { UserVo } from './user.vo';
 import { FeedImageVo } from './feed_image.vo';
 import { FeedVideoVo } from './feed_video.vo';
-import { FeedCommentVo } from './feed_comment.vo';
 import { FeedLikeVo } from './feed_like.vo';
+import { FeedCommentVo } from './feed_comment.vo';
 
 @Entity({
   name: 'feed',
@@ -30,22 +30,21 @@ export class FeedVo extends BaseEntity {
   })
   content: string;
 
-  @ManyToOne(() => UserVo)
-  @JoinColumn()
+  @ManyToOne(() => UserVo, (user) => user.feeds)
   author: UserVo;
 
   @OneToMany(() => FeedImageVo, (feedImage) => feedImage.feed)
   images: FeedImageVo[];
 
-  @OneToMany(() => FeedCommentVo, (feedComment) => feedComment.commentedFeed)
-  comments: FeedCommentVo[];
+  @OneToOne(() => FeedVideoVo)
+  @JoinColumn()
+  video: FeedVideoVo;
 
   @OneToMany(() => FeedLikeVo, (feedLike) => feedLike.likedFeed)
   likes: FeedLikeVo[];
 
-  @OneToOne(() => FeedVideoVo)
-  @JoinColumn()
-  video: FeedVideoVo;
+  @OneToMany(() => FeedCommentVo, (feedComment) => feedComment.commentedFeed)
+  comments: FeedCommentVo[];
 
   @CreateDateColumn({
     type: 'timestamp',
