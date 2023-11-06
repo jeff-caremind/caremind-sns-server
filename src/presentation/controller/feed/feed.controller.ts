@@ -23,7 +23,7 @@ export class FeedController {
     @Param('feedId') feedId: string,
     @Headers('authorization') token: string,
   ): Promise<void> {
-    const decodedToken = this.varifyToken(token);
+    const decodedToken = this.verifyToken(token);
     const feedLikeDto: FeedLikeDto = {
       likerId: decodedToken.aud,
       likedFeedId: parseInt(feedId),
@@ -31,7 +31,7 @@ export class FeedController {
     return await this.feedService.likeFeed(feedLikeDto);
   }
 
-  varifyToken(token: string): { aud: number } {
+  verifyToken(token: string): { aud: number } {
     const decoded = this.JwtService.verify(token);
     return decoded;
   }
