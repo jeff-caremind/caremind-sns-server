@@ -4,32 +4,30 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { FeedVo } from './feed.vo';
 import { UserVo } from './user.vo';
-import { FeedCommentVo } from './feed_comment.vo';
 
 @Entity({
-  name: 'feed',
+  name: 'feed_comment',
 })
-export class FeedVo extends BaseEntity {
+export class FeedCommentVo extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ManyToOne(() => FeedVo, (feed) => feed.id)
+  commentedFeed: FeedVo;
+
+  @ManyToOne(() => UserVo, (user) => user.id)
+  commenter: UserVo;
+
   @Column({
     type: 'varchar',
-    length: 1000,
-    default: '',
+    length: 200,
   })
   content: string;
-
-  @ManyToOne(() => UserVo, (user) => user.feeds)
-  author: UserVo;
-
-  @OneToMany(() => FeedCommentVo, (feedComment) => feedComment.commentedFeed)
-  comments: FeedCommentVo[];
 
   @CreateDateColumn({
     type: 'timestamp',
