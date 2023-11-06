@@ -41,6 +41,6 @@ export class FeedServiceImpl implements IFeedService {
       video.videoUrl = feedCreateDto.video;
       feed.video = video;
     }
-    return await this.feedRepository.createFeed(feed);
+    return await this.feedRepository.create(feed);
   }
 }
