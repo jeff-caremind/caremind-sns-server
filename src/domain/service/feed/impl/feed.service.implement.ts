@@ -37,6 +37,6 @@ export class FeedServiceImpl implements IFeedService {
     comment.content = feedCommentDto.content;
     comment.commenter = commenter;
     comment.commentedFeed = feed;
-    await this.feedCommentRepository.createComment(comment);
+    await this.feedCommentRepository.create(comment);
   }
 }

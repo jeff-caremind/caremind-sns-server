@@ -17,10 +17,10 @@ export class FeedCommentVo extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => FeedVo, (feed) => feed.id)
+  @ManyToOne(() => FeedVo)
   commentedFeed: FeedVo;
 
-  @ManyToOne(() => UserVo, (user) => user.id)
+  @ManyToOne(() => UserVo)
   commenter: UserVo;
 
   @Column({

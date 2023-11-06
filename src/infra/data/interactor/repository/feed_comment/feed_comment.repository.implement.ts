@@ -11,7 +11,7 @@ export class FeedCommentRepositoryImpl implements IFeedCommentRepository {
     private readonly feedCommentTypeormRepository: Repository<FeedCommentVo>,
   ) {}
 
-  async createComment(comment: FeedCommentVo): Promise<void> {
+  async create(comment: FeedCommentVo): Promise<void> {
     await this.feedCommentTypeormRepository.save(comment);
   }
 }
