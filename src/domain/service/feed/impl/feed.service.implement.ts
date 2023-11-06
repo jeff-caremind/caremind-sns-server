@@ -12,7 +12,6 @@ export class FeedServiceImpl implements IFeedService {
 
   async getAll() {
     const feeds = await this.feedRepository.findAll();
-    // const feedsList = feeds as FeedsListDto;
     const feedsList: FeedsListDto = feeds.map((feed) => {
       return {
         ...feed,

@@ -18,6 +18,9 @@ export class FeedRepositoryImpl implements IFeedRepository {
         likes: true,
         images: true,
         video: true,
+        comments: {
+          commenter: true,
+        },
       },
       select: {
         author: {
@@ -28,13 +31,19 @@ export class FeedRepositoryImpl implements IFeedRepository {
           id: true,
           imageUrl: true,
         },
-        likes: {
-          id: true,
-          name: true,
-        },
         video: {
           id: true,
           videoUrl: true,
+        },
+        comments: {
+          id: true,
+          content: true,
+          createdAt: true,
+          updatedAt: true,
+          commenter: {
+            id: true,
+            name: true,
+          },
         },
       },
     });
