@@ -1,10 +1,22 @@
 import { Module } from '@nestjs/common';
 import { TypeormConfigModule } from '../../config/typeorm.config';
-import { FeedTypeormRepository, UserTypeormRepository } from '../ioc';
+import {
+  FeedLikeTypeormRepository,
+  FeedTypeormRepository,
+  UserTypeormRepository,
+} from '../ioc';
 
 @Module({
   imports: [TypeormConfigModule],
-  providers: [FeedTypeormRepository, UserTypeormRepository],
-  exports: [FeedTypeormRepository, UserTypeormRepository],
+  providers: [
+    FeedTypeormRepository,
+    UserTypeormRepository,
+    FeedLikeTypeormRepository,
+  ],
+  exports: [
+    FeedTypeormRepository,
+    UserTypeormRepository,
+    FeedLikeTypeormRepository,
+  ],
 })
 export class TypeormRepositoryModule {}

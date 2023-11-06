@@ -4,8 +4,6 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
-  JoinTable,
-  ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -16,6 +14,7 @@ import { UserVo } from './user.vo';
 import { FeedImageVo } from './feed_image.vo';
 import { FeedVideoVo } from './feed_video.vo';
 import { FeedCommentVo } from './feed_comment.vo';
+import { FeedLikeVo } from './feed_like.vo';
 
 @Entity({
   name: 'feed',
@@ -35,15 +34,14 @@ export class FeedVo extends BaseEntity {
   @JoinColumn()
   author: UserVo;
 
-  @ManyToMany(() => UserVo)
-  @JoinTable()
-  likes: UserVo[];
-
   @OneToMany(() => FeedImageVo, (feedImage) => feedImage.feed)
   images: FeedImageVo[];
 
   @OneToMany(() => FeedCommentVo, (feedComment) => feedComment.commentedFeed)
   comments: FeedCommentVo[];
+
+  @OneToMany(() => FeedLikeVo, (feedLike) => feedLike.likedFeed)
+  likes: FeedLikeVo[];
 
   @OneToOne(() => FeedVideoVo)
   @JoinColumn()

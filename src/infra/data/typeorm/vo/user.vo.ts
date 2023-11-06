@@ -3,9 +3,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { FeedLikeVo } from './feed_like.vo';
 
 @Entity({
   name: 'user',
@@ -40,6 +42,9 @@ export class UserVo extends BaseEntity {
     default: '',
   })
   phoneNumber: string;
+
+  @OneToMany(() => FeedLikeVo, (feedLike) => feedLike.liker)
+  likes: FeedLikeVo[];
 
   @CreateDateColumn({
     type: 'timestamp',
