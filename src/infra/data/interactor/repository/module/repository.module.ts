@@ -4,7 +4,17 @@ import * as IOC from '../ioc';
 
 @Module({
   imports: [TypeormRepositoryModule],
-  providers: [IOC.FeedRepository, IOC.UserRepository, IOC.FeedLikeRepository],
-  exports: [IOC.FeedRepository, IOC.UserRepository, IOC.FeedLikeRepository],
+  providers: [
+    IOC.FeedRepository,
+    IOC.UserRepository,
+    IOC.FeedCommentRepository,
+    IOC.FeedLikeRepository,
+  ],
+  exports: [
+    IOC.FeedRepository, 
+    IOC.UserRepository, 
+    IOC.FeedCommentRepository,
+    IOC.FeedLikeRepository,
+  ],
 })
 export class RepositoryModule {}

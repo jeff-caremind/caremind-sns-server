@@ -10,6 +10,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
 import { UserVo } from './user.vo';
 import { FeedImageVo } from './feed_image.vo';
 import { FeedVideoVo } from './feed_video.vo';
@@ -33,6 +34,11 @@ export class FeedVo extends BaseEntity {
   @ManyToOne(() => UserVo)
   author: UserVo;
 
+  @OneToMany(() => FeedCommentVo, (feedComment) => feedComment.commentedFeed, {
+    cascade: true,
+  })
+  comments: FeedCommentVo[];
+
   @OneToMany(() => FeedImageVo, (feedImage) => feedImage.feed, {
     cascade: true,
   })
@@ -46,9 +52,6 @@ export class FeedVo extends BaseEntity {
 
   @OneToMany(() => FeedLikeVo, (feedLike) => feedLike.likedFeed)
   likes: FeedLikeVo[];
-
-  @OneToMany(() => FeedCommentVo, (feedComment) => feedComment.commentedFeed)
-  comments: FeedCommentVo[];
 
   @CreateDateColumn({
     type: 'timestamp',

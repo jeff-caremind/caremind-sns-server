@@ -34,3 +34,9 @@ export type FeedCreateDto = {
   images?: string[];
   video?: string;
 };
+
+export type FeedCommentDto = {
+  userId: number;
+  feedId: number;
+  content: string;
+};

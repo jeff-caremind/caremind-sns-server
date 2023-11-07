@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeormConfigModule } from '../../config/typeorm.config';
 import {
-  FeedLikeTypeormRepository,
   FeedTypeormRepository,
   UserTypeormRepository,
+  FeedCommentTypeormRepository,
+  FeedLikeTypeormRepository,
 } from '../ioc';
 
 @Module({
@@ -11,11 +12,13 @@ import {
   providers: [
     FeedTypeormRepository,
     UserTypeormRepository,
+    FeedCommentTypeormRepository,
     FeedLikeTypeormRepository,
   ],
   exports: [
     FeedTypeormRepository,
     UserTypeormRepository,
+    FeedCommentTypeormRepository,
     FeedLikeTypeormRepository,
   ],
 })

@@ -27,7 +27,7 @@ export class UserRepositoryImpl implements IUserRepository {
     return await this.userTypeormRepository.findOneBy({ email: email });
   }
 
-  async findOneById(id: number): Promise<UserVo | null> {
-    return await this.userTypeormRepository.findOneBy({ id: id });
+  async findOneById(userId: number): Promise<UserVo | null> {
+    return await this.userTypeormRepository.findOneBy({ id: userId });
   }
 }
