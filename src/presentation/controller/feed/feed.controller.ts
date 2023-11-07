@@ -8,6 +8,7 @@ import {
   Headers,
   HttpException,
   HttpStatus,
+  Put,
 } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { JwtService } from '@nestjs/jwt';
@@ -82,6 +83,17 @@ export class FeedController {
       video: body.video,
     };
     return await this.feedService.createFeed(feedCreateDto);
+  }
+
+  @Put('/:feedId')
+  async updateFeed(
+    @Headers('authorization') token: string,
+    @Param('feedId') feedId: number,
+    @Body() feedUpdateDto: FeedCreateDto,
+  ) {
+    const decoded = this.verifyToken(token);
+    feedUpdateDto.userId = decoded.aud;
+    return await this.feedService.updateFeed(Number(feedId), feedUpdateDto);
   }
 
   verifyToken(token: string): { aud: number } {

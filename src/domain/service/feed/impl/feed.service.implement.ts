@@ -68,41 +68,46 @@ export class FeedServiceImpl implements IFeedService {
   }
 
   async createFeed(feedCreateDto: FeedCreateDto) {
-    const feed = new FeedVo();
-    if (feedCreateDto.content) feed.content = feedCreateDto.content;
-    const user = await this.userRepository.findOneById(feedCreateDto.userId);
+    const { userId, content, images, video } = feedCreateDto;
+    const user = await this.userRepository.findOneById(userId);
     if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const feed = new FeedVo();
     feed.author = user;
-    if (feedCreateDto.images) {
-      const images = feedCreateDto.images.map((item) => {
-        const imageVo = new FeedImageVo();
-        imageVo.imageUrl = item;
-        return imageVo;
-      });
-      feed.images = images;
-    }
-    if (feedCreateDto.video) {
-      const video = new FeedVideoVo();
-      video.videoUrl = feedCreateDto.video;
-      feed.video = video;
-    }
+    if (content) feed.content = content;
+    if (images) feed.images = this.createImageVos(images);
+    if (video) feed.video = this.createVideoVo(video);
     return await this.feedRepository.create(feed);
   }
 
   async createComment(feedCommentDto: FeedCommentDto): Promise<void> {
-    const feed = await this.feedRepository.findOneById(feedCommentDto.feedId);
+    const { userId, feedId, content } = feedCommentDto;
+    const feed = await this.feedRepository.findOneById(feedId);
     if (!feed)
       throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
-    const commenter = await this.userRepository.findOneById(
-      feedCommentDto.userId,
-    );
+    const commenter = await this.userRepository.findOneById(userId);
     if (!commenter)
       throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
     const comment = new FeedCommentVo();
-    comment.content = feedCommentDto.content;
+    comment.content = content;
     comment.commenter = commenter;
     comment.commentedFeed = feed;
     await this.feedCommentRepository.create(comment);
+  }
+
+  async updateFeed(
+    feedId: number,
+    feedUpdateDto: FeedCreateDto,
+  ): Promise<void> {
+    const { userId, content, images, video } = feedUpdateDto;
+    const feed = await this.feedRepository.findOneWithAuthorById(feedId);
+    if (!feed)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (userId !== feed.author.id)
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+    if (content) feed.content = content;
+    if (images) feed.images = this.createImageVos(images);
+    if (video) feed.video = this.createVideoVo(video);
+    await this.feedRepository.update(feed);
   }
 
   async getOne(feedId: number): Promise<FeedVo> {
@@ -110,5 +115,19 @@ export class FeedServiceImpl implements IFeedService {
     if (!feed)
       throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
     return feed;
+  }
+  
+  private createImageVos(images: string[]): FeedImageVo[] {
+    return images.map((item) => {
+      const imageVo = new FeedImageVo();
+      imageVo.imageUrl = item;
+      return imageVo;
+    });
+  }
+
+  private createVideoVo(videoUrl: string): FeedVideoVo {
+    const videoVo = new FeedVideoVo();
+    videoVo.videoUrl = videoUrl;
+    return videoVo;
   }
 }

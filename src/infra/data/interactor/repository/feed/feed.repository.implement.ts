@@ -1,7 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { FindOptionsRelations, FindOptionsSelect, Repository } from 'typeorm';
+
 import { IFeedRepository } from 'src/domain/interactor/data/repository/feed.repository.interface';
 import { FEED_TYPEORM_REPOSITORY } from 'src/infra/data/typeorm/repository/ioc';
-import { FindOptionsRelations, FindOptionsSelect, Repository } from 'typeorm';
 import { FeedVo } from '../../../typeorm/vo/feed.vo';
 
 @Injectable()
@@ -26,6 +27,20 @@ export class FeedRepositoryImpl implements IFeedRepository {
     await this.feedTypeormRepository.save(feed);
   }
 
+  async update(updatedFeed: FeedVo) {
+    await this.feedTypeormRepository.save(updatedFeed);
+  }
+
+  async findOneWithAuthorById(feedId: number): Promise<FeedVo | null> {
+    const [feed] = await this.feedTypeormRepository.find({
+      relations: {
+        author: true,
+      },
+      where: { id: feedId },
+    });
+    return feed;
+  }
+
   async findOneWithRelationsById(feedId: number): Promise<FeedVo | null> {
     return await this.feedTypeormRepository.findOne({
       where: { id: feedId },
@@ -34,7 +49,7 @@ export class FeedRepositoryImpl implements IFeedRepository {
     });
   }
 
-  feedFullRelations: FindOptionsRelations<FeedVo> = {
+  private feedFullRelations: FindOptionsRelations<FeedVo> = {
     author: true,
     likes: true,
     images: true,
@@ -44,7 +59,7 @@ export class FeedRepositoryImpl implements IFeedRepository {
     },
   };
 
-  feedFullRelationsSelect: FindOptionsSelect<FeedVo> = {
+  private feedFullRelationsSelect: FindOptionsSelect<FeedVo> = {
     author: {
       id: true,
       name: true,
