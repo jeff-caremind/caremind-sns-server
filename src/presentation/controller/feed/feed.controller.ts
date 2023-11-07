@@ -1,18 +1,20 @@
 import {
+  Body,
   Controller,
   Get,
   Inject,
   Post,
-  Body,
   Param,
   Headers,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { JwtService } from '@nestjs/jwt';
-import { FeedCommentDto } from 'src/domain/service/dto/feed.dto';
 
 import { IFeedService } from 'src/domain/service/feed/feed.service.interface';
 import { FEED_SERVICE } from 'src/domain/service/ioc';
+import { FeedsListDto, FeedCreateDto, FeedCommentDto } from 'src/domain/service/dto/feed.dto';
 
 @Controller('/feed')
 export class FeedController {
@@ -22,7 +24,7 @@ export class FeedController {
   ) {}
 
   @Get()
-  async getAll(): Promise<any> {
+  async getAll(): Promise<FeedsListDto> {
     return await this.feedService.getAll();
   }
 
@@ -39,6 +41,23 @@ export class FeedController {
       content: body.content,
     };
     return await this.feedService.createComment(feedCommentDto);
+  }
+  
+  @Post()
+  async createPost(
+    @Body() body: Partial<FeedCreateDto>,
+    @Headers('authorization') token: string,
+  ): Promise<void> {
+    if (!body.content && !body.images && !body.video)
+      throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
+    const decodedToken = this.verifyToken(token);
+    const feedCreateDto = {
+      userId: decodedToken.aud,
+      content: body.content,
+      images: body.images,
+      video: body.video,
+    };
+    return await this.feedService.createFeed(feedCreateDto);
   }
 
   verifyToken(token: string): { aud: number } {

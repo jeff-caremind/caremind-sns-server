@@ -3,12 +3,18 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
 import { UserVo } from './user.vo';
+import { FeedImageVo } from './feed_image.vo';
+import { FeedVideoVo } from './feed_video.vo';
+import { FeedLikeVo } from './feed_like.vo';
 import { FeedCommentVo } from './feed_comment.vo';
 
 @Entity({
@@ -32,6 +38,20 @@ export class FeedVo extends BaseEntity {
     cascade: true,
   })
   comments: FeedCommentVo[];
+
+  @OneToMany(() => FeedImageVo, (feedImage) => feedImage.feed, {
+    cascade: true,
+  })
+  images: FeedImageVo[];
+
+  @OneToOne(() => FeedVideoVo, {
+    cascade: true,
+  })
+  @JoinColumn()
+  video: FeedVideoVo;
+
+  @OneToMany(() => FeedLikeVo, (feedLike) => feedLike.likedFeed)
+  likes: FeedLikeVo[];
 
   @CreateDateColumn({
     type: 'timestamp',
