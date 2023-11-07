@@ -7,7 +7,7 @@ import {
   USER_REPOSITORY,
 } from 'src/infra/data/interactor/repository/ioc';
 import { IFeedRepository } from 'src/domain/interactor/data/repository/feed.repository.interface';
-import { FeedLikeDto } from '../../dto/feed.dto';
+import { FeedLikeDto, FeedsListDto } from '../../dto/feed.dto';
 import { IFeedLikeRepository } from 'src/domain/interactor/data/repository/feed_like.repository.interface';
 import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
 import { FeedLikeVo } from 'src/infra/data/typeorm/vo/feed_like.vo';
@@ -22,7 +22,15 @@ export class FeedServiceImpl implements IFeedService {
   ) {}
 
   async getAll() {
-    return await this.feedRepository.findAll();
+    const feeds = await this.feedRepository.findAll();
+    const feedsList: FeedsListDto = feeds.map((feed) => {
+      return {
+        ...feed,
+        likesCount: feed.likes.length,
+        commentsCount: feed.comments.length,
+      };
+    });
+    return feedsList;
   }
 
   async likeFeed(feedLikeDto: FeedLikeDto): Promise<void> {
