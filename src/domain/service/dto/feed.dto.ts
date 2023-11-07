@@ -23,6 +23,11 @@ export type FeedListItemWithcount = FeedListItem & {
 
 export type FeedsListDto = FeedListItemWithcount[];
 
+export type FeedLikeDto = {
+  likerId: number;
+  likedFeedId: number;
+};
+
 export type FeedCreateDto = {
   userId: number;
   content?: string;

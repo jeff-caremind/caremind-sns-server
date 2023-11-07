@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Inject,
+  Param,
   Post,
   Param,
   Headers,
@@ -14,7 +15,12 @@ import { JwtService } from '@nestjs/jwt';
 
 import { IFeedService } from 'src/domain/service/feed/feed.service.interface';
 import { FEED_SERVICE } from 'src/domain/service/ioc';
-import { FeedsListDto, FeedCreateDto, FeedCommentDto } from 'src/domain/service/dto/feed.dto';
+import { 
+  FeedLikeDto, 
+  FeedsListDto, 
+  FeedCreateDto, 
+  FeedCommentDto
+} from 'src/domain/service/dto/feed.dto';
 
 @Controller('/feed')
 export class FeedController {
@@ -41,6 +47,19 @@ export class FeedController {
       content: body.content,
     };
     return await this.feedService.createComment(feedCommentDto);
+  }
+  
+  @Post('/:feedId/like')
+  async likeFeed(
+    @Param('feedId') feedId: string,
+    @Headers('authorization') token: string,
+  ): Promise<void> {
+    const decodedToken = this.verifyToken(token);
+    const feedLikeDto: FeedLikeDto = {
+      likerId: decodedToken.aud,
+      likedFeedId: parseInt(feedId),
+    };
+    return await this.feedService.likeFeed(feedLikeDto);
   }
   
   @Post()

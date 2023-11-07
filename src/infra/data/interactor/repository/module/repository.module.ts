@@ -8,7 +8,13 @@ import * as IOC from '../ioc';
     IOC.FeedRepository,
     IOC.UserRepository,
     IOC.FeedCommentRepository,
+    IOC.FeedLikeRepository,
   ],
-  exports: [IOC.FeedRepository, IOC.UserRepository, IOC.FeedCommentRepository],
+  exports: [
+    IOC.FeedRepository, 
+    IOC.UserRepository, 
+    IOC.FeedCommentRepository,
+    IOC.FeedLikeRepository,
+  ],
 })
 export class RepositoryModule {}

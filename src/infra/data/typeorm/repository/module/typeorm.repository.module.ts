@@ -4,6 +4,7 @@ import {
   FeedTypeormRepository,
   UserTypeormRepository,
   FeedCommentTypeormRepository,
+  FeedLikeTypeormRepository,
 } from '../ioc';
 
 @Module({
@@ -12,11 +13,13 @@ import {
     FeedTypeormRepository,
     UserTypeormRepository,
     FeedCommentTypeormRepository,
+    FeedLikeTypeormRepository,
   ],
   exports: [
     FeedTypeormRepository,
     UserTypeormRepository,
     FeedCommentTypeormRepository,
+    FeedLikeTypeormRepository,
   ],
 })
 export class TypeormRepositoryModule {}
