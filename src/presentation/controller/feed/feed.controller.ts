@@ -10,8 +10,8 @@ import {
 } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { JwtService } from '@nestjs/jwt';
-import { FeedCreateDto } from 'src/domain/service/dto/feed.dto';
 
+import { FeedsListDto, FeedCreateDto } from 'src/domain/service/dto/feed.dto';
 import { IFeedService } from 'src/domain/service/feed/feed.service.interface';
 import { FEED_SERVICE } from 'src/domain/service/ioc';
 
@@ -23,7 +23,7 @@ export class FeedController {
   ) {}
 
   @Get()
-  async getAll(): Promise<any> {
+  async getAll(): Promise<FeedsListDto> {
     return await this.feedService.getAll();
   }
 

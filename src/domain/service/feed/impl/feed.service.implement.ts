@@ -1,11 +1,12 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+
 import { IFeedService } from '../feed.service.interface';
 import {
   FEED_REPOSITORY,
   USER_REPOSITORY,
 } from 'src/infra/data/interactor/repository/ioc';
 import { IFeedRepository } from 'src/domain/interactor/data/repository/feed.repository.interface';
-import { FeedCreateDto } from '../../dto/feed.dto';
+import { FeedsListDto, FeedCreateDto } from '../../dto/feed.dto';
 import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
 import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
 import { FeedVideoVo } from 'src/infra/data/typeorm/vo/feed_video.vo';
@@ -19,7 +20,15 @@ export class FeedServiceImpl implements IFeedService {
   ) {}
 
   async getAll() {
-    return await this.feedRepository.findAll();
+    const feeds = await this.feedRepository.findAll();
+    const feedsList: FeedsListDto = feeds.map((feed) => {
+      return {
+        ...feed,
+        likesCount: feed.likes.length,
+        commentsCount: feed.comments.length,
+      };
+    });
+    return feedsList;
   }
 
   async createFeed(feedCreateDto: FeedCreateDto) {

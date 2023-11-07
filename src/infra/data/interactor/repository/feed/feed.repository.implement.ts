@@ -11,8 +11,42 @@ export class FeedRepositoryImpl implements IFeedRepository {
     private readonly feedTypeormRepository: Repository<FeedVo>,
   ) {}
 
-  async findAll(): Promise<any> {
-    return await this.feedTypeormRepository.find();
+  async findAll(): Promise<FeedVo[]> {
+    return this.feedTypeormRepository.find({
+      relations: {
+        author: true,
+        likes: true,
+        images: true,
+        video: true,
+        comments: {
+          commenter: true,
+        },
+      },
+      select: {
+        author: {
+          id: true,
+          name: true,
+        },
+        images: {
+          id: true,
+          imageUrl: true,
+        },
+        video: {
+          id: true,
+          videoUrl: true,
+        },
+        comments: {
+          id: true,
+          content: true,
+          createdAt: true,
+          updatedAt: true,
+          commenter: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
   }
 
   async createFeed(feed: FeedVo): Promise<void> {
