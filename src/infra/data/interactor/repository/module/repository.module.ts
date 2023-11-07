@@ -11,8 +11,8 @@ import * as IOC from '../ioc';
     IOC.FeedLikeRepository,
   ],
   exports: [
-    IOC.FeedRepository, 
-    IOC.UserRepository, 
+    IOC.FeedRepository,
+    IOC.UserRepository,
     IOC.FeedCommentRepository,
     IOC.FeedLikeRepository,
   ],

@@ -16,7 +16,12 @@ import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
 import { FeedVideoVo } from 'src/infra/data/typeorm/vo/feed_video.vo';
 import { FeedImageVo } from 'src/infra/data/typeorm/vo/feed_image.vo';
 import { FeedLikeVo } from 'src/infra/data/typeorm/vo/feed_like.vo';
-import { FeedLikeDto, FeedsListDto, FeedCreateDto, FeedCommentDto } from '../../dto/feed.dto';
+import {
+  FeedLikeDto,
+  FeedsListDto,
+  FeedCreateDto,
+  FeedCommentDto,
+} from '../../dto/feed.dto';
 
 @Injectable()
 export class FeedServiceImpl implements IFeedService {
@@ -61,7 +66,7 @@ export class FeedServiceImpl implements IFeedService {
     newFeedLike.likedFeed = likedFeed;
     return await this.feedLikeRepository.createLike(newFeedLike);
   }
-  
+
   async createFeed(feedCreateDto: FeedCreateDto) {
     const feed = new FeedVo();
     if (feedCreateDto.content) feed.content = feedCreateDto.content;
@@ -98,5 +103,12 @@ export class FeedServiceImpl implements IFeedService {
     comment.commenter = commenter;
     comment.commentedFeed = feed;
     await this.feedCommentRepository.create(comment);
+  }
+
+  async getOne(feedId: number): Promise<FeedVo> {
+    const feed = await this.feedRepository.findOneWithRelationsById(feedId);
+    if (!feed)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    return feed;
   }
 }
