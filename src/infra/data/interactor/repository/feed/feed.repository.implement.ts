@@ -55,15 +55,15 @@ export class FeedRepositoryImpl implements IFeedRepository {
     });
   }
 
-  async findOneById(id: number): Promise<FeedVo | null> {
-    return await this.feedTypeormRepository.findOneBy({ id: id });
+  async findOneById(feedId: number): Promise<FeedVo | null> {
+    return await this.feedTypeormRepository.findOneBy({ id: feedId });
   }
-  
-  async createFeed(feed: FeedVo): Promise<void> {
+
+  async create(feed: FeedVo): Promise<void> {
     await this.feedTypeormRepository.save(feed);
   }
 
-  async findOneById(feedId: number): Promise<FeedVo | null> {
-    return await this.feedTypeormRepository.findOneBy({ id: feedId });
+  async update(updatedFeed: FeedVo) {
+    await this.feedTypeormRepository.save(updatedFeed);
   }
 }

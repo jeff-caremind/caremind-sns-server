@@ -5,21 +5,21 @@ import {
   Inject,
   Param,
   Post,
-  Param,
   Headers,
   HttpException,
   HttpStatus,
+  Put,
 } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { JwtService } from '@nestjs/jwt';
 
 import { IFeedService } from 'src/domain/service/feed/feed.service.interface';
 import { FEED_SERVICE } from 'src/domain/service/ioc';
-import { 
-  FeedLikeDto, 
-  FeedsListDto, 
-  FeedCreateDto, 
-  FeedCommentDto
+import {
+  FeedLikeDto,
+  FeedsListDto,
+  FeedCreateDto,
+  FeedCommentDto,
 } from 'src/domain/service/dto/feed.dto';
 
 @Controller('/feed')
@@ -48,7 +48,7 @@ export class FeedController {
     };
     return await this.feedService.createComment(feedCommentDto);
   }
-  
+
   @Post('/:feedId/like')
   async likeFeed(
     @Param('feedId') feedId: string,
@@ -61,9 +61,9 @@ export class FeedController {
     };
     return await this.feedService.likeFeed(feedLikeDto);
   }
-  
+
   @Post()
-  async createPost(
+  async createFeed(
     @Body() body: Partial<FeedCreateDto>,
     @Headers('authorization') token: string,
   ): Promise<void> {
@@ -77,6 +77,17 @@ export class FeedController {
       video: body.video,
     };
     return await this.feedService.createFeed(feedCreateDto);
+  }
+
+  @Put('/:feedId')
+  async updateFeed(
+    @Headers('authorization') token: string,
+    @Param('feedId') feedId: number,
+    @Body() feedUpdateDto: FeedCreateDto,
+  ) {
+    const decoded = this.verifyToken(token);
+    feedUpdateDto.userId = decoded.aud;
+    return await this.feedService.updateFeed(feedId, feedUpdateDto);
   }
 
   verifyToken(token: string): { aud: number } {
