@@ -27,3 +27,10 @@ export type FeedLikeDto = {
   likerId: number;
   likedFeedId: number;
 };
+
+export type FeedCreateDto = {
+  userId: number;
+  content?: string;
+  images?: string[];
+  video?: string;
+};

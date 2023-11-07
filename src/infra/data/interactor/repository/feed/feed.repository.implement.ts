@@ -58,4 +58,8 @@ export class FeedRepositoryImpl implements IFeedRepository {
   async findOneById(id: number): Promise<FeedVo | null> {
     return await this.feedTypeormRepository.findOneBy({ id: id });
   }
+  
+  async createFeed(feed: FeedVo): Promise<void> {
+    await this.feedTypeormRepository.save(feed);
+  }
 }
