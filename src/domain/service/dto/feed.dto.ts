@@ -22,3 +22,10 @@ export type FeedListItemWithcount = FeedListItem & {
 };
 
 export type FeedsListDto = FeedListItemWithcount[];
+
+export type FeedCreateDto = {
+  userId: number;
+  content?: string;
+  images?: string[];
+  video?: string;
+};

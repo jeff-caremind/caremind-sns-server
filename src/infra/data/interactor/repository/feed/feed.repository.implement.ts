@@ -48,4 +48,8 @@ export class FeedRepositoryImpl implements IFeedRepository {
       },
     });
   }
+
+  async createFeed(feed: FeedVo): Promise<void> {
+    await this.feedTypeormRepository.save(feed);
+  }
 }

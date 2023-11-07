@@ -33,10 +33,14 @@ export class FeedVo extends BaseEntity {
   @ManyToOne(() => UserVo)
   author: UserVo;
 
-  @OneToMany(() => FeedImageVo, (feedImage) => feedImage.feed)
+  @OneToMany(() => FeedImageVo, (feedImage) => feedImage.feed, {
+    cascade: true,
+  })
   images: FeedImageVo[];
 
-  @OneToOne(() => FeedVideoVo)
+  @OneToOne(() => FeedVideoVo, {
+    cascade: true,
+  })
   @JoinColumn()
   video: FeedVideoVo;
 
