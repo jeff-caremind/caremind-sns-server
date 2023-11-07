@@ -1,3 +1,4 @@
+import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
 import {
   FeedLikeDto,
   FeedsListDto,
@@ -11,4 +12,5 @@ export interface IFeedService {
   likeFeed(feedLikeDto: FeedLikeDto): Promise<void>;
   createFeed(feedCreateDto: FeedCreateDto): Promise<void>;
   updateFeed(feedId: number, feedUpdateDto: FeedCreateDto): Promise<void>;
+  getOne(feedId: number): Promise<FeedVo>;
 }

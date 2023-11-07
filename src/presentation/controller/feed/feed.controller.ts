@@ -15,6 +15,7 @@ import { JwtService } from '@nestjs/jwt';
 
 import { IFeedService } from 'src/domain/service/feed/feed.service.interface';
 import { FEED_SERVICE } from 'src/domain/service/ioc';
+import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
 import {
   FeedLikeDto,
   FeedsListDto,
@@ -28,6 +29,11 @@ export class FeedController {
     @Inject(FEED_SERVICE) private readonly feedService: IFeedService,
     private readonly JwtService: JwtService,
   ) {}
+
+  @Get('/:feedId')
+  async getOne(@Param('feedId') feedId: number): Promise<FeedVo> {
+    return await this.feedService.getOne(feedId);
+  }
 
   @Get()
   async getAll(): Promise<FeedsListDto> {

@@ -6,4 +6,5 @@ export interface IFeedRepository {
   findOneWithAuthorById(feedId: number): Promise<FeedVo | null>;
   create(feed: FeedVo): Promise<void>;
   update(updatedFeed: FeedVo): Promise<void>;
+  findOneWithRelationsById(feedId: number): Promise<FeedVo | null>;
 }

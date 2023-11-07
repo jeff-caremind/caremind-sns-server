@@ -110,6 +110,13 @@ export class FeedServiceImpl implements IFeedService {
     await this.feedRepository.update(feed);
   }
 
+  async getOne(feedId: number): Promise<FeedVo> {
+    const feed = await this.feedRepository.findOneWithRelationsById(feedId);
+    if (!feed)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    return feed;
+  }
+  
   private createImageVos(images: string[]): FeedImageVo[] {
     return images.map((item) => {
       const imageVo = new FeedImageVo();
