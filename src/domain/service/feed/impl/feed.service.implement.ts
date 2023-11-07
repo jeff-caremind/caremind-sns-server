@@ -110,7 +110,7 @@ export class FeedServiceImpl implements IFeedService {
     await this.feedRepository.update(feed);
   }
 
-  createImageVos(images: string[]): FeedImageVo[] {
+  private createImageVos(images: string[]): FeedImageVo[] {
     return images.map((item) => {
       const imageVo = new FeedImageVo();
       imageVo.imageUrl = item;
@@ -118,7 +118,7 @@ export class FeedServiceImpl implements IFeedService {
     });
   }
 
-  createVideoVo(videoUrl: string): FeedVideoVo {
+  private createVideoVo(videoUrl: string): FeedVideoVo {
     const videoVo = new FeedVideoVo();
     videoVo.videoUrl = videoUrl;
     return videoVo;
