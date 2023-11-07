@@ -6,4 +6,5 @@ export interface IFeedService {
   createComment(feedCommentDto: FeedCommentDto): Promise<void>;
   likeFeed(feedLikeDto: FeedLikeDto): Promise<void>;
   createFeed(feedCreateDto: FeedCreateDto): Promise<void>;
+  getOne(feedId: number): Promise<FeedVo>;
 }

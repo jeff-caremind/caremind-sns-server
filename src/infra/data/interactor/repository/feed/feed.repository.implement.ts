@@ -19,51 +19,59 @@ export class FeedRepositoryImpl implements IFeedRepository {
 
   async findAll(): Promise<FeedVo[]> {
     return this.feedTypeormRepository.find({
-      relations: {
-        author: true,
-        likes: true,
-        images: true,
-        video: true,
-        comments: {
-          commenter: true,
-        },
-      },
-      select: {
-        author: {
-          id: true,
-          name: true,
-        },
-        images: {
-          id: true,
-          imageUrl: true,
-        },
-        video: {
-          id: true,
-          videoUrl: true,
-        },
-        comments: {
-          id: true,
-          content: true,
-          createdAt: true,
-          updatedAt: true,
-          commenter: {
-            id: true,
-            name: true,
-          },
-        },
-      },
+      relations: this.feedFullRelations,
+      select: this.feedFullRelationsSelect,
     });
-  }
-
-  async findOneById(id: number): Promise<FeedVo | null> {
-    return await this.feedTypeormRepository.findOneBy({ id: id });
-  }
-  
-  async createFeed(feed: FeedVo): Promise<void> {
-    await this.feedTypeormRepository.save(feed);
   }
 
   async findOneById(feedId: number): Promise<FeedVo | null> {
     return await this.feedTypeormRepository.findOneBy({ id: feedId });
   }
+
+  async create(feed: FeedVo): Promise<void> {
+    await this.feedTypeormRepository.save(feed);
+  }
+
+  async findOneWithRelationsById(feedId: number): Promise<FeedVo | null> {
+    return await this.feedTypeormRepository.findOne({
+      where: { id: feedId },
+      relations: this.feedFullRelations,
+      select: this.feedFullRelationsSelect,
+    });
+  }
+
+  feedFullRelations = {
+    author: true,
+    likes: true,
+    images: true,
+    video: true,
+    comments: {
+      commenter: true,
+    },
+  };
+
+  feedFullRelationsSelect = {
+    author: {
+      id: true,
+      name: true,
+    },
+    images: {
+      id: true,
+      imageUrl: true,
+    },
+    video: {
+      id: true,
+      videoUrl: true,
+    },
+    comments: {
+      id: true,
+      content: true,
+      createdAt: true,
+      updatedAt: true,
+      commenter: {
+        id: true,
+        name: true,
+      },
+    },
+  };
 }
