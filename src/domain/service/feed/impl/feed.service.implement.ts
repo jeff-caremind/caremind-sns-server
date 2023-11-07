@@ -99,7 +99,7 @@ export class FeedServiceImpl implements IFeedService {
     feedUpdateDto: FeedCreateDto,
   ): Promise<void> {
     const { userId, content, images, video } = feedUpdateDto;
-    const feed = await this.feedRepository.findOneById(feedId);
+    const feed = await this.feedRepository.findOneWithAuthorById(feedId);
     if (!feed)
       throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
     if (userId !== feed.author.id)

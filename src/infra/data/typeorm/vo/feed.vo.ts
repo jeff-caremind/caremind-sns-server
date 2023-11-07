@@ -31,7 +31,7 @@ export class FeedVo extends BaseEntity {
   })
   content: string;
 
-  @ManyToOne(() => UserVo, { eager: true })
+  @ManyToOne(() => UserVo)
   author: UserVo;
 
   @OneToMany(() => FeedCommentVo, (feedComment) => feedComment.commentedFeed, {

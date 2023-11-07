@@ -87,7 +87,7 @@ export class FeedController {
   ) {
     const decoded = this.verifyToken(token);
     feedUpdateDto.userId = decoded.aud;
-    return await this.feedService.updateFeed(feedId, feedUpdateDto);
+    return await this.feedService.updateFeed(Number(feedId), feedUpdateDto);
   }
 
   verifyToken(token: string): { aud: number } {

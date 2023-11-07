@@ -66,4 +66,14 @@ export class FeedRepositoryImpl implements IFeedRepository {
   async update(updatedFeed: FeedVo) {
     await this.feedTypeormRepository.save(updatedFeed);
   }
+
+  async findOneWithAuthorById(feedId: number): Promise<FeedVo | null> {
+    const [feed] = await this.feedTypeormRepository.find({
+      relations: {
+        author: true,
+      },
+      where: { id: feedId },
+    });
+    return feed;
+  }
 }
