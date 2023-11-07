@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+
 import { FeedModule } from './domain/service/module/feed.module';
 import { UserModule } from './domain/service/module/user.module';
-import { JwtModule } from '@nestjs/jwt';
+import { ProfileModule } from './domain/service/module/profile.module';
 
 @Module({
   imports: [
@@ -16,6 +18,7 @@ import { JwtModule } from '@nestjs/jwt';
     }),
     FeedModule,
     UserModule,
+    ProfileModule,
   ],
 })
 export class AppModule {}

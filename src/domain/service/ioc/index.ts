@@ -1,8 +1,11 @@
 import { Provider } from '@nestjs/common';
+
 import { FeedServiceImpl } from '../feed/impl/feed.service.implement';
+import { UserServiceImpl } from '../user/impl/user.service.implement';
+import { ProfileServiceImpl } from '../profile/impl/profile.service.implement';
 import { IFeedService } from '../feed/feed.service.interface';
 import { IUserService } from '../user/user.service.interface';
-import { UserServiceImpl } from '../user/impl/user.service.implement';
+import { IProfileService } from '../profile/profile.service.interface';
 
 export const FEED_SERVICE = Symbol.for('FEED_SERVICE');
 export const FeedService: Provider<IFeedService> = {
@@ -18,3 +21,9 @@ export const UserService: Provider<IUserService> = {
 };
 
 // UserService: Provider <어떤 것으로 Provider 할 것인가  /  IUserService와 같은 형태로>
+
+export const PROFILE_SERVICE = Symbol.for('PROFILE_SERVICE');
+export const ProfileService: Provider<IProfileService> = {
+  provide: PROFILE_SERVICE,
+  useClass: ProfileServiceImpl,
+};
