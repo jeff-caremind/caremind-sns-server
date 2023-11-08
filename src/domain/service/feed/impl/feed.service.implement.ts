@@ -80,9 +80,8 @@ export class FeedServiceImpl implements IFeedService {
     if (video) feed.video = this.createVideoVo(video);
     let tags: FeedTagVo[];
     if (content) {
-      const hashtagRegex: RegExp = /#\w+/g;
-      const rawTags: string[] = content.match(hashtagRegex) || [];
-      tags = this.createTagVos(feed, rawTags);
+      const rawTags = this.extractTags(content);
+      tags = this.createFeedTagVos(feed, rawTags);
       feed.tags = tags;
     }
     return await this.feedRepository.create(feed);
@@ -108,7 +107,7 @@ export class FeedServiceImpl implements IFeedService {
     feedUpdateDto: FeedCreateDto,
   ): Promise<void> {
     const { userId, content, images, video } = feedUpdateDto;
-    const feed = await this.feedRepository.findOneWithAuthorById(feedId);
+    const feed = await this.feedRepository.findOneWithAuthorAndTagsById(feedId);
     if (!feed)
       throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
     if (userId !== feed.author.id)
@@ -116,6 +115,21 @@ export class FeedServiceImpl implements IFeedService {
     if (content) feed.content = content;
     if (images) feed.images = this.createImageVos(images);
     if (video) feed.video = this.createVideoVo(video);
+    if (content) {
+      const rawTags: string[] = this.extractTags(content);
+      const feedTagVos = feed.tags;
+      const remainingTags = feedTagVos.filter((feedTagVo: FeedTagVo) =>
+        rawTags.includes(feedTagVo.tag.tag),
+      );
+      const existingTags: string[] = feedTagVos.map((item) => item.tag.tag);
+      const addedTags = rawTags.filter((tag) => !existingTags.includes(tag));
+      const updatedFeedTags = this.createFeedTagVos(
+        feed,
+        addedTags,
+        remainingTags,
+      );
+      feed.tags = updatedFeedTags;
+    }
     await this.feedRepository.update(feed);
   }
 
@@ -140,14 +154,25 @@ export class FeedServiceImpl implements IFeedService {
     return videoVo;
   }
 
-  private createTagVos(feed: FeedVo, tags: string[]): FeedTagVo[] {
-    return tags.map((item) => {
-      const tagVo = new TagVo();
-      tagVo.tag = item;
-      const feedTagVo = new FeedTagVo();
-      feedTagVo.tag = tagVo;
-      feedTagVo.feed = feed;
-      return feedTagVo;
-    });
+  private extractTags(content: string) {
+    const hashtagRegex: RegExp = /#\w+/g;
+    return content.match(hashtagRegex) || [];
+  }
+
+  private createFeedTagVos(
+    feed: FeedVo,
+    tags: string[],
+    existingTags: FeedTagVo[] = [],
+  ): FeedTagVo[] {
+    return existingTags.concat(
+      tags.map((item) => {
+        const tagVo = new TagVo();
+        tagVo.tag = item;
+        const feedTagVo = new FeedTagVo();
+        feedTagVo.tag = tagVo;
+        feedTagVo.feed = feed;
+        return feedTagVo;
+      }),
+    );
   }
 }
