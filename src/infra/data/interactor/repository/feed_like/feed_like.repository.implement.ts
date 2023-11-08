@@ -11,7 +11,7 @@ export class FeedLikeRepositoryImpl implements IFeedLikeRepository {
     private readonly feedLikeTypeormRepository: Repository<FeedLikeVo>,
   ) {}
 
-  async createLike(newFeedLike: FeedLikeVo): Promise<void> {
+  async create(newFeedLike: FeedLikeVo): Promise<void> {
     await this.feedLikeTypeormRepository.save(newFeedLike);
   }
 }

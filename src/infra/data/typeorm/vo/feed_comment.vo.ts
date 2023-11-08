@@ -17,7 +17,7 @@ export class FeedCommentVo extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => FeedVo)
+  @ManyToOne(() => FeedVo, { onDelete: 'CASCADE' })
   commentedFeed: FeedVo;
 
   @ManyToOne(() => UserVo)

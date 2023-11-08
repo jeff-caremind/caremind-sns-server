@@ -5,6 +5,7 @@ import {
   FEED_COMMENT_REPOSITORY,
   FEED_LIKE_REPOSITORY,
   FEED_REPOSITORY,
+  FEED_VIDEO_REPOSITORY,
   USER_REPOSITORY,
 } from 'src/infra/data/interactor/repository/ioc';
 import { IFeedRepository } from 'src/domain/interactor/data/repository/feed.repository.interface';
@@ -23,6 +24,7 @@ import {
   FeedCommentDto,
   FeedDeleteDto,
 } from '../../dto/feed.dto';
+import { IFeedVideoRepository } from 'src/domain/interactor/data/repository/feed_video.repository.interface';
 
 @Injectable()
 export class FeedServiceImpl implements IFeedService {
@@ -33,6 +35,8 @@ export class FeedServiceImpl implements IFeedService {
     @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
     @Inject(FEED_COMMENT_REPOSITORY)
     private readonly feedCommentRepository: IFeedCommentRepository,
+    @Inject(FEED_VIDEO_REPOSITORY)
+    private readonly feedVideoRepository: IFeedVideoRepository,
   ) {}
 
   async getAll() {
@@ -65,7 +69,7 @@ export class FeedServiceImpl implements IFeedService {
     const newFeedLike = new FeedLikeVo();
     newFeedLike.liker = liker;
     newFeedLike.likedFeed = likedFeed;
-    return await this.feedLikeRepository.createLike(newFeedLike);
+    return await this.feedLikeRepository.create(newFeedLike);
   }
 
   async createFeed(feedCreateDto: FeedCreateDto) {
@@ -119,7 +123,14 @@ export class FeedServiceImpl implements IFeedService {
   }
 
   async deleteFeed(feedDeleteDto: FeedDeleteDto): Promise<void> {
-    return;
+    const { userId, feedId } = feedDeleteDto;
+    const feed = await this.feedRepository.findOneWithRelationsById(feedId);
+    if (!feed)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (feed.author.id !== userId)
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+    await this.feedRepository.remove(feed);
+    await this.feedVideoRepository.remove(feed.video);
   }
 
   private createImageVos(images: string[]): FeedImageVo[] {
