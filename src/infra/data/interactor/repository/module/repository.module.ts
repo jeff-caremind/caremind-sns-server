@@ -9,12 +9,14 @@ import * as IOC from '../ioc';
     IOC.UserRepository,
     IOC.FeedCommentRepository,
     IOC.FeedLikeRepository,
+    IOC.FeedVideoRepository,
   ],
   exports: [
     IOC.FeedRepository,
     IOC.UserRepository,
     IOC.FeedCommentRepository,
     IOC.FeedLikeRepository,
+    IOC.FeedVideoRepository,
   ],
 })
 export class RepositoryModule {}
