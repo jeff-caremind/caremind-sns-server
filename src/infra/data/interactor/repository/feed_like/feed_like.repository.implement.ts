@@ -11,7 +11,23 @@ export class FeedLikeRepositoryImpl implements IFeedLikeRepository {
     private readonly feedLikeTypeormRepository: Repository<FeedLikeVo>,
   ) {}
 
-  async createLike(newFeedLike: FeedLikeVo): Promise<void> {
+  async create(newFeedLike: FeedLikeVo): Promise<void> {
     await this.feedLikeTypeormRepository.save(newFeedLike);
+  }
+
+  async findOne(
+    likerId: number,
+    likedFeedId: number,
+  ): Promise<FeedLikeVo | null> {
+    return await this.feedLikeTypeormRepository.findOne({
+      where: {
+        likedFeed: { id: likedFeedId },
+        liker: { id: likerId },
+      },
+    });
+  }
+
+  async remove(feedLike: FeedLikeVo): Promise<void> {
+    await this.feedLikeTypeormRepository.remove(feedLike);
   }
 }

@@ -4,7 +4,7 @@ import { FeedLikeVo } from 'src/infra/data/typeorm/vo/feed_like.vo';
 import { FeedVideoVo } from 'src/infra/data/typeorm/vo/feed_video.vo';
 import { UserVo } from 'src/infra/data/typeorm/vo/user.vo';
 
-export type FeedListItem = {
+export type FeedWithRelationsDto = {
   id: number;
   content: string;
   createdAt: Date;
@@ -16,12 +16,12 @@ export type FeedListItem = {
   comments: FeedCommentVo[];
 };
 
-export type FeedListItemWithcount = FeedListItem & {
+export type FeedWithRelationsAndCount = FeedWithRelationsDto & {
   likesCount: number;
   commentsCount: number;
 };
 
-export type FeedsListDto = FeedListItemWithcount[];
+export type FeedsDto = FeedWithRelationsAndCount[];
 
 export type FeedLikeDto = {
   likerId: number;
@@ -39,4 +39,9 @@ export type FeedCommentDto = {
   userId: number;
   feedId: number;
   content: string;
+};
+
+export type FeedDeleteDto = {
+  userId: number;
+  feedId: number;
 };
