@@ -22,6 +22,8 @@ import {
   FeedCreateDto,
   FeedCommentDto,
 } from '../../dto/feed.dto';
+import { FeedTagVo } from 'src/infra/data/typeorm/vo/feed_tag.vo';
+import { TagVo } from 'src/infra/data/typeorm/vo/tag.vo';
 
 @Injectable()
 export class FeedServiceImpl implements IFeedService {
@@ -76,6 +78,13 @@ export class FeedServiceImpl implements IFeedService {
     if (content) feed.content = content;
     if (images) feed.images = this.createImageVos(images);
     if (video) feed.video = this.createVideoVo(video);
+    let tags: FeedTagVo[];
+    if (content) {
+      const hashtagRegex: RegExp = /#\w+/g;
+      const rawTags: string[] = content.match(hashtagRegex) || [];
+      tags = this.createTagVos(feed, rawTags);
+      feed.tags = tags;
+    }
     return await this.feedRepository.create(feed);
   }
 
@@ -116,7 +125,7 @@ export class FeedServiceImpl implements IFeedService {
       throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
     return feed;
   }
-  
+
   private createImageVos(images: string[]): FeedImageVo[] {
     return images.map((item) => {
       const imageVo = new FeedImageVo();
@@ -129,5 +138,16 @@ export class FeedServiceImpl implements IFeedService {
     const videoVo = new FeedVideoVo();
     videoVo.videoUrl = videoUrl;
     return videoVo;
+  }
+
+  private createTagVos(feed: FeedVo, tags: string[]): FeedTagVo[] {
+    return tags.map((item) => {
+      const tagVo = new TagVo();
+      tagVo.tag = item;
+      const feedTagVo = new FeedTagVo();
+      feedTagVo.tag = tagVo;
+      feedTagVo.feed = feed;
+      return feedTagVo;
+    });
   }
 }
