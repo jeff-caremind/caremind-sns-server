@@ -14,4 +14,17 @@ export class FeedCommentRepositoryImpl implements IFeedCommentRepository {
   async create(comment: FeedCommentVo): Promise<void> {
     await this.feedCommentTypeormRepository.save(comment);
   }
+
+  async findOneById(commentId: number): Promise<FeedCommentVo | null> {
+    const [comment] = await this.feedCommentTypeormRepository.find({
+      where: {
+        id: commentId,
+      },
+    });
+    return comment;
+  }
+
+  async update(updatedComment: FeedCommentVo): Promise<void> {
+    await this.feedCommentTypeormRepository.save(updatedComment);
+  }
 }
