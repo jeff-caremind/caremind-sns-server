@@ -5,6 +5,7 @@ import {
   FEED_COMMENT_REPOSITORY,
   FEED_LIKE_REPOSITORY,
   FEED_REPOSITORY,
+  FEED_VIDEO_REPOSITORY,
   USER_REPOSITORY,
 } from 'src/infra/data/interactor/repository/ioc';
 import { IFeedRepository } from 'src/domain/interactor/data/repository/feed.repository.interface';
@@ -18,10 +19,12 @@ import { FeedImageVo } from 'src/infra/data/typeorm/vo/feed_image.vo';
 import { FeedLikeVo } from 'src/infra/data/typeorm/vo/feed_like.vo';
 import {
   FeedLikeDto,
-  FeedsListDto,
+  FeedsDto,
   FeedCreateDto,
   FeedCommentDto,
+  FeedDeleteDto,
 } from '../../dto/feed.dto';
+import { IFeedVideoRepository } from 'src/domain/interactor/data/repository/feed_video.repository.interface';
 
 @Injectable()
 export class FeedServiceImpl implements IFeedService {
@@ -32,11 +35,13 @@ export class FeedServiceImpl implements IFeedService {
     @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
     @Inject(FEED_COMMENT_REPOSITORY)
     private readonly feedCommentRepository: IFeedCommentRepository,
+    @Inject(FEED_VIDEO_REPOSITORY)
+    private readonly feedVideoRepository: IFeedVideoRepository,
   ) {}
 
   async getAll() {
     const feeds = await this.feedRepository.findAll();
-    const feedsList: FeedsListDto = feeds.map((feed) => {
+    const feedsList: FeedsDto = feeds.map((feed) => {
       return {
         ...feed,
         likesCount: feed.likes.length,
@@ -131,6 +136,17 @@ export class FeedServiceImpl implements IFeedService {
     if (!feedLike)
       throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
     await this.feedLikeRepository.remove(feedLike);
+  }
+
+  async deleteFeed(feedDeleteDto: FeedDeleteDto): Promise<void> {
+    const { userId, feedId } = feedDeleteDto;
+    const feed = await this.feedRepository.findOneWithRelationsById(feedId);
+    if (!feed)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (feed.author.id !== userId)
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+    await this.feedRepository.remove(feed);
+    await this.feedVideoRepository.remove(feed.video);
   }
 
   private createImageVos(images: string[]): FeedImageVo[] {

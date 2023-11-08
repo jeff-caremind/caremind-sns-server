@@ -19,9 +19,10 @@ import { FEED_SERVICE } from 'src/domain/service/ioc';
 import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
 import {
   FeedLikeDto,
-  FeedsListDto,
+  FeedsDto,
   FeedCreateDto,
   FeedCommentDto,
+  FeedDeleteDto,
 } from 'src/domain/service/dto/feed.dto';
 
 @Controller('/feed')
@@ -37,7 +38,7 @@ export class FeedController {
   }
 
   @Get()
-  async getAll(): Promise<FeedsListDto> {
+  async getAll(): Promise<FeedsDto> {
     return await this.feedService.getAll();
   }
 
@@ -77,7 +78,7 @@ export class FeedController {
     if (!body.content && !body.images && !body.video)
       throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
     const decodedToken = this.verifyToken(token);
-    const feedCreateDto = {
+    const feedCreateDto: FeedCreateDto = {
       userId: decodedToken.aud,
       content: body.content,
       images: body.images,
@@ -90,10 +91,13 @@ export class FeedController {
   async updateFeed(
     @Headers('authorization') token: string,
     @Param('feedId') feedId: number,
-    @Body() feedUpdateDto: FeedCreateDto,
+    @Body() body: Partial<FeedCreateDto>,
   ) {
     const decoded = this.verifyToken(token);
-    feedUpdateDto.userId = decoded.aud;
+    const feedUpdateDto: FeedCreateDto = {
+      ...body,
+      userId: decoded.aud,
+    };
     return await this.feedService.updateFeed(Number(feedId), feedUpdateDto);
   }
 
@@ -108,6 +112,19 @@ export class FeedController {
       likedFeedId: Number(feedId),
     };
     return await this.feedService.deleteLike(feedLikeDto);
+  }
+
+  @Delete('/:feedId')
+  async deleteFeed(
+    @Headers('authorization') token: string,
+    @Param('feedId') feedId: number,
+  ) {
+    const decoded = this.verifyToken(token);
+    const feedDeleteDto: FeedDeleteDto = {
+      userId: Number(decoded.aud),
+      feedId: feedId,
+    };
+    return await this.feedService.deleteFeed(feedDeleteDto);
   }
 
   verifyToken(token: string): { aud: number } {

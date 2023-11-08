@@ -42,11 +42,16 @@ export class FeedRepositoryImpl implements IFeedRepository {
   }
 
   async findOneWithRelationsById(feedId: number): Promise<FeedVo | null> {
-    return await this.feedTypeormRepository.findOne({
+    const [feed] = await this.feedTypeormRepository.find({
       where: { id: feedId },
       relations: this.feedFullRelations,
       select: this.feedFullRelationsSelect,
     });
+    return feed;
+  }
+
+  async remove(feed: FeedVo) {
+    await this.feedTypeormRepository.remove(feed);
   }
 
   private feedFullRelations: FindOptionsRelations<FeedVo> = {
