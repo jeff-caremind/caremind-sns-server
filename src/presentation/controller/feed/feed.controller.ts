@@ -9,6 +9,7 @@ import {
   HttpException,
   HttpStatus,
   Put,
+  Delete,
 } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { JwtService } from '@nestjs/jwt';
@@ -18,7 +19,7 @@ import { FEED_SERVICE } from 'src/domain/service/ioc';
 import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
 import {
   FeedLikeDto,
-  FeedsListDto,
+  FeedsDto,
   FeedCreateDto,
   FeedCommentDto,
 } from 'src/domain/service/dto/feed.dto';
@@ -36,7 +37,7 @@ export class FeedController {
   }
 
   @Get()
-  async getAll(): Promise<FeedsListDto> {
+  async getAll(): Promise<FeedsDto> {
     return await this.feedService.getAll();
   }
 
@@ -94,6 +95,21 @@ export class FeedController {
     const decoded = this.verifyToken(token);
     feedUpdateDto.userId = decoded.aud;
     return await this.feedService.updateFeed(Number(feedId), feedUpdateDto);
+  }
+
+  @Delete('/:feedId/comment/:commentId')
+  async deleteComment(
+    @Headers('authorization') token: string,
+    @Param('feedId') feedId: number,
+    @Param('commentId') commentId: number,
+  ): Promise<void> {
+    const decoded = this.verifyToken(token);
+    const feedCommentDeleteDto = {
+      userId: decoded.aud,
+      feedId: Number(feedId),
+      commentId: Number(commentId),
+    };
+    return await this.feedService.deleteComment(feedCommentDeleteDto);
   }
 
   verifyToken(token: string): { aud: number } {

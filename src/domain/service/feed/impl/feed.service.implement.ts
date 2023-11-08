@@ -18,9 +18,10 @@ import { FeedImageVo } from 'src/infra/data/typeorm/vo/feed_image.vo';
 import { FeedLikeVo } from 'src/infra/data/typeorm/vo/feed_like.vo';
 import {
   FeedLikeDto,
-  FeedsListDto,
+  FeedsDto,
   FeedCreateDto,
   FeedCommentDto,
+  FeedCommentDeleteDto,
 } from '../../dto/feed.dto';
 
 @Injectable()
@@ -36,7 +37,7 @@ export class FeedServiceImpl implements IFeedService {
 
   async getAll() {
     const feeds = await this.feedRepository.findAll();
-    const feedsList: FeedsListDto = feeds.map((feed) => {
+    const feedsList: FeedsDto = feeds.map((feed) => {
       return {
         ...feed,
         likesCount: feed.likes.length,
@@ -116,7 +117,22 @@ export class FeedServiceImpl implements IFeedService {
       throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
     return feed;
   }
-  
+
+  async deleteComment(
+    feedCommentDeleteDto: FeedCommentDeleteDto,
+  ): Promise<void> {
+    const { userId, feedId, commentId } = feedCommentDeleteDto;
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const feed = await this.feedRepository.findOneById(feedId);
+    if (!feed)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const comment = await this.feedCommentRepository.findOneById(commentId);
+    if (!comment)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    return await this.feedCommentRepository.remove(comment);
+  }
+
   private createImageVos(images: string[]): FeedImageVo[] {
     return images.map((item) => {
       const imageVo = new FeedImageVo();
