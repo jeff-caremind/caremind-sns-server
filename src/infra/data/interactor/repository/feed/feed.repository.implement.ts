@@ -50,18 +50,8 @@ export class FeedRepositoryImpl implements IFeedRepository {
     return feed;
   }
 
-  // async delete(feedId: number) {
-  //   await this.feedTypeormRepository.delete(feedId);
-  // }
-
   async remove(feed: FeedVo) {
-    // await this.feedTypeormRepository.remove(feed);
-    await this.feedTypeormRepository
-      .createQueryBuilder('feed')
-      .delete()
-      .from(FeedVo)
-      .where('id = :id', { id: feed.id })
-      .execute();
+    await this.feedTypeormRepository.remove(feed);
   }
 
   private feedFullRelations: FindOptionsRelations<FeedVo> = {
