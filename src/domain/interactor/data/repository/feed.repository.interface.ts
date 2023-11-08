@@ -7,6 +7,5 @@ export interface IFeedRepository {
   create(feed: FeedVo): Promise<void>;
   update(updatedFeed: FeedVo): Promise<void>;
   findOneWithRelationsById(feedId: number): Promise<FeedVo | null>;
-  // delete(feedId: number): Promise<void>;
   remove(feed: FeedVo): Promise<void>;
 }
