@@ -15,7 +15,9 @@ export class FeedTagVo extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => FeedVo)
+  @ManyToOne(() => FeedVo, {
+    orphanedRowAction: 'delete',
+  })
   feed: FeedVo;
 
   @ManyToOne(() => TagVo, {
