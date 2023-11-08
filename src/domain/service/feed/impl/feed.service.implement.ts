@@ -18,7 +18,7 @@ import { FeedImageVo } from 'src/infra/data/typeorm/vo/feed_image.vo';
 import { FeedLikeVo } from 'src/infra/data/typeorm/vo/feed_like.vo';
 import {
   FeedLikeDto,
-  FeedsListDto,
+  FeedsDto,
   FeedCreateDto,
   FeedCommentDto,
 } from '../../dto/feed.dto';
@@ -36,7 +36,7 @@ export class FeedServiceImpl implements IFeedService {
 
   async getAll() {
     const feeds = await this.feedRepository.findAll();
-    const feedsList: FeedsListDto = feeds.map((feed) => {
+    const feedsList: FeedsDto = feeds.map((feed) => {
       return {
         ...feed,
         likesCount: feed.likes.length,

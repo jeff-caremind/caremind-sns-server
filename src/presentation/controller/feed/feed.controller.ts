@@ -18,7 +18,7 @@ import { FEED_SERVICE } from 'src/domain/service/ioc';
 import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
 import {
   FeedLikeDto,
-  FeedsListDto,
+  FeedsDto,
   FeedCreateDto,
   FeedCommentDto,
 } from 'src/domain/service/dto/feed.dto';
@@ -36,7 +36,7 @@ export class FeedController {
   }
 
   @Get()
-  async getAll(): Promise<FeedsListDto> {
+  async getAll(): Promise<FeedsDto> {
     return await this.feedService.getAll();
   }
 
