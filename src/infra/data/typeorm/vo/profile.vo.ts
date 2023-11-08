@@ -3,14 +3,18 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  JoinColumn,
 } from 'typeorm';
 
+import { UserVo } from './user.vo';
 import { ProfileProjectVo } from './profile_project.vo';
 import { ProfileExperienceVo } from './profile_experience.vo';
 import { ProfileEducationVo } from './profile_education.vo';
+import { ProfileWebsiteVo } from './profile_website.vo';
 
 @Entity({
   name: 'profile',
@@ -18,12 +22,6 @@ import { ProfileEducationVo } from './profile_education.vo';
 export class ProfileVo extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column({
-    type: 'integer',
-    unique: true,
-  })
-  userId: number;
 
   @Column({
     type: 'varchar',
@@ -65,8 +63,12 @@ export class ProfileVo extends BaseEntity {
   })
   updatedAt: Date;
 
+  @OneToOne(() => UserVo)
+  @JoinColumn()
+  user: UserVo;
+
   @OneToMany(() => ProfileProjectVo, (project) => project.profile)
-  project: ProfileProjectVo[];
+  profileProject: ProfileProjectVo[];
 
   @OneToMany(
     () => ProfileExperienceVo,
@@ -79,4 +81,7 @@ export class ProfileVo extends BaseEntity {
     (profileEducation) => profileEducation.profile,
   )
   profileEducation: ProfileEducationVo[];
+
+  @OneToMany(() => ProfileWebsiteVo, (profileWebsite) => profileWebsite.profile)
+  profileWebsite: ProfileWebsiteVo[];
 }

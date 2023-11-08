@@ -3,19 +3,17 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 import { ProfileVo } from './profile.vo';
-import { ExperienceCompanyVo } from './experience_company.vo';
 
 @Entity({
-  name: 'profile_experience',
+  name: 'profile_website',
 })
-export class ProfileExperienceVo extends BaseEntity {
+export class ProfileWebsiteVo extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -24,35 +22,14 @@ export class ProfileExperienceVo extends BaseEntity {
     length: 100,
     default: '',
   })
-  position: string;
-
-  // @Column({
-  //   type: 'integer',
-  // })
-  // companyId: number;
+  type: string;
 
   @Column({
     type: 'varchar',
     length: 1000,
     default: '',
   })
-  description: string;
-
-  @Column({
-    type: 'date',
-  })
-  startDate: Date;
-
-  @Column({
-    type: 'date',
-    nullable: true,
-  })
-  endDate: Date | null;
-
-  get inProgress(): boolean {
-    // experience 진행중 여부 : 진행중이면 endDate에 null
-    return this.endDate === null;
-  }
+  url: string;
 
   @CreateDateColumn({
     type: 'timestamp',
@@ -69,8 +46,4 @@ export class ProfileExperienceVo extends BaseEntity {
 
   @ManyToOne(() => ProfileVo, (profile) => profile.profileExperience)
   profile: ProfileVo;
-
-  @ManyToOne(() => ExperienceCompanyVo)
-  @JoinColumn()
-  exerienceCompany: ExperienceCompanyVo;
 }

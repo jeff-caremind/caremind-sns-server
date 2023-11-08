@@ -14,8 +14,14 @@ export class ProfileRepositoryImpl implements IProfileRepository {
 
   async findAllByProfileId(profileId: number): Promise<ProfileVo[]> {
     return await this.profileTypeormRepository.find({
+      select: {
+        user: {
+          email: true,
+          profileImage: true,
+        },
+      },
       relations: {
-        project: {
+        profileProject: {
           projectImage: true,
           projectCategory: true,
         },
@@ -25,9 +31,11 @@ export class ProfileRepositoryImpl implements IProfileRepository {
         profileEducation: {
           educationInstitute: true,
         },
+        profileWebsite: true,
+        user: true,
       },
       where: {
-        userId: profileId,
+        id: profileId,
       },
     });
   }

@@ -20,16 +20,6 @@ export class ProfileEducationVo extends BaseEntity {
   id: number;
 
   @Column({
-    type: 'integer',
-  })
-  profileId: number;
-
-  @Column({
-    type: 'integer',
-  })
-  instituteId: number;
-
-  @Column({
     type: 'varchar',
     length: 200,
     default: '',
@@ -76,9 +66,6 @@ export class ProfileEducationVo extends BaseEntity {
   profile: ProfileVo;
 
   @ManyToOne(() => EducationInstituteVo)
-  @JoinColumn({
-    name: 'profileEducationId', // foreign key 이름
-    referencedColumnName: 'id', // 외래 키가 참조할 column
-  })
+  @JoinColumn()
   educationInstitute: EducationInstituteVo;
 }

@@ -22,11 +22,6 @@ export class ProfileProjectVo extends BaseEntity {
   id: number;
 
   @Column({
-    type: 'integer',
-  })
-  profileId: number;
-
-  @Column({
     type: 'varchar',
     length: 100,
     default: '',
@@ -38,11 +33,6 @@ export class ProfileProjectVo extends BaseEntity {
     nullable: true,
   })
   coverImageId: number;
-
-  @Column({
-    type: 'integer',
-  })
-  projectCategoryId: number;
 
   @Column({
     type: 'varchar',
@@ -81,7 +71,7 @@ export class ProfileProjectVo extends BaseEntity {
   })
   updatedAt: Date;
 
-  @ManyToOne(() => ProfileVo, (profile) => profile.project)
+  @ManyToOne(() => ProfileVo, (profile) => profile.profileProject)
   profile: ProfileVo;
 
   @OneToMany(() => ProjectImageVo, (projectImage) => projectImage.project)
