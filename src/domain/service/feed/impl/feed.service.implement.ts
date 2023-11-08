@@ -46,7 +46,7 @@ export class FeedServiceImpl implements IFeedService {
     return feedsList;
   }
 
-  async likeFeed(feedLikeDto: FeedLikeDto): Promise<void> {
+  async createLike(feedLikeDto: FeedLikeDto): Promise<void> {
     if (
       typeof feedLikeDto.likedFeedId !== 'number' ||
       typeof feedLikeDto.likerId !== 'number'
@@ -64,7 +64,7 @@ export class FeedServiceImpl implements IFeedService {
     const newFeedLike = new FeedLikeVo();
     newFeedLike.liker = liker;
     newFeedLike.likedFeed = likedFeed;
-    return await this.feedLikeRepository.createLike(newFeedLike);
+    return await this.feedLikeRepository.create(newFeedLike);
   }
 
   async createFeed(feedCreateDto: FeedCreateDto) {
@@ -116,7 +116,23 @@ export class FeedServiceImpl implements IFeedService {
       throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
     return feed;
   }
-  
+
+  async deleteLike(feedLikeDto: FeedLikeDto): Promise<void> {
+    const { likerId, likedFeedId } = feedLikeDto;
+    const likedFeed = await this.feedRepository.findOneById(likedFeedId);
+    if (!likedFeed)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const liker = await this.userRepository.findOneById(likerId);
+    if (!liker) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const feedLike = await this.feedLikeRepository.findOne(
+      likerId,
+      likedFeedId,
+    );
+    if (!feedLike)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    await this.feedLikeRepository.remove(feedLike);
+  }
+
   private createImageVos(images: string[]): FeedImageVo[] {
     return images.map((item) => {
       const imageVo = new FeedImageVo();

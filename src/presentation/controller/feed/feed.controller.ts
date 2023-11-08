@@ -9,6 +9,7 @@ import {
   HttpException,
   HttpStatus,
   Put,
+  Delete,
 } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { JwtService } from '@nestjs/jwt';
@@ -56,7 +57,7 @@ export class FeedController {
   }
 
   @Post('/:feedId/like')
-  async likeFeed(
+  async createLike(
     @Param('feedId') feedId: string,
     @Headers('authorization') token: string,
   ): Promise<void> {
@@ -65,7 +66,7 @@ export class FeedController {
       likerId: decodedToken.aud,
       likedFeedId: parseInt(feedId),
     };
-    return await this.feedService.likeFeed(feedLikeDto);
+    return await this.feedService.createLike(feedLikeDto);
   }
 
   @Post()
@@ -94,6 +95,19 @@ export class FeedController {
     const decoded = this.verifyToken(token);
     feedUpdateDto.userId = decoded.aud;
     return await this.feedService.updateFeed(Number(feedId), feedUpdateDto);
+  }
+
+  @Delete('/:feedId/like')
+  async deleteLike(
+    @Headers('authorization') token: string,
+    @Param('feedId') feedId: number,
+  ) {
+    const decoded = this.verifyToken(token);
+    const feedLikeDto: FeedLikeDto = {
+      likerId: decoded.aud,
+      likedFeedId: Number(feedId),
+    };
+    return await this.feedService.deleteLike(feedLikeDto);
   }
 
   verifyToken(token: string): { aud: number } {
