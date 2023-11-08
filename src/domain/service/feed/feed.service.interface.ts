@@ -13,4 +13,8 @@ export interface IFeedService {
   createFeed(feedCreateDto: FeedCreateDto): Promise<void>;
   updateFeed(feedId: number, feedUpdateDto: FeedCreateDto): Promise<void>;
   getOne(feedId: number): Promise<FeedVo>;
+  updateComment(
+    commentId: number,
+    feedCommentDto: FeedCommentDto,
+  ): Promise<void>;
 }

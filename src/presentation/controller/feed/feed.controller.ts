@@ -96,6 +96,27 @@ export class FeedController {
     return await this.feedService.updateFeed(Number(feedId), feedUpdateDto);
   }
 
+  @Put('/:feedId/comment/:commentId')
+  async updateComment(
+    @Headers('authorization') token: string,
+    @Param('feedId') feedId: number,
+    @Param('commentId') commentId: number,
+    @Body() body: Partial<FeedCommentDto>,
+  ): Promise<void> {
+    const decoded = this.verifyToken(token);
+    if (!body.content)
+      throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
+    const feedCommentDto: FeedCommentDto = {
+      userId: decoded.aud,
+      feedId: feedId,
+      content: body.content,
+    };
+    return await this.feedService.updateComment(
+      Number(commentId),
+      feedCommentDto,
+    );
+  }
+
   verifyToken(token: string): { aud: number } {
     const decoded = this.JwtService.verify(token);
     return decoded;

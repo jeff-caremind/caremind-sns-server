@@ -116,7 +116,24 @@ export class FeedServiceImpl implements IFeedService {
       throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
     return feed;
   }
-  
+
+  async updateComment(
+    commentId: number,
+    feedCommentDto: FeedCommentDto,
+  ): Promise<void> {
+    const { userId, feedId, content } = feedCommentDto;
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const feed = await this.feedRepository.findOneById(feedId);
+    if (!feed)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const comment = await this.feedCommentRepository.findOneById(commentId);
+    if (!comment)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    comment.content = content;
+    return await this.feedCommentRepository.update(comment);
+  }
+
   private createImageVos(images: string[]): FeedImageVo[] {
     return images.map((item) => {
       const imageVo = new FeedImageVo();
