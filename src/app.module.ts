@@ -14,7 +14,7 @@ import { ProfileModule } from './domain/service/module/profile.module';
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET_KEY,
-      signOptions: { expiresIn: '60s' },
+      signOptions: { expiresIn: '12h' },
     }),
     FeedModule,
     UserModule,
