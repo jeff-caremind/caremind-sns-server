@@ -58,7 +58,7 @@ export class FeedController {
   }
 
   @Post('/:feedId/like')
-  async likeFeed(
+  async createLike(
     @Param('feedId') feedId: string,
     @Headers('authorization') token: string,
   ): Promise<void> {
@@ -67,7 +67,7 @@ export class FeedController {
       likerId: decodedToken.aud,
       likedFeedId: parseInt(feedId),
     };
-    return await this.feedService.likeFeed(feedLikeDto);
+    return await this.feedService.createLike(feedLikeDto);
   }
 
   @Post()
@@ -122,6 +122,19 @@ export class FeedController {
     );
   }
   
+  @Delete('/:feedId/like')
+  async deleteLike(
+    @Headers('authorization') token: string,
+    @Param('feedId') feedId: number,
+  ) {
+    const decoded = this.verifyToken(token);
+    const feedLikeDto: FeedLikeDto = {
+      likerId: decoded.aud,
+      likedFeedId: Number(feedId),
+    };
+    return await this.feedService.deleteLike(feedLikeDto);
+  }
+
   @Delete('/:feedId')
   async deleteFeed(
     @Headers('authorization') token: string,
