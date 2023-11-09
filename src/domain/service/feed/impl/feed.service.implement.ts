@@ -36,9 +36,8 @@ export class FeedServiceImpl implements IFeedService {
   ) {}
 
   async getList(queryDto: FeedQueryDto) {
-    const { sort, search, tag, offset, limit } = queryDto;
-    
-    const feeds = await this.feedRepository.findAll();
+    const queryOptions = this.feedRepository.queryOptionsBuilder(queryDto);
+    const feeds = await this.feedRepository.findAll(queryOptions);
     const feedsList: FeedsListDto = feeds.map((feed) => {
       return {
         ...feed,
