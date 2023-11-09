@@ -7,6 +7,7 @@ import { UserVo } from '../../vo/user.vo';
 import { FeedCommentVo } from '../../vo/feed_comment.vo';
 import { FeedLikeVo } from '../../vo/feed_like.vo';
 import { FeedVideoVo } from '../../vo/feed_video.vo';
+import { UserConnectionVo } from '../../vo/user_connection.vo';
 
 export const FEED_TYPEORM_REPOSITORY = Symbol.for('FEED_TYPEORM_REPOSITORY');
 export const FeedTypeormRepository: Provider<Repository<FeedVo>> = {
@@ -48,5 +49,17 @@ export const FEED_VIDEO_TYPEORM_REPOSITORY = Symbol.for(
 export const FeedVideoTypeormRepository: Provider<Repository<FeedVideoVo>> = {
   provide: FEED_VIDEO_TYPEORM_REPOSITORY,
   useFactory: (dataSource: DataSource) => dataSource.getRepository(FeedVideoVo),
+  inject: [DATA_SOURCE],
+};
+
+export const USER_CONNECTION_TYPEORM_REPOSITORY = Symbol.for(
+  'USER_CONNECTION_TYPEORM_REPOSITORY',
+);
+export const UserConnectionTypeormRepository: Provider<
+  Repository<UserConnectionVo>
+> = {
+  provide: USER_CONNECTION_TYPEORM_REPOSITORY,
+  useFactory: (dataSource: DataSource) =>
+    dataSource.getRepository(UserConnectionVo),
   inject: [DATA_SOURCE],
 };
