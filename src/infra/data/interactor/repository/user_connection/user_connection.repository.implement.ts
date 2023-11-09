@@ -11,8 +11,18 @@ export class UserConnectionRepositoryImpl implements IUserConnectionRepository {
     private readonly userConnectionTypeormRepository: Repository<UserConnectionVo>,
   ) {}
 
-  async create(connection: UserConnectionVo) {
-    console.log(connection);
-    return;
+  async update(connection: UserConnectionVo) {
+    await this.userConnectionTypeormRepository.save(connection);
+  }
+
+  async findOneWithConnectedUserById(
+    connectionId: number,
+  ): Promise<UserConnectionVo | null> {
+    return await this.userConnectionTypeormRepository.findOne({
+      where: { id: connectionId },
+      relations: {
+        connectedUser: true,
+      },
+    });
   }
 }

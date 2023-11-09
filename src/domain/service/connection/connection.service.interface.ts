@@ -1,5 +1,5 @@
-import { ConnectionDto } from '../dto/connection.dto';
+import { ConnectionUpdateDto } from '../dto/connection.dto';
 
 export interface IConnectionService {
-  updateConnection(connectionDto: ConnectionDto): Promise<void>;
+  updateConnection(connectionDto: ConnectionUpdateDto): Promise<void>;
 }

@@ -1,5 +1,5 @@
-export type ConnectionDto = {
+export type ConnectionUpdateDto = {
   userId: number;
-  connectedUserId: number;
-  message?: string;
+  connectionId: number;
+  accepted: boolean;
 };
