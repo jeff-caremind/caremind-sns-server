@@ -60,7 +60,9 @@ export class FeedRepositoryImpl implements IFeedRepository {
     if (limit) queryOptions.take = limit;
     if (offset) queryOptions.skip = offset;
 
-    // TODO: add tag search logic
+    if (tag) {
+      // TODO: add tag search logic
+    }
     return queryOptions;
   }
 
