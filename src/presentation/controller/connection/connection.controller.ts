@@ -15,7 +15,7 @@ export class ConnectionController {
   ) {}
 
   @Post('/user/:userId')
-  async followUser(
+  async createConnection(
     @Headers('authorization') token: string,
     @Param('userId') userId: number,
     @Body('message') message: string,
@@ -26,7 +26,7 @@ export class ConnectionController {
       connectedUserId: Number(userId),
       message: message,
     };
-    return await this.connectionService.followUser(connectionDto);
+    return await this.connectionService.createConnection(connectionDto);
   }
 
   verifyToken(token: string): { aud: number } {

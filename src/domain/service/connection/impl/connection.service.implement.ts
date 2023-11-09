@@ -19,7 +19,7 @@ export class ConnectionServiceImpl implements IConnectionService {
     private readonly userRepository: IUserRepository,
   ) {}
 
-  async followUser(connectionDto: ConnectionDto): Promise<void> {
+  async createConnection(connectionDto: ConnectionDto): Promise<void> {
     const { userId, connectedUserId, message } = connectionDto;
     const follower = await this.userRepository.findOneById(userId);
     if (!follower)
