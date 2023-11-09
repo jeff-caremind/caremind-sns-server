@@ -9,6 +9,7 @@ import {
   HttpException,
   HttpStatus,
   Put,
+  Query,
 } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { JwtService } from '@nestjs/jwt';
@@ -21,6 +22,7 @@ import {
   FeedsListDto,
   FeedCreateDto,
   FeedCommentDto,
+  FeedQueryDto,
 } from 'src/domain/service/dto/feed.dto';
 
 @Controller('/feed')
@@ -36,8 +38,21 @@ export class FeedController {
   }
 
   @Get()
-  async getAll(): Promise<FeedsListDto> {
-    return await this.feedService.getAll();
+  async getList(
+    @Query('sort') sort: string,
+    @Query('search') search: string,
+    @Query('tag') tag: string,
+    @Query('offset') offset: number,
+    @Query('limit') limit: number,
+  ): Promise<FeedsListDto> {
+    const queryDto: FeedQueryDto = {
+      sort: sort,
+      search: search,
+      tag: tag,
+      offset: Number(offset),
+      limit: Number(limit),
+    };
+    return await this.feedService.getList(queryDto);
   }
 
   @Post('/:feedId/comment')

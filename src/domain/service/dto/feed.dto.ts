@@ -40,3 +40,11 @@ export type FeedCommentDto = {
   feedId: number;
   content: string;
 };
+
+export type FeedQueryDto = {
+  sort: string;
+  search: string;
+  tag: string;
+  limit: number;
+  offset: number;
+};

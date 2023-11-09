@@ -21,6 +21,7 @@ import {
   FeedsListDto,
   FeedCreateDto,
   FeedCommentDto,
+  FeedQueryDto,
 } from '../../dto/feed.dto';
 
 @Injectable()
@@ -34,7 +35,9 @@ export class FeedServiceImpl implements IFeedService {
     private readonly feedCommentRepository: IFeedCommentRepository,
   ) {}
 
-  async getAll() {
+  async getList(queryDto: FeedQueryDto) {
+    const { sort, search, tag, offset, limit } = queryDto;
+    
     const feeds = await this.feedRepository.findAll();
     const feedsList: FeedsListDto = feeds.map((feed) => {
       return {
@@ -116,7 +119,7 @@ export class FeedServiceImpl implements IFeedService {
       throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
     return feed;
   }
-  
+
   private createImageVos(images: string[]): FeedImageVo[] {
     return images.map((item) => {
       const imageVo = new FeedImageVo();

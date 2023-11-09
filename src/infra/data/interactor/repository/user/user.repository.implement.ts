@@ -13,7 +13,7 @@ export class UserRepositoryImpl implements IUserRepository {
     private readonly userTypeormRepository: Repository<UserVo>,
   ) {}
 
-  async findAll(): Promise<UserVo[]> {
+  async findMany(): Promise<UserVo[]> {
     return await this.userTypeormRepository.find();
   }
 

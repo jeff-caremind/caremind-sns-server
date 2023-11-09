@@ -26,7 +26,7 @@ export class UserServiceImpl implements IUserService {
   ) {}
 
   async getAll(): Promise<UserVo[]> {
-    return await this.userRepository.findAll();
+    return await this.userRepository.findMany();
   }
 
   async getFeedsBy(): Promise<FeedVo[]> {
