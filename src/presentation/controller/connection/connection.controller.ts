@@ -22,8 +22,8 @@ export class ConnectionController {
   ): Promise<void> {
     const decoded = this.verifyToken(token);
     const connectionDto: ConnectionDto = {
-      followerId: decoded.aud,
-      followeeId: Number(userId),
+      userId: decoded.aud,
+      connectedUserId: Number(userId),
       message: message,
     };
     return await this.connectionService.followUser(connectionDto);

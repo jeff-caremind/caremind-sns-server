@@ -1,5 +1,5 @@
 export type ConnectionDto = {
-  followerId: number;
-  followeeId: number;
+  userId: number;
+  connectedUserId: number;
   message?: string;
 };

@@ -13,21 +13,21 @@ import { UserVo } from './user.vo';
 @Entity({
   name: 'user_connection',
 })
-@Unique(['follower', 'followee'])
+@Unique(['user', 'connectedUser'])
 export class UserConnectionVo extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @ManyToOne(() => UserVo)
-  follower: UserVo;
+  user: UserVo;
 
   @ManyToOne(() => UserVo)
-  followee: UserVo;
+  connectedUser: UserVo;
 
   @Column({
     default: 0,
   })
-  accepted: boolean;
+  isAccepted: boolean;
 
   @Column({
     type: 'varchar',

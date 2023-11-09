@@ -20,16 +20,16 @@ export class ConnectionServiceImpl implements IConnectionService {
   ) {}
 
   async followUser(connectionDto: ConnectionDto): Promise<void> {
-    const { followerId, followeeId, message } = connectionDto;
-    const follower = await this.userRepository.findOneById(followerId);
+    const { userId, connectedUserId, message } = connectionDto;
+    const follower = await this.userRepository.findOneById(userId);
     if (!follower)
       throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
-    const followee = await this.userRepository.findOneById(followeeId);
+    const followee = await this.userRepository.findOneById(connectedUserId);
     if (!followee)
       throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
     const newConnection = new UserConnectionVo();
-    newConnection.follower = follower;
-    newConnection.followee = followee;
+    newConnection.user = follower;
+    newConnection.connectedUser = followee;
     if (message) newConnection.message = message;
     return await this.userConnectionRepository.create(newConnection);
   }
