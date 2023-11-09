@@ -5,7 +5,7 @@ import {
   USER_CONNECTION_REPOSITORY,
   USER_REPOSITORY,
 } from 'src/infra/data/interactor/repository/ioc';
-import { ConnectionUpdateDto } from '../../dto/connection.dto';
+import { ConnectionDto } from '../../dto/connection.dto';
 import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
 
 @Injectable()
@@ -17,10 +17,8 @@ export class ConnectionServiceImpl implements IConnectionService {
     private readonly userRepository: IUserRepository,
   ) {}
 
-  async updateConnection(
-    connectionUpdateDto: ConnectionUpdateDto,
-  ): Promise<void> {
-    const { userId, connectionId, accepted } = connectionUpdateDto;
+  async acceptConnection(connectionDto: ConnectionDto): Promise<void> {
+    const { userId, connectionId } = connectionDto;
     const user = await this.userRepository.findOneById(userId);
     if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
     const connection =
@@ -31,7 +29,7 @@ export class ConnectionServiceImpl implements IConnectionService {
       throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
     if (connection.connectedUser.id !== user.id)
       throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
-    connection.isAccepted = accepted;
+    connection.isAccepted = true;
     await this.userConnectionRepository.update(connection);
   }
 }
