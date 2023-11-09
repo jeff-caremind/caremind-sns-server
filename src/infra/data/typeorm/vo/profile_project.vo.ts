@@ -53,11 +53,6 @@ export class ProfileProjectVo extends BaseEntity {
   })
   endDate: Date | null;
 
-  get inProgress(): boolean {
-    // project 진행중 여부 : 진행중이면 endDate에 null
-    return this.endDate === null;
-  }
-
   @CreateDateColumn({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',

@@ -26,11 +26,6 @@ export class ProfileExperienceVo extends BaseEntity {
   })
   position: string;
 
-  // @Column({
-  //   type: 'integer',
-  // })
-  // companyId: number;
-
   @Column({
     type: 'varchar',
     length: 1000,
@@ -48,11 +43,6 @@ export class ProfileExperienceVo extends BaseEntity {
     nullable: true,
   })
   endDate: Date | null;
-
-  get inProgress(): boolean {
-    // experience 진행중 여부 : 진행중이면 endDate에 null
-    return this.endDate === null;
-  }
 
   @CreateDateColumn({
     type: 'timestamp',
