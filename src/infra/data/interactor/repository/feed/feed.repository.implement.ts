@@ -27,45 +27,6 @@ export class FeedRepositoryImpl implements IFeedRepository {
     });
   }
 
-  queryOptionsBuilder(queryDto: FeedQueryDto) {
-    const { sort, search, tag, offset, limit } = queryDto;
-    const queryOptions: FindManyOptions<FeedVo> = {};
-    if (sort) {
-      switch (sort) {
-        case 'recent': {
-          queryOptions.order = {
-            createdAt: 'DESC',
-          };
-          break;
-        }
-        case 'trending': {
-          // TODO: add logic for getting trending feeds
-          queryOptions.order = {
-            createdAt: 'DESC',
-          };
-          break;
-        }
-        default: {
-          queryOptions.order = {
-            createdAt: 'DESC',
-          };
-        }
-      }
-    }
-    if (search) {
-      queryOptions.where = {
-        content: Like(`%${search}`),
-      };
-    }
-    if (limit) queryOptions.take = limit;
-    if (offset) queryOptions.skip = offset;
-
-    if (tag) {
-      // TODO: add tag search logic
-    }
-    return queryOptions;
-  }
-
   async findOneById(feedId: number): Promise<FeedVo | null> {
     return await this.feedTypeormRepository.findOneBy({ id: feedId });
   }
@@ -130,4 +91,50 @@ export class FeedRepositoryImpl implements IFeedRepository {
       },
     },
   };
+
+  queryOptionsBuilder(queryDto: FeedQueryDto) {
+    const { sort, search, tag, offset, limit } = queryDto;
+    const queryOptions: FindManyOptions<FeedVo> = {};
+    if (sort) {
+      switch (sort) {
+        case 'recent': {
+          queryOptions.order = {
+            createdAt: 'DESC',
+          };
+          break;
+        }
+        case 'trending': {
+          // TODO: change logic to get trending feeds
+          queryOptions.order = {
+            createdAt: 'DESC',
+          };
+          break;
+        }
+        default: {
+          queryOptions.order = {
+            createdAt: 'DESC',
+          };
+        }
+      }
+    }
+    if (search) {
+      queryOptions.where = {
+        ...queryOptions.where,
+        content: Like(`%${search}%`),
+      };
+    }
+    if (limit) queryOptions.take = limit;
+    if (offset) queryOptions.skip = offset;
+    if (tag) {
+      queryOptions.where = {
+        ...queryOptions.where,
+        feedTags: {
+          tag: {
+            tag: tag,
+          },
+        },
+      };
+    }
+    return queryOptions;
+  }
 }
