@@ -1,5 +1,6 @@
 import {
   BaseEntity,
+  Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
@@ -22,6 +23,18 @@ export class UserConnectionVo extends BaseEntity {
 
   @ManyToOne(() => UserVo)
   followee: UserVo;
+
+  @Column({
+    default: 0,
+  })
+  accepted: boolean;
+
+  @Column({
+    type: 'varchar',
+    length: 200,
+    nullable: true,
+  })
+  message: string;
 
   @CreateDateColumn({
     type: 'timestamp',

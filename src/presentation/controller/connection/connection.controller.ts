@@ -1,4 +1,4 @@
-import { Controller, Post, Inject, Headers, Param } from '@nestjs/common';
+import { Controller, Post, Inject, Headers, Param, Body } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { JwtService } from '@nestjs/jwt';
 
@@ -18,11 +18,13 @@ export class ConnectionController {
   async followUser(
     @Headers('authorization') token: string,
     @Param('userId') userId: number,
+    @Body('message') message: string,
   ): Promise<void> {
     const decoded = this.verifyToken(token);
     const connectionDto: ConnectionDto = {
       followerId: decoded.aud,
       followeeId: Number(userId),
+      message: message,
     };
     return await this.connectionService.followUser(connectionDto);
   }
