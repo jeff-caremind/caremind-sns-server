@@ -41,6 +41,12 @@ export type FeedCommentDto = {
   content: string;
 };
 
+export type FeedCommentDeleteDto = {
+  userId: number;
+  feedId: number;
+  commentId: number;
+};
+
 export type FeedDeleteDto = {
   userId: number;
   feedId: number;

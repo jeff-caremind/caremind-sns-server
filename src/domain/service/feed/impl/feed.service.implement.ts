@@ -22,6 +22,7 @@ import {
   FeedsDto,
   FeedCreateDto,
   FeedCommentDto,
+  FeedCommentDeleteDto,
   FeedDeleteDto,
 } from '../../dto/feed.dto';
 import { IFeedVideoRepository } from 'src/domain/interactor/data/repository/feed_video.repository.interface';
@@ -122,6 +123,21 @@ export class FeedServiceImpl implements IFeedService {
     return feed;
   }
 
+  async deleteComment(
+    feedCommentDeleteDto: FeedCommentDeleteDto,
+  ): Promise<void> {
+    const { userId, feedId, commentId } = feedCommentDeleteDto;
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const feed = await this.feedRepository.findOneById(feedId);
+    if (!feed)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const comment = await this.feedCommentRepository.findOneById(commentId);
+    if (!comment)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    return await this.feedCommentRepository.remove(comment);
+  }
+
   async updateComment(
     commentId: number,
     feedCommentDto: FeedCommentDto,
@@ -135,7 +151,6 @@ export class FeedServiceImpl implements IFeedService {
     const comment = await this.feedCommentRepository.findOneById(commentId);
     if (!comment)
       throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
-    comment.content = content;
     return await this.feedCommentRepository.update(comment);
   }
 

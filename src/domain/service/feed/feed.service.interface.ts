@@ -4,6 +4,7 @@ import {
   FeedsDto,
   FeedCreateDto,
   FeedCommentDto,
+  FeedCommentDeleteDto,
   FeedDeleteDto,
 } from '../dto/feed.dto';
 
@@ -14,6 +15,7 @@ export interface IFeedService {
   createFeed(feedCreateDto: FeedCreateDto): Promise<void>;
   updateFeed(feedId: number, feedUpdateDto: FeedCreateDto): Promise<void>;
   getOne(feedId: number): Promise<FeedVo>;
+  deleteComment(feedCommentDeleteDto: FeedCommentDeleteDto): Promise<void>;
   updateComment(
     commentId: number,
     feedCommentDto: FeedCommentDto,

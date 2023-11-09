@@ -24,6 +24,10 @@ export class FeedCommentRepositoryImpl implements IFeedCommentRepository {
     return comment;
   }
 
+  async remove(comment: FeedCommentVo): Promise<void> {
+    await this.feedCommentTypeormRepository.remove(comment);
+  }
+
   async update(updatedComment: FeedCommentVo): Promise<void> {
     await this.feedCommentTypeormRepository.save(updatedComment);
   }

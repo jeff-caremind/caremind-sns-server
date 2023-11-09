@@ -101,6 +101,21 @@ export class FeedController {
     return await this.feedService.updateFeed(Number(feedId), feedUpdateDto);
   }
 
+  @Delete('/:feedId/comment/:commentId')
+  async deleteComment(
+    @Headers('authorization') token: string,
+    @Param('feedId') feedId: number,
+    @Param('commentId') commentId: number,
+  ): Promise<void> {
+    const decoded = this.verifyToken(token);
+    const feedCommentDeleteDto = {
+      userId: decoded.aud,
+      feedId: Number(feedId),
+      commentId: Number(commentId),
+    };
+    return await this.feedService.deleteComment(feedCommentDeleteDto);
+  }
+
   @Put('/:feedId/comment/:commentId')
   async updateComment(
     @Headers('authorization') token: string,
