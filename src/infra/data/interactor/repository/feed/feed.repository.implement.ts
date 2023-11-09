@@ -71,6 +71,7 @@ export class FeedRepositoryImpl implements IFeedRepository {
     author: {
       id: true,
       name: true,
+      profileImage: true,
     },
     images: {
       id: true,
@@ -88,6 +89,7 @@ export class FeedRepositoryImpl implements IFeedRepository {
       commenter: {
         id: true,
         name: true,
+        profileImage: true,
       },
     },
   };
