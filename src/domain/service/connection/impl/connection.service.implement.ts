@@ -29,6 +29,8 @@ export class ConnectionServiceImpl implements IConnectionService {
       throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
     if (connection.connectedUser.id !== user.id)
       throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+    if (connection.isAccepted)
+      throw new HttpException('DUPLICATE_REQUEST', HttpStatus.BAD_REQUEST);
     connection.isAccepted = true;
     await this.userConnectionRepository.update(connection);
   }
