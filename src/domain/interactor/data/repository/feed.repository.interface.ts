@@ -10,4 +10,5 @@ export interface IFeedRepository {
   update(updatedFeed: FeedVo): Promise<void>;
   findOneWithRelationsById(feedId: number): Promise<FeedVo | null>;
   queryOptionsBuilder(queryDto: FeedQueryDto): FindManyOptions<FeedVo>;
+  remove(feed: FeedVo): Promise<void>;
 }

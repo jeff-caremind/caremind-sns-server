@@ -5,6 +5,7 @@ import {
   FEED_COMMENT_REPOSITORY,
   FEED_LIKE_REPOSITORY,
   FEED_REPOSITORY,
+  FEED_VIDEO_REPOSITORY,
   USER_REPOSITORY,
 } from 'src/infra/data/interactor/repository/ioc';
 import { IFeedRepository } from 'src/domain/interactor/data/repository/feed.repository.interface';
@@ -18,11 +19,14 @@ import { FeedImageVo } from 'src/infra/data/typeorm/vo/feed_image.vo';
 import { FeedLikeVo } from 'src/infra/data/typeorm/vo/feed_like.vo';
 import {
   FeedLikeDto,
-  FeedsListDto,
+  FeedsDto,
   FeedCreateDto,
   FeedCommentDto,
   FeedQueryDto,
+  FeedCommentDeleteDto,
+  FeedDeleteDto,
 } from '../../dto/feed.dto';
+import { IFeedVideoRepository } from 'src/domain/interactor/data/repository/feed_video.repository.interface';
 
 @Injectable()
 export class FeedServiceImpl implements IFeedService {
@@ -33,22 +37,24 @@ export class FeedServiceImpl implements IFeedService {
     @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
     @Inject(FEED_COMMENT_REPOSITORY)
     private readonly feedCommentRepository: IFeedCommentRepository,
+    @Inject(FEED_VIDEO_REPOSITORY)
+    private readonly feedVideoRepository: IFeedVideoRepository,
   ) {}
 
   async getList(queryDto: FeedQueryDto) {
     const queryOptions = this.feedRepository.queryOptionsBuilder(queryDto);
-    const feeds = await this.feedRepository.findAll(queryOptions);
-    const feedsList: FeedsListDto = feeds.map((feed) => {
+    const data = await this.feedRepository.findAll(queryOptions);
+    const feeds: FeedsDto = feeds.map((feed) => {
       return {
         ...feed,
         likesCount: feed.likes.length,
         commentsCount: feed.comments.length,
       };
     });
-    return feedsList;
+    return feeds;
   }
 
-  async likeFeed(feedLikeDto: FeedLikeDto): Promise<void> {
+  async createLike(feedLikeDto: FeedLikeDto): Promise<void> {
     if (
       typeof feedLikeDto.likedFeedId !== 'number' ||
       typeof feedLikeDto.likerId !== 'number'
@@ -66,7 +72,7 @@ export class FeedServiceImpl implements IFeedService {
     const newFeedLike = new FeedLikeVo();
     newFeedLike.liker = liker;
     newFeedLike.likedFeed = likedFeed;
-    return await this.feedLikeRepository.createLike(newFeedLike);
+    return await this.feedLikeRepository.create(newFeedLike);
   }
 
   async createFeed(feedCreateDto: FeedCreateDto) {
@@ -117,6 +123,64 @@ export class FeedServiceImpl implements IFeedService {
     if (!feed)
       throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
     return feed;
+  }
+
+  async deleteComment(
+    feedCommentDeleteDto: FeedCommentDeleteDto,
+  ): Promise<void> {
+    const { userId, feedId, commentId } = feedCommentDeleteDto;
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const feed = await this.feedRepository.findOneById(feedId);
+    if (!feed)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const comment = await this.feedCommentRepository.findOneById(commentId);
+    if (!comment)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    return await this.feedCommentRepository.remove(comment);
+  }
+
+  async updateComment(
+    commentId: number,
+    feedCommentDto: FeedCommentDto,
+  ): Promise<void> {
+    const { userId, feedId, content } = feedCommentDto;
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const feed = await this.feedRepository.findOneById(feedId);
+    if (!feed)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const comment = await this.feedCommentRepository.findOneById(commentId);
+    if (!comment)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    return await this.feedCommentRepository.update(comment);
+  }
+
+  async deleteLike(feedLikeDto: FeedLikeDto): Promise<void> {
+    const { likerId, likedFeedId } = feedLikeDto;
+    const likedFeed = await this.feedRepository.findOneById(likedFeedId);
+    if (!likedFeed)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const liker = await this.userRepository.findOneById(likerId);
+    if (!liker) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const feedLike = await this.feedLikeRepository.findOne(
+      likerId,
+      likedFeedId,
+    );
+    if (!feedLike)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    await this.feedLikeRepository.remove(feedLike);
+  }
+
+  async deleteFeed(feedDeleteDto: FeedDeleteDto): Promise<void> {
+    const { userId, feedId } = feedDeleteDto;
+    const feed = await this.feedRepository.findOneWithRelationsById(feedId);
+    if (!feed)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (feed.author.id !== userId)
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+    await this.feedRepository.remove(feed);
+    await this.feedVideoRepository.remove(feed.video);
   }
 
   private createImageVos(images: string[]): FeedImageVo[] {
