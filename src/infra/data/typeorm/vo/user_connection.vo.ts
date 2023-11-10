@@ -3,50 +3,38 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
+import { UserVo } from './user.vo';
 
 @Entity({
-  name: 'user',
+  name: 'user_connection',
 })
-export class UserVo extends BaseEntity {
+@Unique(['user', 'connectedUser'])
+export class UserConnectionVo extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({
-    type: 'varchar',
-    length: 100,
-    unique: true,
-  })
-  email: string;
+  @ManyToOne(() => UserVo)
+  user: UserVo;
+
+  @ManyToOne(() => UserVo)
+  connectedUser: UserVo;
 
   @Column({
-    type: 'varchar',
-    length: 100,
-    default: 'User',
+    default: 0,
   })
-  name: string;
+  isAccepted: boolean;
 
   @Column({
     type: 'varchar',
     length: 200,
+    nullable: true,
   })
-  password: string;
-
-  @Column({
-    type: 'varchar',
-    length: 20,
-    default: '',
-  })
-  phoneNumber: string;
-
-  @Column({
-    type: 'varchar',
-    length: 2000,
-    default: '',
-  })
-  profileImage: string;
+  message: string;
 
   @CreateDateColumn({
     type: 'timestamp',
