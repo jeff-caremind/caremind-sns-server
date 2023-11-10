@@ -41,6 +41,13 @@ export class UserVo extends BaseEntity {
   })
   phoneNumber: string;
 
+  @Column({
+    type: 'varchar',
+    length: 2000,
+    default: '',
+  })
+  profileImage: string;
+
   @CreateDateColumn({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',
