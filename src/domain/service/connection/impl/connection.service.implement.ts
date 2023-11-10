@@ -11,8 +11,7 @@ export class ConnectionServiceImpl implements IConnectionService {
     private readonly userConnectionRepository: IUserConnectionRepository,
   ) {}
 
-  async getAll(userId: number): Promise<UserConnectionVo[]> {
-    console.log(userId);
-    return [new UserConnectionVo()];
+  async getSent(userId: number): Promise<UserConnectionVo[]> {
+    return await this.userConnectionRepository.findSent(userId);
   }
 }
