@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { FeedModule } from './domain/service/module/feed.module';
 import { UserModule } from './domain/service/module/user.module';
 import { JwtModule } from '@nestjs/jwt';
+import { ConnectionModule } from './domain/service/module/connection.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { JwtModule } from '@nestjs/jwt';
     }),
     FeedModule,
     UserModule,
+    ConnectionModule,
   ],
 })
 export class AppModule {}

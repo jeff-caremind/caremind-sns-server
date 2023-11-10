@@ -12,15 +12,16 @@ export class UserConnectionRepositoryImpl implements IUserConnectionRepository {
     private readonly userConnectionTypeormRepository: Repository<UserConnectionVo>,
   ) {}
 
-  async findOneWithUserById(userId: number): Promise<UserConnectionVo | null> {
+  async findOneWithRelationsById(
+    connectionId: number,
+  ): Promise<UserConnectionVo | null> {
     return await this.userConnectionTypeormRepository.findOne({
       relations: {
         user: true,
+        connectedUser: true,
       },
       where: {
-        user: {
-          id: userId,
-        },
+        id: connectionId,
       },
     });
   }

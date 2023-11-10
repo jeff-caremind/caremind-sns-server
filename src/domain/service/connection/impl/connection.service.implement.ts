@@ -22,10 +22,12 @@ export class ConnectionServiceImpl implements IConnectionService {
     const user = await this.userRepository.findOneById(userId);
     if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
     const connection =
-      await this.userConnectionRepository.findOneWithUserById(connectionId);
+      await this.userConnectionRepository.findOneWithRelationsById(
+        connectionId,
+      );
     if (!connection)
       throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
-    if (connection.user.id !== userId)
+    if (connection.user.id !== userId && connection.connectedUser.id !== userId)
       throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
     return await this.userConnectionRepository.remove(connection);
   }
