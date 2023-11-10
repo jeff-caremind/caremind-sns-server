@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -37,6 +38,10 @@ export class ProjectImageVo extends BaseEntity {
   })
   updatedAt: Date;
 
-  @ManyToOne(() => ProfileProjectVo, (project) => project.projectImage)
+  @ManyToOne(() => ProfileProjectVo)
+  @JoinColumn({
+    name: 'projectId', // foreign key 이름
+    referencedColumnName: 'id', // 외래 키가 참조할 column
+  })
   project: ProfileProjectVo;
 }

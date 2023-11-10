@@ -12,27 +12,13 @@ export class ProfileRepositoryImpl implements IProfileRepository {
     private readonly profileTypeormRepository: Repository<ProfileVo>,
   ) {}
 
-  async findAllByProfileId(profileId: number): Promise<ProfileVo[]> {
-    return await this.profileTypeormRepository.find({
+  async findProfileByProfileId(profileId: number): Promise<ProfileVo | null> {
+    return await this.profileTypeormRepository.findOne({
       select: {
         user: {
           email: true,
           profileImage: true,
         },
-      },
-      relations: {
-        profileProject: {
-          projectImage: true,
-          projectCategory: true,
-        },
-        profileExperience: {
-          exerienceCompany: true,
-        },
-        profileEducation: {
-          educationInstitute: true,
-        },
-        profileWebsite: true,
-        user: true,
       },
       where: {
         id: profileId,

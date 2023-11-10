@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -44,6 +45,10 @@ export class ProfileWebsiteVo extends BaseEntity {
   })
   updatedAt: Date;
 
-  @ManyToOne(() => ProfileVo, (profile) => profile.profileExperience)
+  @ManyToOne(() => ProfileVo)
+  @JoinColumn({
+    name: 'profileId', // foreign key 이름
+    referencedColumnName: 'id', // 외래 키가 참조할 column
+  })
   profile: ProfileVo;
 }

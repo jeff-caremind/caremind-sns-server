@@ -6,6 +6,10 @@ import {
   ProfileTypeormRepository,
   FeedCommentTypeormRepository,
   FeedLikeTypeormRepository,
+  ProfileProjectTypeormRepository,
+  ProfileExperienceTypeormRepository,
+  ProfileEducationTypeormRepository,
+  ProfileWebsiteTypeormRepository,
 } from '../ioc';
 
 @Module({
@@ -16,6 +20,10 @@ import {
     ProfileTypeormRepository,
     FeedCommentTypeormRepository,
     FeedLikeTypeormRepository,
+    ProfileProjectTypeormRepository,
+    ProfileExperienceTypeormRepository,
+    ProfileEducationTypeormRepository,
+    ProfileWebsiteTypeormRepository,
   ],
   exports: [
     FeedTypeormRepository,
@@ -23,6 +31,10 @@ import {
     ProfileTypeormRepository,
     FeedCommentTypeormRepository,
     FeedLikeTypeormRepository,
+    ProfileProjectTypeormRepository,
+    ProfileExperienceTypeormRepository,
+    ProfileEducationTypeormRepository,
+    ProfileWebsiteTypeormRepository,
   ],
 })
 export class TypeormRepositoryModule {}

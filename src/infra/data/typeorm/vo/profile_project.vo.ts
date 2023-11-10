@@ -29,10 +29,15 @@ export class ProfileProjectVo extends BaseEntity {
   title: string;
 
   @Column({
-    type: 'integer',
+    type: 'json',
     nullable: true,
   })
-  coverImageId: number;
+  coverImage: {
+    id: number;
+    image: string;
+    createdAt: Date;
+    updatedAt: Date;
+  };
 
   @Column({
     type: 'varchar',
@@ -66,7 +71,11 @@ export class ProfileProjectVo extends BaseEntity {
   })
   updatedAt: Date;
 
-  @ManyToOne(() => ProfileVo, (profile) => profile.profileProject)
+  @ManyToOne(() => ProfileVo)
+  @JoinColumn({
+    name: 'profileId', // foreign key 이름
+    referencedColumnName: 'id', // 외래 키가 참조할 column
+  })
   profile: ProfileVo;
 
   @OneToMany(() => ProjectImageVo, (projectImage) => projectImage.project)

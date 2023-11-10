@@ -11,6 +11,10 @@ import * as IOC from '../ioc';
     IOC.ProfileRepository,
     IOC.FeedCommentRepository,
     IOC.FeedLikeRepository,
+    IOC.ProfileProjectRepository,
+    IOC.ProfileExperienceRepository,
+    IOC.ProfileEducationRepository,
+    IOC.ProfileWebsiteRepository,
   ],
   exports: [
     IOC.FeedRepository,
@@ -18,6 +22,10 @@ import * as IOC from '../ioc';
     IOC.ProfileRepository,
     IOC.FeedCommentRepository,
     IOC.FeedLikeRepository,
+    IOC.ProfileProjectRepository,
+    IOC.ProfileExperienceRepository,
+    IOC.ProfileEducationRepository,
+    IOC.ProfileWebsiteRepository,
   ],
 })
 export class RepositoryModule {}

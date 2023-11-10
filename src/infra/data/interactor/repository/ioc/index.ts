@@ -10,6 +10,14 @@ import { UserRepositoryImpl } from '../user/user.repository.implement';
 import { ProfileRepositoryImpl } from '../profile/profile.repository.implement';
 import { FeedCommentRepositoryImpl } from '../feed_comment/feed_comment.repository.implement';
 import { FeedLikeRepositoryImpl } from '../feed_like/feed_like.repository.implement';
+import { IProfileProjectRepository } from 'src/domain/interactor/data/repository/profile_project.repository.interface';
+import { ProfileProjectRepositoryImpl } from '../profile_project/profile_project.repository.implement';
+import { IProfileExperienceRepository } from 'src/domain/interactor/data/repository/profile_experience.repository.interface';
+import { ProfileExperienceRepositoryImpl } from '../profile_experience/profile_experience.repository.implement';
+import { IProfileEducationRepository } from 'src/domain/interactor/data/repository/profile_education.repository.interface';
+import { ProfileEducationRepositoryImpl } from '../profile_education/profile_education.repository.implement';
+import { IProfileWebsiteRepository } from 'src/domain/interactor/data/repository/profile_website.repository.interface';
+import { ProfileWebsiteRepositoryImpl } from '../profile_website/profile_website.repository.implement';
 
 export const FEED_REPOSITORY = Symbol.for('FEED_REPOSITORY');
 export const FeedRepository: Provider<IFeedRepository> = {
@@ -39,4 +47,38 @@ export const FEED_LIKE_REPOSITORY = Symbol.for('FEED_LIKE_REPOSITORY');
 export const FeedLikeRepository: Provider<IFeedLikeRepository> = {
   provide: FEED_LIKE_REPOSITORY,
   useClass: FeedLikeRepositoryImpl,
+};
+
+export const PROFILE_PROJECT_REPOSITORY = Symbol.for(
+  'PROFILE_PROJECT_REPOSITORY',
+);
+export const ProfileProjectRepository: Provider<IProfileProjectRepository> = {
+  provide: PROFILE_PROJECT_REPOSITORY,
+  useClass: ProfileProjectRepositoryImpl,
+};
+
+export const PROFILE_EXPERIENCE_REPOSITORY = Symbol.for(
+  'PROFILE_EXPERIENCE_REPOSITORY',
+);
+export const ProfileExperienceRepository: Provider<IProfileExperienceRepository> =
+  {
+    provide: PROFILE_EXPERIENCE_REPOSITORY,
+    useClass: ProfileExperienceRepositoryImpl,
+  };
+
+export const PROFILE_EDUCATION_REPOSITORY = Symbol.for(
+  'PROFILE_EDUCATION_REPOSITORY',
+);
+export const ProfileEducationRepository: Provider<IProfileEducationRepository> =
+  {
+    provide: PROFILE_EDUCATION_REPOSITORY,
+    useClass: ProfileEducationRepositoryImpl,
+  };
+
+export const PROFILE_WEBSITE_REPOSITORY = Symbol.for(
+  'PROFILE_WEBSITE_REPOSITORY',
+);
+export const ProfileWebsiteRepository: Provider<IProfileWebsiteRepository> = {
+  provide: PROFILE_WEBSITE_REPOSITORY,
+  useClass: ProfileWebsiteRepositoryImpl,
 };
