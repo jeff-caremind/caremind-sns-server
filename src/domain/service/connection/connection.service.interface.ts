@@ -1,5 +1,5 @@
-import { UserConnectionVo } from 'src/infra/data/typeorm/vo/user_connection.vo';
+import { ConnectionDto } from '../dto/connection.dto';
 
 export interface IConnectionService {
-  getAll(userId: number): Promise<UserConnectionVo[]>;
+  deleteConnection(connectionDto: ConnectionDto): Promise<void>;
 }
