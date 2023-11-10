@@ -12,10 +12,10 @@ export class ConnectionController {
     private readonly JwtService: JwtService,
   ) {}
 
-  @Get()
-  async getAll(@Headers('authorization') token: string) {
+  @Get('/connected')
+  async getConnections(@Headers('authorization') token: string) {
     const decoded = this.verifyToken(token);
-    return await this.connectionService.getAll(decoded.aud);
+    return await this.connectionService.getConnections(decoded.aud);
   }
 
   verifyToken(token: string): { aud: number } {
