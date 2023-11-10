@@ -110,4 +110,5 @@ export const ProfileWebsiteTypeormRepository: Provider<
   provide: PROFILE_WEBSITE_TYPEORM_REPOSITORY,
   useFactory: (dataSource: DataSource) =>
     dataSource.getRepository(ProfileWebsiteVo),
+  inject: [DATA_SOURCE],
 };
