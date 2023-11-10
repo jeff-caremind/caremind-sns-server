@@ -1,5 +1,5 @@
-import { UserConnectionVo } from 'src/infra/data/typeorm/vo/user_connection.vo';
+import { ConnectionsDto } from '../dto/connection.dto';
 
 export interface IConnectionService {
-  getConnections(userId: number): Promise<UserConnectionVo[]>;
+  getConnections(userId: number): Promise<ConnectionsDto>;
 }

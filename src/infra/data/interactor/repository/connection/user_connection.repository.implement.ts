@@ -15,16 +15,30 @@ export class UserConnectionRepositoryImpl implements IUserConnectionRepository {
   async findConnections(userId: number): Promise<UserConnectionVo[]> {
     return await this.userConnectionTypeormRepository.find({
       relations: {
+        user: true,
         connectedUser: true,
       },
-      where: {
-        user: {
-          id: userId,
+      where: [
+        {
+          user: {
+            id: userId,
+          },
+          isAccepted: true,
         },
-        isAccepted: true,
-      },
+        {
+          connectedUser: {
+            id: userId,
+          },
+          isAccepted: true,
+        },
+      ],
       select: {
         connectedUser: {
+          id: true,
+          name: true,
+          profileImage: true,
+        },
+        user: {
           id: true,
           name: true,
           profileImage: true,
