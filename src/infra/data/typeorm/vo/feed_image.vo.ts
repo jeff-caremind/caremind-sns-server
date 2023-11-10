@@ -22,7 +22,7 @@ export class FeedImageVo extends BaseEntity {
   })
   imageUrl: string;
 
-  @ManyToOne(() => FeedVo)
+  @ManyToOne(() => FeedVo, { onDelete: 'CASCADE' })
   feed: FeedVo;
 
   @CreateDateColumn({

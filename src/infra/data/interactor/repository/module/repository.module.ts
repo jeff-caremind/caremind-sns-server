@@ -8,9 +8,10 @@ import * as IOC from '../ioc';
   providers: [
     IOC.FeedRepository,
     IOC.UserRepository,
-    IOC.ProfileRepository,
     IOC.FeedCommentRepository,
     IOC.FeedLikeRepository,
+    IOC.FeedVideoRepository,
+    IOC.ProfileRepository,
     IOC.ProfileProjectRepository,
     IOC.ProfileExperienceRepository,
     IOC.ProfileEducationRepository,
@@ -18,14 +19,15 @@ import * as IOC from '../ioc';
   ],
   exports: [
     IOC.FeedRepository,
-    IOC.UserRepository,
-    IOC.ProfileRepository,
+    IOC.UserRepository,    
     IOC.FeedCommentRepository,
     IOC.FeedLikeRepository,
+    IOC.FeedVideoRepository,
+    IOC.ProfileRepository,
     IOC.ProfileProjectRepository,
     IOC.ProfileExperienceRepository,
     IOC.ProfileEducationRepository,
-    IOC.ProfileWebsiteRepository,
+    IOC.ProfileWebsiteRepository,    
   ],
 })
 export class RepositoryModule {}

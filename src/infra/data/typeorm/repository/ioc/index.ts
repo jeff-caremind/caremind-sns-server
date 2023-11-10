@@ -4,9 +4,10 @@ import { DataSource, Repository } from 'typeorm';
 import { DATA_SOURCE } from '../../config/typeorm.config';
 import { FeedVo } from '../../vo/feed.vo';
 import { UserVo } from '../../vo/user.vo';
-import { ProfileVo } from '../../vo/profile.vo';
 import { FeedCommentVo } from '../../vo/feed_comment.vo';
 import { FeedLikeVo } from '../../vo/feed_like.vo';
+import { FeedVideoVo } from '../../vo/feed_video.vo';
+import { ProfileVo } from '../../vo/profile.vo';
 import { ProfileProjectVo } from '../../vo/profile_project.vo';
 import { ProfileExperienceVo } from '../../vo/profile_experience.vo';
 import { ProfileEducationVo } from '../../vo/profile_education.vo';
@@ -43,6 +44,15 @@ export const FEED_LIKE_TYPEORM_REPOSITORY = Symbol.for(
 export const FeedLikeTypeormRepository: Provider<Repository<FeedLikeVo>> = {
   provide: FEED_LIKE_TYPEORM_REPOSITORY,
   useFactory: (dataSource: DataSource) => dataSource.getRepository(FeedLikeVo),
+  inject: [DATA_SOURCE],
+};
+
+export const FEED_VIDEO_TYPEORM_REPOSITORY = Symbol.for(
+  'FEED_VIDEO_TYPEORM_REPOSITORY',
+);
+export const FeedVideoTypeormRepository: Provider<Repository<FeedVideoVo>> = {
+  provide: FEED_VIDEO_TYPEORM_REPOSITORY,
+  useFactory: (dataSource: DataSource) => dataSource.getRepository(FeedVideoVo),
   inject: [DATA_SOURCE],
 };
 
@@ -90,6 +100,7 @@ export const ProfileEducationTypeormRepository: Provider<
     dataSource.getRepository(ProfileEducationVo),
   inject: [DATA_SOURCE],
 };
+
 export const PROFILE_WEBSITE_TYPEORM_REPOSITORY = Symbol.for(
   'PROFILE_WEBSITE_TYPEORM_REPOSITORY',
 );
@@ -99,5 +110,4 @@ export const ProfileWebsiteTypeormRepository: Provider<
   provide: PROFILE_WEBSITE_TYPEORM_REPOSITORY,
   useFactory: (dataSource: DataSource) =>
     dataSource.getRepository(ProfileWebsiteVo),
-  inject: [DATA_SOURCE],
 };
