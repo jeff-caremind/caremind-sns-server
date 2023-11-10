@@ -44,7 +44,7 @@ export class FeedServiceImpl implements IFeedService {
   async getList(queryDto: FeedQueryDto) {
     const queryOptions = this.feedRepository.queryOptionsBuilder(queryDto);
     const data = await this.feedRepository.findAll(queryOptions);
-    const feeds: FeedsDto = feeds.map((feed) => {
+    const feeds: FeedsDto = data.map((feed) => {
       return {
         ...feed,
         likesCount: feed.likes.length,
@@ -153,6 +153,7 @@ export class FeedServiceImpl implements IFeedService {
     const comment = await this.feedCommentRepository.findOneById(commentId);
     if (!comment)
       throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    comment.content = content;
     return await this.feedCommentRepository.update(comment);
   }
 

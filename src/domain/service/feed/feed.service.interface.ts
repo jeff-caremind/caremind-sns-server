@@ -9,9 +9,8 @@ import {
   FeedDeleteDto,
 } from '../dto/feed.dto';
 
-
 export interface IFeedService {
-  getList(queryDto: FeedQueryDto): Promise<FeedsListDto>;
+  getList(queryDto: FeedQueryDto): Promise<FeedsDto>;
   createComment(feedCommentDto: FeedCommentDto): Promise<void>;
   createLike(feedLikeDto: FeedLikeDto): Promise<void>;
   createFeed(feedCreateDto: FeedCreateDto): Promise<void>;

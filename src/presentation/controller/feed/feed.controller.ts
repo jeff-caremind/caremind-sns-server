@@ -46,7 +46,7 @@ export class FeedController {
     @Query('tag') tag: string,
     @Query('offset') offset: number,
     @Query('limit') limit: number,
-  ): Promise<FeedsListDto> {
+  ): Promise<FeedsDto> {
     const queryDto: FeedQueryDto = {
       sort: sort,
       search: search,
@@ -151,7 +151,7 @@ export class FeedController {
       feedCommentDto,
     );
   }
-  
+
   @Delete('/:feedId/like')
   async deleteLike(
     @Headers('authorization') token: string,
