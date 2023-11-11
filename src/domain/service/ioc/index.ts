@@ -1,9 +1,9 @@
 import { Provider } from '@nestjs/common';
-import { FeedServiceImpl } from '../feed/impl/feed.service.implement';
-import { IFeedService } from '../feed/feed.service.interface';
 import { IUserService } from '../user/user.service.interface';
-import { UserServiceImpl } from '../user/impl/user.service.implement';
+import { IFeedService } from '../feed/feed.service.interface';
 import { IConnectionService } from '../connection/connection.service.interface';
+import { UserServiceImpl } from '../user/impl/user.service.implement';
+import { FeedServiceImpl } from '../feed/impl/feed.service.implement';
 import { ConnectionServiceImpl } from '../connection/impl/connection.service.implement';
 
 export const FEED_SERVICE = Symbol.for('FEED_SERVICE');

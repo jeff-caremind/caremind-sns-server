@@ -1,13 +1,14 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+
 import { IConnectionService } from '../connection.service.interface';
 import { UserConnectionVo } from 'src/infra/data/typeorm/vo/user_connection.vo';
+import { IUserConnectionRepository } from 'src/domain/interactor/data/repository/user_connection.repository.interface';
+import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
 import {
   USER_CONNECTION_REPOSITORY,
   USER_REPOSITORY,
 } from 'src/infra/data/interactor/repository/ioc';
-import { IUserConnectionRepository } from 'src/domain/interactor/data/repository/user_connection.repository.interface';
-import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
-import { ConnectionsDto } from '../../dto/connection.dto';
+import { ConnectionsDto, ConnectionDto } from '../../dto/connection.dto';
 
 @Injectable()
 export class ConnectionServiceImpl implements IConnectionService {
@@ -33,5 +34,20 @@ export class ConnectionServiceImpl implements IConnectionService {
       },
     );
     return connections;
+  }
+
+  async createConnection(connectionDto: ConnectionDto): Promise<void> {
+    const { userId, connectedUserId, message } = connectionDto;
+    const follower = await this.userRepository.findOneById(userId);
+    if (!follower)
+      throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const followee = await this.userRepository.findOneById(connectedUserId);
+    if (!followee)
+      throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const newConnection = new UserConnectionVo();
+    newConnection.user = follower;
+    newConnection.connectedUser = followee;
+    if (message) newConnection.message = message;
+    return await this.userConnectionRepository.create(newConnection);
   }
 }

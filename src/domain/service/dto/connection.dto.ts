@@ -8,3 +8,9 @@ export type ConnectionsDto = {
   updatedAt: Date;
   connectedUser: UserVo;
 }[];
+
+export type ConnectionDto = {
+  userId: number;
+  connectedUserId: number;
+  message?: string;
+};
