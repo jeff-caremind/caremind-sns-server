@@ -21,7 +21,6 @@ import { ProfileExperienceRepositoryImpl } from '../profile_experience/profile_e
 import { ProfileEducationRepositoryImpl } from '../profile_education/profile_education.repository.implement';
 import { ProfileWebsiteRepositoryImpl } from '../profile_website/profile_website.repository.implement';
 
-
 export const FEED_REPOSITORY = Symbol.for('FEED_REPOSITORY');
 export const FeedRepository: Provider<IFeedRepository> = {
   provide: FEED_REPOSITORY,

@@ -5,7 +5,7 @@ import {
   UserTypeormRepository,
   FeedCommentTypeormRepository,
   FeedLikeTypeormRepository,
-  FeedVideoTypeormRepository,  
+  FeedVideoTypeormRepository,
   ProfileTypeormRepository,
   ProfileProjectTypeormRepository,
   ProfileExperienceTypeormRepository,
