@@ -10,6 +10,7 @@ import * as IOC from '../ioc';
     IOC.FeedCommentRepository,
     IOC.FeedLikeRepository,
     IOC.FeedVideoRepository,
+    IOC.UserConnectionRepository,
   ],
   exports: [
     IOC.FeedRepository,
@@ -17,6 +18,7 @@ import * as IOC from '../ioc';
     IOC.FeedCommentRepository,
     IOC.FeedLikeRepository,
     IOC.FeedVideoRepository,
+    IOC.UserConnectionRepository,
   ],
 })
 export class RepositoryModule {}
