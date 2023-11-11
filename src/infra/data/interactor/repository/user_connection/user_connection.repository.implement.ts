@@ -25,4 +25,8 @@ export class UserConnectionRepositoryImpl implements IUserConnectionRepository {
       },
     });
   }
+
+  async create(connection: UserConnectionVo) {
+    await this.userConnectionTypeormrepository.save(connection);
+  }
 }

@@ -5,4 +5,5 @@ export interface IUserConnectionRepository {
   findOneWithConnectedUserById(
     connectionId: number,
   ): Promise<UserConnectionVo | null>;
+  create(connection: UserConnectionVo): Promise<void>;
 }
