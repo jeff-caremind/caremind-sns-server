@@ -3,50 +3,34 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
+import { ProfileVo } from './profile.vo';
+
 @Entity({
-  name: 'user',
+  name: 'profile_website',
 })
-export class UserVo extends BaseEntity {
+export class ProfileWebsiteVo extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({
     type: 'varchar',
     length: 100,
-    unique: true,
-  })
-  email: string;
-
-  @Column({
-    type: 'varchar',
-    length: 100,
-    default: 'User',
-  })
-  name: string;
-
-  @Column({
-    type: 'varchar',
-    length: 200,
-  })
-  password: string;
-
-  @Column({
-    type: 'varchar',
-    length: 20,
     default: '',
   })
-  phoneNumber: string;
+  type: string;
 
   @Column({
     type: 'varchar',
-    length: 2000,
+    length: 1000,
     default: '',
   })
-  profileImage: string;
+  url: string;
 
   @CreateDateColumn({
     type: 'timestamp',
@@ -60,4 +44,11 @@ export class UserVo extends BaseEntity {
     onUpdate: 'CURRENT_TIMESTAMP(6)',
   })
   updatedAt: Date;
+
+  @ManyToOne(() => ProfileVo)
+  @JoinColumn({
+    name: 'profileId', // foreign key 이름
+    referencedColumnName: 'id', // 외래 키가 참조할 column
+  })
+  profile: ProfileVo;
 }

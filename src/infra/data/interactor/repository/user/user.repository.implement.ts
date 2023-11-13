@@ -18,7 +18,6 @@ export class UserRepositoryImpl implements IUserRepository {
   }
 
   async create(userData: SignUpRequestDto): Promise<void> {
-    // void : 리턴값이 없다.
     const user = this.userTypeormRepository.create(userData);
     await this.userTypeormRepository.save(user);
   }
