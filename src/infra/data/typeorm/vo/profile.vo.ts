@@ -3,50 +3,47 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  JoinColumn,
 } from 'typeorm';
 
+import { UserVo } from './user.vo';
+
 @Entity({
-  name: 'user',
+  name: 'profile',
 })
-export class UserVo extends BaseEntity {
+export class ProfileVo extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({
     type: 'varchar',
-    length: 100,
-    unique: true,
+    length: 500,
+    default: '',
   })
-  email: string;
+  jobDescription: string;
+
+  @Column({
+    type: 'varchar',
+    length: 500,
+  })
+  about: string;
 
   @Column({
     type: 'varchar',
     length: 100,
-    default: 'User',
+    default: '',
   })
-  name: string;
+  location: string;
 
   @Column({
     type: 'varchar',
     length: 200,
-  })
-  password: string;
-
-  @Column({
-    type: 'varchar',
-    length: 20,
     default: '',
   })
-  phoneNumber: string;
-
-  @Column({
-    type: 'varchar',
-    length: 2000,
-    default: '',
-  })
-  profileImage: string;
+  address: string;
 
   @CreateDateColumn({
     type: 'timestamp',
@@ -60,4 +57,8 @@ export class UserVo extends BaseEntity {
     onUpdate: 'CURRENT_TIMESTAMP(6)',
   })
   updatedAt: Date;
+
+  @OneToOne(() => UserVo)
+  @JoinColumn()
+  user: UserVo;
 }

@@ -3,50 +3,27 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
+import { ProfileProjectVo } from './profile_project.vo';
+
 @Entity({
-  name: 'user',
+  name: 'project_image',
 })
-export class UserVo extends BaseEntity {
+export class ProjectImageVo extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column({
-    type: 'varchar',
-    length: 100,
-    unique: true,
-  })
-  email: string;
-
-  @Column({
-    type: 'varchar',
-    length: 100,
-    default: 'User',
-  })
-  name: string;
-
-  @Column({
-    type: 'varchar',
-    length: 200,
-  })
-  password: string;
-
-  @Column({
-    type: 'varchar',
-    length: 20,
-    default: '',
-  })
-  phoneNumber: string;
 
   @Column({
     type: 'varchar',
     length: 2000,
     default: '',
   })
-  profileImage: string;
+  image: string;
 
   @CreateDateColumn({
     type: 'timestamp',
@@ -60,4 +37,11 @@ export class UserVo extends BaseEntity {
     onUpdate: 'CURRENT_TIMESTAMP(6)',
   })
   updatedAt: Date;
+
+  @ManyToOne(() => ProfileProjectVo)
+  @JoinColumn({
+    name: 'projectId', // foreign key 이름
+    referencedColumnName: 'id', // 외래 키가 참조할 column
+  })
+  project: ProfileProjectVo;
 }
