@@ -10,6 +10,7 @@ import { IProfileProjectRepository } from 'src/domain/interactor/data/repository
 import { IProfileExperienceRepository } from 'src/domain/interactor/data/repository/profile_experience.repository.interface';
 import { IProfileEducationRepository } from 'src/domain/interactor/data/repository/profile_education.repository.interface';
 import { IProfileWebsiteRepository } from 'src/domain/interactor/data/repository/profile_website.repository.interface';
+import { IUserConnectionRepository } from 'src/domain/interactor/data/repository/user_connection.repository.interface';
 import { FeedRepositoryImpl } from '../feed/feed.repository.implement';
 import { UserRepositoryImpl } from '../user/user.repository.implement';
 import { FeedCommentRepositoryImpl } from '../feed_comment/feed_comment.repository.implement';
@@ -20,6 +21,7 @@ import { ProfileProjectRepositoryImpl } from '../profile_project/profile_project
 import { ProfileExperienceRepositoryImpl } from '../profile_experience/profile_experience.repository.implement';
 import { ProfileEducationRepositoryImpl } from '../profile_education/profile_education.repository.implement';
 import { ProfileWebsiteRepositoryImpl } from '../profile_website/profile_website.repository.implement';
+import { UserConnectionRepositoryImpl } from '../user_connection/user_connection.repository.implement';
 
 export const FEED_REPOSITORY = Symbol.for('FEED_REPOSITORY');
 export const FeedRepository: Provider<IFeedRepository> = {
@@ -89,4 +91,12 @@ export const PROFILE_WEBSITE_REPOSITORY = Symbol.for(
 export const ProfileWebsiteRepository: Provider<IProfileWebsiteRepository> = {
   provide: PROFILE_WEBSITE_REPOSITORY,
   useClass: ProfileWebsiteRepositoryImpl,
+  };
+  
+export const USER_CONNECTION_REPOSITORY = Symbol.for(
+  'USER_CONNECTION_REPOSITORY',
+);
+export const UserConnectionRepository: Provider<IUserConnectionRepository> = {
+  provide: USER_CONNECTION_REPOSITORY,
+  useClass: UserConnectionRepositoryImpl,
 };

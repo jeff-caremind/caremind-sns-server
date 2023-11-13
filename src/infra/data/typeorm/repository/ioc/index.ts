@@ -12,6 +12,7 @@ import { ProfileProjectVo } from '../../vo/profile_project.vo';
 import { ProfileExperienceVo } from '../../vo/profile_experience.vo';
 import { ProfileEducationVo } from '../../vo/profile_education.vo';
 import { ProfileWebsiteVo } from '../../vo/profile_website.vo';
+import { UserConnectionVo } from '../../vo/user_connection.vo';
 
 export const FEED_TYPEORM_REPOSITORY = Symbol.for('FEED_TYPEORM_REPOSITORY');
 export const FeedTypeormRepository: Provider<Repository<FeedVo>> = {
@@ -110,5 +111,17 @@ export const ProfileWebsiteTypeormRepository: Provider<
   provide: PROFILE_WEBSITE_TYPEORM_REPOSITORY,
   useFactory: (dataSource: DataSource) =>
     dataSource.getRepository(ProfileWebsiteVo),
+  inject: [DATA_SOURCE],
+};
+  
+export const USER_CONNECTION_TYPEORM_REPOSITORY = Symbol.for(
+  'USER_CONNECTION_TYPEORM_REPOSITORY',
+);
+export const UserConnectionTypeormRepository: Provider<
+  Repository<UserConnectionVo>
+> = {
+  provide: USER_CONNECTION_TYPEORM_REPOSITORY,
+  useFactory: (dataSource: DataSource) =>
+    dataSource.getRepository(UserConnectionVo),
   inject: [DATA_SOURCE],
 };
