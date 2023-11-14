@@ -20,9 +20,15 @@ import { IProfileEducationRepository } from 'src/domain/interactor/data/reposito
 import { ProfileEducationVo } from 'src/infra/data/typeorm/vo/profile_education.vo';
 import { IProfileWebsiteRepository } from 'src/domain/interactor/data/repository/profile_website.repository.interface';
 import { ProfileWebsiteVo } from 'src/infra/data/typeorm/vo/profile_website.vo';
-import { ProfileDto, ProfileProjectDto } from '../../dto/profile.dto';
+import {
+  ProfileDto,
+  ProfileExperienceDto,
+  ProfileProjectDto,
+} from '../../dto/profile.dto';
 import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
 import { ProjectImageVo } from 'src/infra/data/typeorm/vo/project_image.vo';
+import { ProjectCategoryVo } from 'src/infra/data/typeorm/vo/project_category.vo';
+import { ExperienceCompanyVo } from 'src/infra/data/typeorm/vo/experience_company.vo';
 
 @Injectable()
 export class ProfileServiceImpl implements IProfileService {
@@ -115,12 +121,14 @@ export class ProfileServiceImpl implements IProfileService {
     const { userId, jobDescription, about, location, address } = profileDto;
     const user = await this.userRepository.findOneById(userId);
     if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
     const profile = new ProfileVo();
     profile.user = user;
     if (jobDescription) profile.jobDescription = jobDescription;
     if (about) profile.about = about;
     if (location) profile.location = location;
     if (address) profile.address = address;
+
     return await this.profileRepository.create(profile);
   }
 
@@ -128,39 +136,76 @@ export class ProfileServiceImpl implements IProfileService {
     profileProjectDto: ProfileProjectDto,
     profileId: number,
   ): Promise<void> {
-    const { userId, title, description, startDate, endDate, projectImage } =
-      profileProjectDto;
+    const {
+      userId,
+      title,
+      description,
+      startDate,
+      endDate,
+      projectImages,
+      projectCategory,
+    } = profileProjectDto;
     const user = await this.userRepository.findOneById(userId);
     if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
 
     const profileIdByUserId =
       await this.profileRepository.findProfileIdByUserId(user.id);
-
     if (profileIdByUserId === null) {
       return;
     }
-
-    // console.log(profileId);
-    // console.log(profileIdByUserId);
-    // console.log(profileIdByUserId.id);
-    // console.log(typeof Number(profileId));
-    // console.log(typeof profileIdByUserId.id);
-
     if (Number(profileId) !== profileIdByUserId.id)
-      // profileIdByUserId?.id 에 optional?
       throw new HttpException('PROFILE_NOT_MATCHED', HttpStatus.NOT_ACCEPTABLE);
 
     const profileProject = new ProfileProjectVo();
-    profileProject.profile = profileIdByUserId;
-
+    if (profileIdByUserId) profileProject.profile = profileIdByUserId;
     if (title) profileProject.title = title;
     if (description) profileProject.description = description;
     if (startDate) profileProject.startDate = startDate;
     if (endDate) profileProject.endDate = endDate;
-    if (projectImage)
-      profileProject.projectImage = this.createImageVos(projectImage);
+    if (projectImages)
+      profileProject.projectImage = this.createImageVos(projectImages);
+    if (projectCategory)
+      profileProject.projectCategory = this.createCategoryVos(projectCategory);
 
     return await this.profileProjectRepository.create(profileProject);
+  }
+
+  async createProfileExperience(
+    profileExperienceDto: ProfileExperienceDto,
+    profileId: number,
+  ) {
+    const {
+      userId,
+      position,
+      description,
+      startDate,
+      endDate,
+      experienceCompany,
+    } = profileExperienceDto;
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profileExperience = new ProfileExperienceVo();
+
+    const profile = await this.profileRepository.findProfileByProfileId(
+      Number(profileId),
+    );
+
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.id !== Number(profileId))
+      throw new HttpException('PROFILE_NOT_MATCHED', HttpStatus.NOT_ACCEPTABLE);
+
+    if (profile) profileExperience.profile = profile;
+    if (position) profileExperience.position = position;
+    if (description) profileExperience.description = description;
+    if (startDate) profileExperience.startDate = startDate;
+    if (endDate) profileExperience.endDate = endDate;
+    if (experienceCompany)
+      profileExperience.experienceCompany =
+        this.createExperienceCompany(experienceCompany);
+
+    return await this.profileExperienceRepository.create(profileExperience);
   }
 
   private createImageVos(images: string[]): ProjectImageVo[] {
@@ -169,5 +214,21 @@ export class ProfileServiceImpl implements IProfileService {
       imageVo.image = item;
       return imageVo;
     });
+  }
+
+  private createCategoryVos(category: string): ProjectCategoryVo {
+    const categoryVo = new ProjectCategoryVo();
+    categoryVo.title = category;
+    return categoryVo;
+  }
+
+  private createExperienceCompany(
+    company: ExperienceCompanyVo,
+  ): ExperienceCompanyVo {
+    const companyVo = new ExperienceCompanyVo();
+    companyVo.name = company.name;
+    companyVo.logo = company.logo;
+    companyVo.location = company.location;
+    return companyVo;
   }
 }

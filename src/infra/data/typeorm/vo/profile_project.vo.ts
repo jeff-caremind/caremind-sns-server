@@ -24,7 +24,6 @@ export class ProfileProjectVo extends BaseEntity {
   @Column({
     type: 'varchar',
     length: 100,
-    // default: '',
   })
   title: string;
 
@@ -78,10 +77,14 @@ export class ProfileProjectVo extends BaseEntity {
   })
   profile: ProfileVo;
 
-  @OneToMany(() => ProjectImageVo, (projectImage) => projectImage.project)
+  @OneToMany(() => ProjectImageVo, (projectImage) => projectImage.project, {
+    cascade: true,
+  })
   projectImage: ProjectImageVo[];
 
-  @ManyToOne(() => ProjectCategoryVo)
+  @ManyToOne(() => ProjectCategoryVo, {
+    cascade: true,
+  })
   @JoinColumn({
     name: 'projectCategoryId', // foreign key 이름
     referencedColumnName: 'id', // 외래 키가 참조할 column

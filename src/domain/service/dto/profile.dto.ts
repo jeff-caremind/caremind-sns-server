@@ -1,4 +1,4 @@
-import { ProjectImageVo } from 'src/infra/data/typeorm/vo/project_image.vo';
+import { ExperienceCompanyVo } from 'src/infra/data/typeorm/vo/experience_company.vo';
 
 export type ProfileDto = {
   userId: number;
@@ -14,5 +14,20 @@ export type ProfileProjectDto = {
   description?: string;
   startDate: Date;
   endDate?: Date | null;
-  projectImage?: string[];
+  projectImages?: string[];
+  projectCategory?: string;
+};
+
+export type ProfileExperienceDto = {
+  userId: number;
+  position: string;
+  description?: string;
+  startDate: Date;
+  endDate?: Date | null;
+  experienceCompany?: ExperienceCompanyVo;
+  // experienceCompany?: {
+  //   name: string;
+  //   logo: string;
+  //   location: string;
+  // };
 };

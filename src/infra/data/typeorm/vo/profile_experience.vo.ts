@@ -59,8 +59,8 @@ export class ProfileExperienceVo extends BaseEntity {
 
   @ManyToOne(() => ProfileVo)
   @JoinColumn({
-    name: 'profileId', // foreign key 이름
-    referencedColumnName: 'id', // 외래 키가 참조할 column
+    name: 'profileId',
+    referencedColumnName: 'id',
   })
   profile: ProfileVo;
 

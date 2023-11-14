@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import {
   ProfileDto,
+  ProfileExperienceDto,
   ProfileProjectDto,
 } from 'src/domain/service/dto/profile.dto';
 
@@ -97,12 +98,36 @@ export class ProfileController {
       description: body.description,
       startDate: body.startDate!,
       endDate: body.endDate,
-      projectImage: body.projectImage,
-      // projectCategory: body.projectCategory,
+      projectImages: body.projectImages,
+      projectCategory: body.projectCategory,
     };
 
     return await this.profileService.createProfileProject(
       profileProjectDto,
+      profileId,
+    );
+  }
+
+  @Post('/:profileId/experience')
+  async createProfileExperience(
+    @Param('profileId') profileId: number,
+    @Body() body: Partial<ProfileExperienceDto>,
+    @Headers('authorization') token: string,
+  ): Promise<void> {
+    if (!body.position && !body.startDate)
+      throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
+    const decodedToken = this.verifyToken(token);
+    const profileExperienceDto: ProfileExperienceDto = {
+      userId: decodedToken.aud,
+      position: body.position!,
+      description: body.description,
+      startDate: body.startDate!,
+      endDate: body.endDate,
+      experienceCompany: body.experienceCompany,
+    };
+
+    return await this.profileService.createProfileExperience(
+      profileExperienceDto,
       profileId,
     );
   }

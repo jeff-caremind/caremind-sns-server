@@ -17,7 +17,6 @@ export class ExperienceCompanyVo extends BaseEntity {
   @Column({
     type: 'varchar',
     length: 100,
-    default: '',
   })
   name: string;
 
@@ -25,6 +24,7 @@ export class ExperienceCompanyVo extends BaseEntity {
     type: 'varchar',
     length: 2000,
     default: '',
+    nullable: true,
   })
   logo: string;
 
@@ -32,6 +32,7 @@ export class ExperienceCompanyVo extends BaseEntity {
     type: 'varchar',
     length: 100,
     default: '',
+    nullable: true,
   })
   location: string;
 
