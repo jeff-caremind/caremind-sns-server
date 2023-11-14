@@ -25,9 +25,4 @@ export type ProfileExperienceDto = {
   startDate: Date;
   endDate?: Date | null;
   experienceCompany?: ExperienceCompanyVo;
-  // experienceCompany?: {
-  //   name: string;
-  //   logo: string;
-  //   location: string;
-  // };
 };

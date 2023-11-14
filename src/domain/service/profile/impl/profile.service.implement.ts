@@ -185,6 +185,14 @@ export class ProfileServiceImpl implements IProfileService {
     const user = await this.userRepository.findOneById(userId);
     if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
 
+    const profileIdByUserId =
+      await this.profileRepository.findProfileIdByUserId(user.id);
+    if (profileIdByUserId === null) {
+      return;
+    }
+    if (Number(profileId) !== profileIdByUserId.id)
+      throw new HttpException('PROFILE_NOT_MATCHED', HttpStatus.NOT_ACCEPTABLE);
+
     const profileExperience = new ProfileExperienceVo();
 
     const profile = await this.profileRepository.findProfileByProfileId(
@@ -229,6 +237,7 @@ export class ProfileServiceImpl implements IProfileService {
     companyVo.name = company.name;
     companyVo.logo = company.logo;
     companyVo.location = company.location;
+
     return companyVo;
   }
 }

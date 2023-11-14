@@ -64,7 +64,9 @@ export class ProfileExperienceVo extends BaseEntity {
   })
   profile: ProfileVo;
 
-  @ManyToOne(() => ExperienceCompanyVo)
-  @JoinColumn()
+  @ManyToOne(() => ExperienceCompanyVo, {
+    cascade: true,
+  })
+  @JoinColumn({})
   experienceCompany: ExperienceCompanyVo;
 }
