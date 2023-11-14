@@ -25,7 +25,7 @@ export class UserConnectionRepositoryImpl implements IUserConnectionRepository {
       },
     });
   }
-  
+
   async findReceived(userId: number): Promise<UserConnectionVo[]> {
     return await this.userConnectionTypeormRepository.find({
       relations: {
@@ -81,6 +81,6 @@ export class UserConnectionRepositoryImpl implements IUserConnectionRepository {
   }
 
   async create(connection: UserConnectionVo) {
-    await this.userConnectionTypeormrepository.save(connection);
+    await this.userConnectionTypeormRepository.save(connection);
   }
 }

@@ -42,12 +42,14 @@ export type FeedCommentDto = {
 };
 
 export type FeedQueryDto = {
-  sort: string;
+  sort: SortParam;
   search: string;
   tag: string;
   limit: number;
   offset: number;
 };
+
+export type SortParam = 'recent' | 'trending';
 
 export type FeedCommentDeleteDto = {
   userId: number;
