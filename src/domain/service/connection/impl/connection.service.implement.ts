@@ -1,4 +1,3 @@
-
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 
 import { IConnectionService } from '../connection.service.interface';
@@ -8,9 +7,8 @@ import {
   USER_CONNECTION_REPOSITORY,
   USER_REPOSITORY,
 } from 'src/infra/data/interactor/repository/ioc';
-import { UserConnectionVo } from 'src/infra/data/typeorm/vo/user_connection.vo';
 import { ConnectionDto } from '../../dto/connection.dto';
-
+import { UserConnectionVo } from 'src/infra/data/typeorm/vo/user_connection.vo';
 
 @Injectable()
 export class ConnectionServiceImpl implements IConnectionService {
@@ -20,6 +18,21 @@ export class ConnectionServiceImpl implements IConnectionService {
     @Inject(USER_REPOSITORY)
     private readonly userRepository: IUserRepository,
   ) {}
+
+  async deleteConnection(connectionDto: ConnectionDto): Promise<void> {
+    const { userId, connectionId } = connectionDto;
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const connection =
+      await this.userConnectionRepository.findOneWithRelationsById(
+        connectionId,
+      );
+    if (!connection)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (connection.user.id !== userId && connection.connectedUser.id !== userId)
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+    await this.userConnectionRepository.remove(connection);
+  }
 
   async acceptConnection(connectionDto: ConnectionDto): Promise<void> {
     const { userId, connectionId } = connectionDto;
@@ -37,7 +50,7 @@ export class ConnectionServiceImpl implements IConnectionService {
       throw new HttpException('DUPLICATE_REQUEST', HttpStatus.BAD_REQUEST);
     connection.isAccepted = true;
     await this.userConnectionRepository.update(connection);
-}
+  }
 
   async createConnection(connectionDto: ConnectionDto): Promise<void> {
     const { userId, connectedUserId, message } = connectionDto;
@@ -52,5 +65,6 @@ export class ConnectionServiceImpl implements IConnectionService {
     newConnection.connectedUser = followee;
     if (message) newConnection.message = message;
     return await this.userConnectionRepository.create(newConnection);
+
   }
 }

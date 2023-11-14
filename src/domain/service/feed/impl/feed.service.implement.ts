@@ -174,6 +174,7 @@ export class FeedServiceImpl implements IFeedService {
     const comment = await this.feedCommentRepository.findOneById(commentId);
     if (!comment)
       throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    comment.content = content;
     return await this.feedCommentRepository.update(comment);
   }
 

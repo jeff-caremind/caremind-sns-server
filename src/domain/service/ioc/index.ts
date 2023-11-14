@@ -9,7 +9,6 @@ import { FeedServiceImpl } from '../feed/impl/feed.service.implement';
 import { ProfileServiceImpl } from '../profile/impl/profile.service.implement';
 import { ConnectionServiceImpl } from '../connection/impl/connection.service.implement';
 
-
 export const FEED_SERVICE = Symbol.for('FEED_SERVICE');
 export const FeedService: Provider<IFeedService> = {
   provide: FEED_SERVICE,
@@ -21,8 +20,6 @@ export const UserService: Provider<IUserService> = {
   provide: USER_SERVICE,
   useClass: UserServiceImpl,
 };
-
-// UserService: Provider <어떤 것으로 Provider 할 것인가  /  IUserService와 같은 형태로>
 
 export const PROFILE_SERVICE = Symbol.for('PROFILE_SERVICE');
 export const ProfileService: Provider<IProfileService> = {
