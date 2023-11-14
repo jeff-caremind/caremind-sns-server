@@ -8,45 +8,25 @@ import {
 } from 'typeorm';
 
 @Entity({
-  name: 'user',
+  name: 'education_institute',
 })
-export class UserVo extends BaseEntity {
+export class EducationInstituteVo extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({
     type: 'varchar',
     length: 100,
-    unique: true,
-  })
-  email: string;
-
-  @Column({
-    type: 'varchar',
-    length: 100,
-    default: 'User',
-  })
-  name: string;
-
-  @Column({
-    type: 'varchar',
-    length: 200,
-  })
-  password: string;
-
-  @Column({
-    type: 'varchar',
-    length: 20,
     default: '',
   })
-  phoneNumber: string;
+  name: string;
 
   @Column({
     type: 'varchar',
     length: 2000,
     default: '',
   })
-  profileImage: string;
+  logo: string;
 
   @CreateDateColumn({
     type: 'timestamp',

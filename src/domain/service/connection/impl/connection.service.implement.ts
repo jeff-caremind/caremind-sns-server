@@ -1,12 +1,14 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+
 import { IConnectionService } from '../connection.service.interface';
+import { IUserConnectionRepository } from 'src/domain/interactor/data/repository/user_connection.repository.interface';
+import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
 import {
   USER_CONNECTION_REPOSITORY,
   USER_REPOSITORY,
 } from 'src/infra/data/interactor/repository/ioc';
-import { IUserConnectionRepository } from 'src/domain/interactor/data/repository/user_connection.repository.interface';
 import { ConnectionDto } from '../../dto/connection.dto';
-import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
+import { UserConnectionVo } from 'src/infra/data/typeorm/vo/user_connection.vo';
 
 @Injectable()
 export class ConnectionServiceImpl implements IConnectionService {
@@ -29,6 +31,40 @@ export class ConnectionServiceImpl implements IConnectionService {
       throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
     if (connection.user.id !== userId && connection.connectedUser.id !== userId)
       throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
-    return await this.userConnectionRepository.remove(connection);
+    await this.userConnectionRepository.remove(connection);
+  }
+
+  async acceptConnection(connectionDto: ConnectionDto): Promise<void> {
+    const { userId, connectionId } = connectionDto;
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const connection =
+      await this.userConnectionRepository.findOneWithConnectedUserById(
+        connectionId,
+      );
+    if (!connection)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (connection.connectedUser.id !== user.id)
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+    if (connection.isAccepted)
+      throw new HttpException('DUPLICATE_REQUEST', HttpStatus.BAD_REQUEST);
+    connection.isAccepted = true;
+    await this.userConnectionRepository.update(connection);
+  }
+
+  async createConnection(connectionDto: ConnectionDto): Promise<void> {
+    const { userId, connectedUserId, message } = connectionDto;
+    const follower = await this.userRepository.findOneById(userId);
+    if (!follower)
+      throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const followee = await this.userRepository.findOneById(connectedUserId);
+    if (!followee)
+      throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const newConnection = new UserConnectionVo();
+    newConnection.user = follower;
+    newConnection.connectedUser = followee;
+    if (message) newConnection.message = message;
+    return await this.userConnectionRepository.create(newConnection);
+
   }
 }
