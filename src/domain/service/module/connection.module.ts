@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
-import { RepositoryModule } from 'src/infra/data/interactor/repository/module/repository.module';
+
 import * as IOC from '../ioc';
-import { ConnectionController } from 'src/presentation/controller/connection/connection.controller';
+import { RepositoryModule } from 'src/infra/data/interactor/repository/module/repository.module';
+import { ConnectionController } from 'src/presentation/controller/controller/connection.controller';
 
 @Module({
   imports: [RepositoryModule],
