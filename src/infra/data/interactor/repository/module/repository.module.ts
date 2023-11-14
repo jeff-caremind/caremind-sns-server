@@ -16,6 +16,7 @@ import * as IOC from '../ioc';
     IOC.ProfileExperienceRepository,
     IOC.ProfileEducationRepository,
     IOC.ProfileWebsiteRepository,
+    IOC.UserConnectionRepository,
   ],
   exports: [
     IOC.FeedRepository,
@@ -28,6 +29,7 @@ import * as IOC from '../ioc';
     IOC.ProfileExperienceRepository,
     IOC.ProfileEducationRepository,
     IOC.ProfileWebsiteRepository,
+    IOC.UserConnectionRepository,
   ],
 })
 export class RepositoryModule {}
