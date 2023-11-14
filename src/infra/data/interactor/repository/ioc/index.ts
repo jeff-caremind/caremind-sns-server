@@ -11,7 +11,7 @@ import { FeedLikeRepositoryImpl } from '../feed_like/feed_like.repository.implem
 import { IFeedVideoRepository } from 'src/domain/interactor/data/repository/feed_video.repository.interface';
 import { FeedVideoRepositoryImpl } from '../feed_video/feed_video.repository.implement';
 import { IUserConnectionRepository } from 'src/domain/interactor/data/repository/user_connection.repository.interface';
-import { UserConnectionRepositoryImpl } from '../connection/user_connection.repository.implement';
+import { UserConnectionRepositoryImpl } from '../user_connection/user_connection.repository.implement';
 
 export const FEED_REPOSITORY = Symbol.for('FEED_REPOSITORY');
 export const FeedRepository: Provider<IFeedRepository> = {
