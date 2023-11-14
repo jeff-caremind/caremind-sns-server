@@ -7,8 +7,8 @@ import {
   USER_CONNECTION_REPOSITORY,
   USER_REPOSITORY,
 } from 'src/infra/data/interactor/repository/ioc';
-import { ConnectionDto } from '../../dto/connection.dto';
 import { UserConnectionVo } from 'src/infra/data/typeorm/vo/user_connection.vo';
+import { ConnectionDto } from '../../dto/connection.dto';
 
 @Injectable()
 export class ConnectionServiceImpl implements IConnectionService {
@@ -18,6 +18,10 @@ export class ConnectionServiceImpl implements IConnectionService {
     @Inject(USER_REPOSITORY)
     private readonly userRepository: IUserRepository,
   ) {}
+
+  async getReceived(userId: number): Promise<UserConnectionVo[]> {
+    return await this.userConnectionRepository.findReceived(userId);
+  }
 
   async deleteConnection(connectionDto: ConnectionDto): Promise<void> {
     const { userId, connectionId } = connectionDto;
@@ -65,6 +69,5 @@ export class ConnectionServiceImpl implements IConnectionService {
     newConnection.connectedUser = followee;
     if (message) newConnection.message = message;
     return await this.userConnectionRepository.create(newConnection);
-
   }
 }

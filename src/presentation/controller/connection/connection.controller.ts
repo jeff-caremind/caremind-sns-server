@@ -1,4 +1,4 @@
-import { Controller, Post, Inject, Headers, Param, Body, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Inject, Headers, Param, Body, Delete } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { JwtService } from '@nestjs/jwt';
 import { IConnectionService } from 'src/domain/service/connection/connection.service.interface';
@@ -12,6 +12,12 @@ export class ConnectionController {
     private readonly connectionService: IConnectionService,
     private readonly JwtService: JwtService,
   ) {}
+
+  @Get('/received')
+  async getReceived(@Headers('authorization') token: string) {
+    const decoded = this.verifyToken(token);
+    return await this.connectionService.getReceived(decoded.aud);
+  }
 
   @Delete('/:connectionId')
   async deleteConnection(

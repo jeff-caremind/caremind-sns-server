@@ -1,6 +1,7 @@
 import { UserConnectionVo } from 'src/infra/data/typeorm/vo/user_connection.vo';
 
 export interface IUserConnectionRepository {
+  findReceived(userId: number): Promise<UserConnectionVo[]>;
   findOneWithRelationsById(userId: number): Promise<UserConnectionVo | null>;
   remove(connection: UserConnectionVo): Promise<void>;
   update(connection: UserConnectionVo): Promise<void>;
