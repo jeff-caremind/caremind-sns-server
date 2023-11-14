@@ -7,11 +7,12 @@ import { UserVo } from '../../vo/user.vo';
 import { FeedCommentVo } from '../../vo/feed_comment.vo';
 import { FeedLikeVo } from '../../vo/feed_like.vo';
 import { FeedVideoVo } from '../../vo/feed_video.vo';
+import { FeedTypeormRepositoryFactory } from '../factory/feed.typeorm.repository.factory';
 
 export const FEED_TYPEORM_REPOSITORY = Symbol.for('FEED_TYPEORM_REPOSITORY');
 export const FeedTypeormRepository: Provider<Repository<FeedVo>> = {
   provide: FEED_TYPEORM_REPOSITORY,
-  useFactory: (dataSource: DataSource) => dataSource.getRepository(FeedVo),
+  useFactory: FeedTypeormRepositoryFactory,
   inject: [DATA_SOURCE],
 };
 

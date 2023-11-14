@@ -3,14 +3,12 @@ import {
   FindManyOptions,
   FindOptionsRelations,
   FindOptionsSelect,
-  Like,
   Repository,
 } from 'typeorm';
 
 import { IFeedRepository } from 'src/domain/interactor/data/repository/feed.repository.interface';
 import { FEED_TYPEORM_REPOSITORY } from 'src/infra/data/typeorm/repository/ioc';
 import { FeedVo } from '../../../typeorm/vo/feed.vo';
-import { FeedQueryDto } from 'src/domain/service/dto/feed.dto';
 
 @Injectable()
 export class FeedRepositoryImpl implements IFeedRepository {
@@ -43,7 +41,7 @@ export class FeedRepositoryImpl implements IFeedRepository {
     const [feed] = await this.feedTypeormRepository.find({
       relations: {
         author: true,
-        tags: {
+        feedTags: {
           tag: true,
         },
       },
@@ -101,50 +99,4 @@ export class FeedRepositoryImpl implements IFeedRepository {
       },
     },
   };
-
-  queryOptionsBuilder(queryDto: FeedQueryDto) {
-    const { sort, search, tag, offset, limit } = queryDto;
-    const queryOptions: FindManyOptions<FeedVo> = {};
-    if (sort) {
-      switch (sort) {
-        case 'recent': {
-          queryOptions.order = {
-            createdAt: 'DESC',
-          };
-          break;
-        }
-        case 'trending': {
-          // TODO: change logic to get trending feeds
-          queryOptions.order = {
-            createdAt: 'DESC',
-          };
-          break;
-        }
-        default: {
-          queryOptions.order = {
-            createdAt: 'DESC',
-          };
-        }
-      }
-    }
-    if (search) {
-      queryOptions.where = {
-        ...queryOptions.where,
-        content: Like(`%${search}%`),
-      };
-    }
-    if (limit) queryOptions.take = limit;
-    if (offset) queryOptions.skip = offset;
-    if (tag) {
-      queryOptions.where = {
-        ...queryOptions.where,
-        feedTags: {
-          tag: {
-            tag: tag,
-          },
-        },
-      };
-    }
-    return queryOptions;
-  }
 }
