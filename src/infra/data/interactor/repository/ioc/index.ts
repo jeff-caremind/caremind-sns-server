@@ -91,8 +91,8 @@ export const PROFILE_WEBSITE_REPOSITORY = Symbol.for(
 export const ProfileWebsiteRepository: Provider<IProfileWebsiteRepository> = {
   provide: PROFILE_WEBSITE_REPOSITORY,
   useClass: ProfileWebsiteRepositoryImpl,
-  };
-  
+};
+
 export const USER_CONNECTION_REPOSITORY = Symbol.for(
   'USER_CONNECTION_REPOSITORY',
 );

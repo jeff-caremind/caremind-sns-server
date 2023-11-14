@@ -1,9 +1,22 @@
-import { Controller, Get, Post, Inject, Headers, Param, Body, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Inject,
+  Headers,
+  Param,
+  Body,
+  Delete,
+} from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { JwtService } from '@nestjs/jwt';
+
 import { IConnectionService } from 'src/domain/service/connection/connection.service.interface';
 import { CONNECTION_SERVICE } from 'src/domain/service/ioc';
-import { ConnectionDto } from 'src/domain/service/dto/connection.dto';
+import {
+  ConnectionDto,
+  ConnectionWithUsersDto,
+} from 'src/domain/service/dto/connection.dto';
 
 @Controller('/connection')
 export class ConnectionController {
@@ -12,6 +25,12 @@ export class ConnectionController {
     private readonly connectionService: IConnectionService,
     private readonly JwtService: JwtService,
   ) {}
+
+  @Get('/connected')
+  async getConnections(@Headers('authorization') token: string) {
+    const decoded = this.verifyToken(token);
+    return await this.connectionService.getConnections(decoded.aud);
+  }
 
   @Get('/sent')
   async getSent(@Headers('authorization') token: string) {
@@ -45,7 +64,7 @@ export class ConnectionController {
     @Body('message') message: string,
   ): Promise<void> {
     const decoded = this.verifyToken(token);
-    const connectionDto: ConnectionDto = {
+    const connectionDto: ConnectionWithUsersDto = {
       userId: decoded.aud,
       connectedUserId: Number(userId),
       message: message,
