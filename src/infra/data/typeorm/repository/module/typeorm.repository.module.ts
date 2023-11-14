@@ -6,6 +6,11 @@ import {
   FeedCommentTypeormRepository,
   FeedLikeTypeormRepository,
   FeedVideoTypeormRepository,
+  ProfileTypeormRepository,
+  ProfileProjectTypeormRepository,
+  ProfileExperienceTypeormRepository,
+  ProfileEducationTypeormRepository,
+  ProfileWebsiteTypeormRepository,
   UserConnectionTypeormRepository,
 } from '../ioc';
 
@@ -17,6 +22,11 @@ import {
     FeedCommentTypeormRepository,
     FeedLikeTypeormRepository,
     FeedVideoTypeormRepository,
+    ProfileTypeormRepository,
+    ProfileProjectTypeormRepository,
+    ProfileExperienceTypeormRepository,
+    ProfileEducationTypeormRepository,
+    ProfileWebsiteTypeormRepository,
     UserConnectionTypeormRepository,
   ],
   exports: [
@@ -25,6 +35,11 @@ import {
     FeedCommentTypeormRepository,
     FeedLikeTypeormRepository,
     FeedVideoTypeormRepository,
+    ProfileTypeormRepository,
+    ProfileProjectTypeormRepository,
+    ProfileExperienceTypeormRepository,
+    ProfileEducationTypeormRepository,
+    ProfileWebsiteTypeormRepository,
     UserConnectionTypeormRepository,
   ],
 })

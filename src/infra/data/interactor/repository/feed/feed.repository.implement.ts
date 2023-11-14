@@ -31,10 +31,13 @@ export class FeedRepositoryImpl implements IFeedRepository {
     await this.feedTypeormRepository.save(updatedFeed);
   }
 
-  async findOneWithAuthorById(feedId: number): Promise<FeedVo | null> {
+  async findOneWithAuthorAndTagsById(feedId: number): Promise<FeedVo | null> {
     const [feed] = await this.feedTypeormRepository.find({
       relations: {
         author: true,
+        tags: {
+          tag: true,
+        },
       },
       where: { id: feedId },
     });
