@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+
 import { TypeormRepositoryModule } from 'src/infra/data/typeorm/repository/module/typeorm.repository.module';
 import * as IOC from '../ioc';
 
@@ -10,6 +11,12 @@ import * as IOC from '../ioc';
     IOC.FeedCommentRepository,
     IOC.FeedLikeRepository,
     IOC.FeedVideoRepository,
+    IOC.ProfileRepository,
+    IOC.ProfileProjectRepository,
+    IOC.ProfileExperienceRepository,
+    IOC.ProfileEducationRepository,
+    IOC.ProfileWebsiteRepository,
+    IOC.UserConnectionRepository,
   ],
   exports: [
     IOC.FeedRepository,
@@ -17,6 +24,12 @@ import * as IOC from '../ioc';
     IOC.FeedCommentRepository,
     IOC.FeedLikeRepository,
     IOC.FeedVideoRepository,
+    IOC.ProfileRepository,
+    IOC.ProfileProjectRepository,
+    IOC.ProfileExperienceRepository,
+    IOC.ProfileEducationRepository,
+    IOC.ProfileWebsiteRepository,
+    IOC.UserConnectionRepository,
   ],
 })
 export class RepositoryModule {}
