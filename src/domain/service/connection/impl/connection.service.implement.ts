@@ -36,6 +36,47 @@ export class ConnectionServiceImpl implements IConnectionService {
     return connections;
   }
 
+  async getSent(userId: number): Promise<UserConnectionVo[]> {
+    return await this.userConnectionRepository.findSent(userId);
+  }
+
+  async getReceived(userId: number): Promise<UserConnectionVo[]> {
+    return await this.userConnectionRepository.findReceived(userId);
+  }
+
+  async deleteConnection(connectionDto: ConnectionDto): Promise<void> {
+    const { userId, connectionId } = connectionDto;
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const connection =
+      await this.userConnectionRepository.findOneWithRelationsById(
+        connectionId,
+      );
+    if (!connection)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (connection.user.id !== userId && connection.connectedUser.id !== userId)
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+    await this.userConnectionRepository.remove(connection);
+  }
+
+  async acceptConnection(connectionDto: ConnectionDto): Promise<void> {
+    const { userId, connectionId } = connectionDto;
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const connection =
+      await this.userConnectionRepository.findOneWithConnectedUserById(
+        connectionId,
+      );
+    if (!connection)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (connection.connectedUser.id !== user.id)
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+    if (connection.isAccepted)
+      throw new HttpException('DUPLICATE_REQUEST', HttpStatus.BAD_REQUEST);
+    connection.isAccepted = true;
+    await this.userConnectionRepository.update(connection);
+  }
+
   async createConnection(connectionDto: ConnectionDto): Promise<void> {
     const { userId, connectedUserId, message } = connectionDto;
     const follower = await this.userRepository.findOneById(userId);
