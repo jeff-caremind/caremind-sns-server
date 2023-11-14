@@ -8,10 +8,45 @@ import { Repository } from 'typeorm';
 export class UserConnectionRepositoryImpl implements IUserConnectionRepository {
   constructor(
     @Inject(USER_CONNECTION_TYPEORM_REPOSITORY)
-    private readonly userConnectionTypeormrepository: Repository<UserConnectionVo>,
+    private readonly userConnectionTypeormRepository: Repository<UserConnectionVo>,
   ) {}
 
   async create(connection: UserConnectionVo) {
-    await this.userConnectionTypeormrepository.save(connection);
+    await this.userConnectionTypeormRepository.save(connection);
+  }
+
+  async findConnections(userId: number): Promise<UserConnectionVo[]> {
+    return await this.userConnectionTypeormRepository.find({
+      relations: {
+        user: true,
+        connectedUser: true,
+      },
+      where: [
+        {
+          user: {
+            id: userId,
+          },
+          isAccepted: true,
+        },
+        {
+          connectedUser: {
+            id: userId,
+          },
+          isAccepted: true,
+        },
+      ],
+      select: {
+        connectedUser: {
+          id: true,
+          name: true,
+          profileImage: true,
+        },
+        user: {
+          id: true,
+          name: true,
+          profileImage: true,
+        },
+      },
+    });
   }
 }

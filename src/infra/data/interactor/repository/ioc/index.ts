@@ -16,8 +16,6 @@ import { UserRepositoryImpl } from '../user/user.repository.implement';
 import { FeedCommentRepositoryImpl } from '../feed_comment/feed_comment.repository.implement';
 import { FeedLikeRepositoryImpl } from '../feed_like/feed_like.repository.implement';
 import { FeedVideoRepositoryImpl } from '../feed_video/feed_video.repository.implement';
-import { IUserConnectionRepository } from 'src/domain/interactor/data/repository/user_connection.repository.interface';
-import { UserConnectionRepositoryImpl } from '../connection/user_connection.repository.implement';
 import { ProfileRepositoryImpl } from '../profile/profile.repository.implement';
 import { ProfileProjectRepositoryImpl } from '../profile_project/profile_project.repository.implement';
 import { ProfileExperienceRepositoryImpl } from '../profile_experience/profile_experience.repository.implement';
@@ -93,8 +91,8 @@ export const PROFILE_WEBSITE_REPOSITORY = Symbol.for(
 export const ProfileWebsiteRepository: Provider<IProfileWebsiteRepository> = {
   provide: PROFILE_WEBSITE_REPOSITORY,
   useClass: ProfileWebsiteRepositoryImpl,
-  };
-  
+};
+
 export const USER_CONNECTION_REPOSITORY = Symbol.for(
   'USER_CONNECTION_REPOSITORY',
 );

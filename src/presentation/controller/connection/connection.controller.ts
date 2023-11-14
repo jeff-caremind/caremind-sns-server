@@ -1,4 +1,12 @@
-import { Controller, Post, Inject, Headers, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Inject,
+  Headers,
+  Param,
+  Body,
+} from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { JwtService } from '@nestjs/jwt';
 import { IConnectionService } from 'src/domain/service/connection/connection.service.interface';
