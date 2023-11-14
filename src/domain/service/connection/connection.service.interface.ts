@@ -1,4 +1,8 @@
-import { ConnectionsDto, ConnectionDto } from '../dto/connection.dto';
+import {
+  ConnectionsDto,
+  ConnectionDto,
+  ConnectionWithUsersDto,
+} from '../dto/connection.dto';
 import { UserConnectionVo } from 'src/infra/data/typeorm/vo/user_connection.vo';
 
 export interface IConnectionService {
@@ -7,5 +11,5 @@ export interface IConnectionService {
   getReceived(userId: number): Promise<UserConnectionVo[]>;
   deleteConnection(connectionDto: ConnectionDto): Promise<void>;
   acceptConnection(connectionDto: ConnectionDto): Promise<void>;
-  createConnection(connectionDto: ConnectionDto): Promise<void>;
+  createConnection(connectionDto: ConnectionWithUsersDto): Promise<void>;
 }
