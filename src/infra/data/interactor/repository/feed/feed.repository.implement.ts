@@ -5,7 +5,7 @@ import { IFeedRepository } from 'src/domain/interactor/data/repository/feed.repo
 import { FEED_TYPEORM_REPOSITORY } from 'src/infra/data/typeorm/repository/ioc';
 import { FeedVo } from '../../../typeorm/vo/feed.vo';
 import { FeedQueryDto } from 'src/domain/service/dto/feed.dto';
-import { IFeedTypeormRepository } from 'src/infra/data/typeorm/repository/feed/feed.typeorm.repository.interface';
+import { IFeedTypeormRepository } from 'src/infra/data/interactor/repository/feed/orm_interface/feed.typeorm.repository.interface';
 
 @Injectable()
 export class FeedRepositoryImpl implements IFeedRepository {

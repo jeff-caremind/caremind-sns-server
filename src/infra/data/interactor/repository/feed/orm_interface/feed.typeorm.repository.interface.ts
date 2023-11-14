@@ -1,5 +1,5 @@
 import { FindManyOptions, Repository } from 'typeorm';
-import { FeedVo } from '../../vo/feed.vo';
+import { FeedVo } from '../../../../typeorm/vo/feed.vo';
 import { FeedQueryDto } from 'src/domain/service/dto/feed.dto';
 
 export interface IFeedTypeormRepository extends Repository<FeedVo> {

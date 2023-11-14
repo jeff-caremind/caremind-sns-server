@@ -7,7 +7,7 @@ import { FeedCommentVo } from '../../vo/feed_comment.vo';
 import { FeedLikeVo } from '../../vo/feed_like.vo';
 import { FeedVideoVo } from '../../vo/feed_video.vo';
 import { FeedTypeormRepositoryFactory } from '../feed/feed.typeorm.repository.factory';
-import { IFeedTypeormRepository } from '../feed/feed.typeorm.repository.interface';
+import { IFeedTypeormRepository } from '../../../interactor/repository/feed/orm_interface/feed.typeorm.repository.interface';
 import { ProfileVo } from '../../vo/profile.vo';
 import { ProfileProjectVo } from '../../vo/profile_project.vo';
 import { ProfileExperienceVo } from '../../vo/profile_experience.vo';
