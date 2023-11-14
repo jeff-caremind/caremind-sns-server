@@ -73,7 +73,7 @@ export class FeedServiceImpl implements IFeedService {
     return await this.feedLikeRepository.create(newFeedLike);
   }
 
-  async createFeed(feedCreateDto: FeedCreateDto) {
+  async createFeed(feedCreateDto: FeedCreateDto): Promise<void> {
     const { userId, content, images, video } = feedCreateDto;
     const user = await this.userRepository.findOneById(userId);
     if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);

@@ -136,7 +136,7 @@ export class FeedController {
       feedCommentDto,
     );
   }
-  
+
   @Delete('/:feedId/like')
   async deleteLike(
     @Headers('authorization') token: string,

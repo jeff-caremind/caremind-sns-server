@@ -24,7 +24,7 @@ export class ProfileProjectVo extends BaseEntity {
   @Column({
     type: 'varchar',
     length: 100,
-    default: '',
+    // default: '',
   })
   title: string;
 
