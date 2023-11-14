@@ -32,4 +32,41 @@ export class UserConnectionRepositoryImpl implements IUserConnectionRepository {
       },
     });
   }
+
+  async findOneWithRelationsById(
+    connectionId: number,
+  ): Promise<UserConnectionVo | null> {
+    return await this.userConnectionTypeormRepository.findOne({
+      relations: {
+        user: true,
+        connectedUser: true,
+      },
+      where: {
+        id: connectionId,
+      },
+    });
+  }
+
+  async remove(connection: UserConnectionVo): Promise<void> {
+    await this.userConnectionTypeormRepository.remove(connection);
+  }
+
+  async update(connection: UserConnectionVo) {
+    await this.userConnectionTypeormRepository.save(connection);
+  }
+
+  async findOneWithConnectedUserById(
+    connectionId: number,
+  ): Promise<UserConnectionVo | null> {
+    return await this.userConnectionTypeormRepository.findOne({
+      where: { id: connectionId },
+      relations: {
+        connectedUser: true,
+      },
+    });
+  }
+
+  async create(connection: UserConnectionVo) {
+    await this.userConnectionTypeormrepository.save(connection);
+  }
 }
