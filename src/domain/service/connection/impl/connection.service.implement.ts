@@ -1,5 +1,4 @@
-import { Inject, Injectable, HttpException, HttpStatus } from '@nestjs/common';
-
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { IConnectionService } from '../connection.service.interface';
 import { IUserConnectionRepository } from 'src/domain/interactor/data/repository/user_connection.repository.interface';
 import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
@@ -18,6 +17,47 @@ export class ConnectionServiceImpl implements IConnectionService {
     @Inject(USER_REPOSITORY)
     private readonly userRepository: IUserRepository,
   ) {}
+
+  async getSent(userId: number): Promise<UserConnectionVo[]> {
+    return await this.userConnectionRepository.findSent(userId);
+  }
+
+  async getReceived(userId: number): Promise<UserConnectionVo[]> {
+    return await this.userConnectionRepository.findReceived(userId);
+  }
+
+  async deleteConnection(connectionDto: ConnectionDto): Promise<void> {
+    const { userId, connectionId } = connectionDto;
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const connection =
+      await this.userConnectionRepository.findOneWithRelationsById(
+        connectionId,
+      );
+    if (!connection)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (connection.user.id !== userId && connection.connectedUser.id !== userId)
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+    await this.userConnectionRepository.remove(connection);
+  }
+
+  async acceptConnection(connectionDto: ConnectionDto): Promise<void> {
+    const { userId, connectionId } = connectionDto;
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const connection =
+      await this.userConnectionRepository.findOneWithConnectedUserById(
+        connectionId,
+      );
+    if (!connection)
+      throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (connection.connectedUser.id !== user.id)
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+    if (connection.isAccepted)
+      throw new HttpException('DUPLICATE_REQUEST', HttpStatus.BAD_REQUEST);
+    connection.isAccepted = true;
+    await this.userConnectionRepository.update(connection);
+  }
 
   async createConnection(connectionDto: ConnectionDto): Promise<void> {
     const { userId, connectedUserId, message } = connectionDto;
