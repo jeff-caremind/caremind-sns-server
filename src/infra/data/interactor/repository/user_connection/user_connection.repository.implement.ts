@@ -12,6 +12,20 @@ export class UserConnectionRepositoryImpl implements IUserConnectionRepository {
     private readonly userConnectionTypeormRepository: Repository<UserConnectionVo>,
   ) {}
 
+  async findSent(userId: number): Promise<UserConnectionVo[]> {
+    return await this.userConnectionTypeormRepository.find({
+      relations: {
+        connectedUser: true,
+      },
+      where: {
+        user: {
+          id: userId,
+        },
+        isAccepted: false,
+      },
+    });
+  }
+  
   async findReceived(userId: number): Promise<UserConnectionVo[]> {
     return await this.userConnectionTypeormRepository.find({
       relations: {

@@ -13,6 +13,12 @@ export class ConnectionController {
     private readonly JwtService: JwtService,
   ) {}
 
+  @Get('/sent')
+  async getSent(@Headers('authorization') token: string) {
+    const decoded = this.verifyToken(token);
+    return await this.connectionService.getSent(decoded.aud);
+  }
+
   @Get('/received')
   async getReceived(@Headers('authorization') token: string) {
     const decoded = this.verifyToken(token);

@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-
 import { IConnectionService } from '../connection.service.interface';
 import { IUserConnectionRepository } from 'src/domain/interactor/data/repository/user_connection.repository.interface';
 import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
@@ -18,6 +17,10 @@ export class ConnectionServiceImpl implements IConnectionService {
     @Inject(USER_REPOSITORY)
     private readonly userRepository: IUserRepository,
   ) {}
+
+  async getSent(userId: number): Promise<UserConnectionVo[]> {
+    return await this.userConnectionRepository.findSent(userId);
+  }
 
   async getReceived(userId: number): Promise<UserConnectionVo[]> {
     return await this.userConnectionRepository.findReceived(userId);
