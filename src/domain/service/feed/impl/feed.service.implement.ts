@@ -44,8 +44,7 @@ export class FeedServiceImpl implements IFeedService {
   ) {}
 
   async getList(queryDto: FeedQueryDto) {
-    const queryOptions = this.feedRepository.queryOptionsBuilder(queryDto);
-    const data = await this.feedRepository.findAll(queryOptions);
+    const data = await this.feedRepository.findAll(queryDto);
     const feeds: FeedsDto = data.map((feed) => {
       return {
         ...feed,
@@ -90,7 +89,7 @@ export class FeedServiceImpl implements IFeedService {
     if (content) {
       const rawTags = this.extractTags(content);
       tags = this.createFeedTagVos(feed, rawTags);
-      feed.tags = tags;
+      feed.feedTags = tags;
     }
     return await this.feedRepository.create(feed);
   }
@@ -125,7 +124,7 @@ export class FeedServiceImpl implements IFeedService {
     if (video) feed.video = this.createVideoVo(video);
     if (content) {
       const rawTags: string[] = this.extractTags(content);
-      const feedTagVos = feed.tags;
+      const feedTagVos = feed.feedTags;
       const remainingTags = feedTagVos.filter((feedTagVo: FeedTagVo) =>
         rawTags.includes(feedTagVo.tag.tag),
       );
@@ -136,7 +135,7 @@ export class FeedServiceImpl implements IFeedService {
         addedTags,
         remainingTags,
       );
-      feed.tags = updatedFeedTags;
+      feed.feedTags = updatedFeedTags;
     }
     await this.feedRepository.update(feed);
   }

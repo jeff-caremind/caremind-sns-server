@@ -2,15 +2,15 @@ import { Provider } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 
 import { DATA_SOURCE } from '../../config/typeorm.config';
-import { FeedVo } from '../../vo/feed.vo';
 import { UserVo } from '../../vo/user.vo';
 import { FeedCommentVo } from '../../vo/feed_comment.vo';
 import { FeedLikeVo } from '../../vo/feed_like.vo';
 import { FeedVideoVo } from '../../vo/feed_video.vo';
-import { FeedTypeormRepositoryFactory } from '../factory/feed.typeorm.repository.factory';
+import { FeedTypeormRepositoryFactory } from '../feed/feed.typeorm.repository.factory';
+import { IFeedTypeormRepository } from '../feed/feed.typeorm.repository.interface';
 
 export const FEED_TYPEORM_REPOSITORY = Symbol.for('FEED_TYPEORM_REPOSITORY');
-export const FeedTypeormRepository: Provider<Repository<FeedVo>> = {
+export const FeedTypeormRepository: Provider<IFeedTypeormRepository> = {
   provide: FEED_TYPEORM_REPOSITORY,
   useFactory: FeedTypeormRepositoryFactory,
   inject: [DATA_SOURCE],

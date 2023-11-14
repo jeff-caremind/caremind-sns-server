@@ -3,8 +3,7 @@ import { DataSource, FindManyOptions, Like } from 'typeorm';
 import { FeedVo } from '../../vo/feed.vo';
 
 export function FeedTypeormRepositoryFactory(dataSource: DataSource) {
-  const repository = dataSource.getRepository(FeedVo);
-  repository.extend({
+  const repository = dataSource.getRepository(FeedVo).extend({
     queryOptionsBuilder(queryDto: FeedQueryDto) {
       const { sort, search, tag, offset, limit } = queryDto;
       const queryOptions: FindManyOptions<FeedVo> = {};

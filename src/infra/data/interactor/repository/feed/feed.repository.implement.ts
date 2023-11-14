@@ -1,23 +1,22 @@
 import { Inject, Injectable } from '@nestjs/common';
-import {
-  FindManyOptions,
-  FindOptionsRelations,
-  FindOptionsSelect,
-  Repository,
-} from 'typeorm';
+import { FindOptionsRelations, FindOptionsSelect } from 'typeorm';
 
 import { IFeedRepository } from 'src/domain/interactor/data/repository/feed.repository.interface';
 import { FEED_TYPEORM_REPOSITORY } from 'src/infra/data/typeorm/repository/ioc';
 import { FeedVo } from '../../../typeorm/vo/feed.vo';
+import { FeedQueryDto } from 'src/domain/service/dto/feed.dto';
+import { IFeedTypeormRepository } from 'src/infra/data/typeorm/repository/feed/feed.typeorm.repository.interface';
 
 @Injectable()
 export class FeedRepositoryImpl implements IFeedRepository {
   constructor(
     @Inject(FEED_TYPEORM_REPOSITORY)
-    private readonly feedTypeormRepository: Repository<FeedVo>,
+    private readonly feedTypeormRepository: IFeedTypeormRepository,
   ) {}
 
-  async findAll(queryOptions: FindManyOptions<FeedVo>): Promise<FeedVo[]> {
+  async findAll(queryDto: FeedQueryDto): Promise<FeedVo[]> {
+    const queryOptions =
+      this.feedTypeormRepository.queryOptionsBuilder(queryDto);
     return this.feedTypeormRepository.find({
       relations: this.feedFullRelations,
       select: this.feedFullRelationsSelect,
