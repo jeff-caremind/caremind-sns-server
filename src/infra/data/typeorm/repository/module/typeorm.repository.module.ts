@@ -13,6 +13,7 @@ import {
   ProfileWebsiteTypeormRepository,
   UserConnectionTypeormRepository,
   FeedTagTypeormRepository,
+  TagTypeormRepository,
 } from '../ioc';
 
 @Module({
@@ -30,6 +31,7 @@ import {
     ProfileEducationTypeormRepository,
     ProfileWebsiteTypeormRepository,
     UserConnectionTypeormRepository,
+    TagTypeormRepository,
   ],
   exports: [
     FeedTypeormRepository,
@@ -44,6 +46,7 @@ import {
     ProfileEducationTypeormRepository,
     ProfileWebsiteTypeormRepository,
     UserConnectionTypeormRepository,
+    TagTypeormRepository,
   ],
 })
 export class TypeormRepositoryModule {}

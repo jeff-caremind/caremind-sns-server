@@ -7,6 +7,7 @@ import {
   FEED_REPOSITORY,
   FEED_TAG_REPOSITORY,
   FEED_VIDEO_REPOSITORY,
+  TAG_REPOSITORY,
   USER_REPOSITORY,
 } from 'src/infra/data/interactor/repository/ioc';
 import { IFeedRepository } from 'src/domain/interactor/data/repository/feed.repository.interface';
@@ -30,6 +31,7 @@ import {
   FeedCommentDeleteDto,
   FeedDeleteDto,
 } from '../../dto/feed.dto';
+import { ITagRepository } from 'src/domain/interactor/data/repository/tag.repository.interface';
 
 @Injectable()
 export class FeedServiceImpl implements IFeedService {
@@ -44,6 +46,8 @@ export class FeedServiceImpl implements IFeedService {
     private readonly feedVideoRepository: IFeedVideoRepository,
     @Inject(FEED_TAG_REPOSITORY)
     private readonly feedTagRepository: IFeedTagRepository,
+    @Inject(TAG_REPOSITORY)
+    private readonly tagRepository: ITagRepository,
   ) {}
 
   async getAll() {
@@ -244,22 +248,20 @@ export class FeedServiceImpl implements IFeedService {
     newTags: string[],
     remainingTagsInUpdatedFeed: FeedTagVo[] = [],
   ): Promise<FeedTagVo[]> {
-    const existingTagVosOnDb = await this.feedTagRepository.findAll(newTags);
-    const existingTagStringsOnDb = existingTagVosOnDb.map(
-      (item) => item.tag.tag,
-    );
+    const existingTagVosOnDb = await this.tagRepository.findAll(newTags);
+    const existingTagStringsOnDb = existingTagVosOnDb.map((item) => item.tag);
 
-    const tagVos = newTags.map((item) => {
-      if (existingTagStringsOnDb.includes(item)) {
+    const newTagVos: FeedTagVo[] = [];
+    newTags.forEach((item) => {
+      if (!existingTagStringsOnDb.includes(item)) {
         const tagVo = new TagVo();
         tagVo.tag = item;
         const feedTagVo = new FeedTagVo();
         feedTagVo.tag = tagVo;
         feedTagVo.feed = feed;
-        return feedTagVo;
+        newTagVos.push(feedTagVo);
       }
     });
-    console.log(tagVos);
-    return remainingTagsInUpdatedFeed.concat(existingTagVosOnDb);
+    return remainingTagsInUpdatedFeed.concat(newTagVos);
   }
 }
