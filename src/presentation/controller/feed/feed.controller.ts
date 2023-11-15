@@ -25,6 +25,7 @@ import {
   FeedCommentDto,
   FeedQueryDto,
   FeedDeleteDto,
+  SortParam,
 } from 'src/domain/service/dto/feed.dto';
 
 @Controller('/feed')
@@ -41,7 +42,7 @@ export class FeedController {
 
   @Get()
   async getList(
-    @Query('sort') sort: string,
+    @Query('sort') sort: SortParam,
     @Query('search') search: string,
     @Query('tag') tag: string,
     @Query('offset') offset: number,

@@ -3,7 +3,10 @@ import { Controller, Get, Post, Inject, Headers, Param, Body, Delete } from '@ne
 import { JwtService } from '@nestjs/jwt';
 import { IConnectionService } from 'src/domain/service/connection/connection.service.interface';
 import { CONNECTION_SERVICE } from 'src/domain/service/ioc';
-import { ConnectionDto } from 'src/domain/service/dto/connection.dto';
+import {
+  ConnectionDto,
+  ConnectionWithUsersDto,
+} from 'src/domain/service/dto/connection.dto';
 
 @Controller('/connection')
 export class ConnectionController {
@@ -45,7 +48,7 @@ export class ConnectionController {
     @Body('message') message: string,
   ): Promise<void> {
     const decoded = this.verifyToken(token);
-    const connectionDto: ConnectionDto = {
+    const connectionDto: ConnectionWithUsersDto = {
       userId: decoded.aud,
       connectedUserId: Number(userId),
       message: message,

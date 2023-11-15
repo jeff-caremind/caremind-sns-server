@@ -23,11 +23,6 @@ export class UserController {
     @Inject(USER_SERVICE) private readonly userService: IUserService,
   ) {}
 
-  @Get()
-  async getAll(): Promise<UserVo[]> {
-    return await this.userService.getAll();
-  }
-
   @Post('/signup')
   async signUp(@Body() userData: SignUpRequestDto): Promise<void> {
     if (!userData || !userData.email || !userData.password) {
