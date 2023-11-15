@@ -12,6 +12,7 @@ import {
   ProfileEducationTypeormRepository,
   ProfileWebsiteTypeormRepository,
   UserConnectionTypeormRepository,
+  FeedTagTypeormRepository,
 } from '../ioc';
 
 @Module({
@@ -22,6 +23,7 @@ import {
     FeedCommentTypeormRepository,
     FeedLikeTypeormRepository,
     FeedVideoTypeormRepository,
+    FeedTagTypeormRepository,
     ProfileTypeormRepository,
     ProfileProjectTypeormRepository,
     ProfileExperienceTypeormRepository,
@@ -35,6 +37,7 @@ import {
     FeedCommentTypeormRepository,
     FeedLikeTypeormRepository,
     FeedVideoTypeormRepository,
+    FeedTagTypeormRepository,
     ProfileTypeormRepository,
     ProfileProjectTypeormRepository,
     ProfileExperienceTypeormRepository,
