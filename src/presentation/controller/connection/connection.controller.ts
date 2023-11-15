@@ -3,10 +3,11 @@ import {
   Post,
   Get,
   Inject,
-  Headers,
   Param,
   Body,
   Delete,
+  Patch,
+  Req,
 } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { JwtService } from '@nestjs/jwt';
@@ -27,31 +28,27 @@ export class ConnectionController {
   ) {}
 
   @Get('/connected')
-  async getConnections(@Headers('authorization') token: string) {
-    const decoded = this.verifyToken(token);
-    return await this.connectionService.getConnections(decoded.aud);
+  async getConnections(@Req() req: Request & { headers: { userId: number } }) {
+    return await this.connectionService.getConnections(req.headers.userId);
   }
 
   @Get('/sent')
-  async getSent(@Headers('authorization') token: string) {
-    const decoded = this.verifyToken(token);
-    return await this.connectionService.getSent(decoded.aud);
+  async getSent(@Req() req: Request & { headers: { userId: number } }) {
+    return await this.connectionService.getSent(req.headers.userId);
   }
 
   @Get('/received')
-  async getReceived(@Headers('authorization') token: string) {
-    const decoded = this.verifyToken(token);
-    return await this.connectionService.getReceived(decoded.aud);
+  async getReceived(@Req() req: Request & { headers: { userId: number } }) {
+    return await this.connectionService.getReceived(req.headers.userId);
   }
 
   @Delete('/:connectionId')
   async deleteConnection(
-    @Headers('authorization') token: string,
+    @Req() req: Request & { headers: { userId: number } },
     @Param('connectionId') connectionId: string,
   ) {
-    const decoded = this.verifyToken(token);
     const connectionDto: ConnectionDto = {
-      userId: decoded.aud,
+      userId: req.headers.userId,
       connectionId: Number(connectionId),
     };
     return await this.connectionService.deleteConnection(connectionDto);
@@ -59,21 +56,27 @@ export class ConnectionController {
 
   @Post('/user/:userId')
   async createConnection(
-    @Headers('authorization') token: string,
+    @Req() req: Request & { headers: { userId: number } },
     @Param('userId') userId: number,
     @Body('message') message: string,
   ): Promise<void> {
-    const decoded = this.verifyToken(token);
     const connectionDto: ConnectionWithUsersDto = {
-      userId: decoded.aud,
+      userId: req.headers.userId,
       connectedUserId: Number(userId),
       message: message,
     };
     return await this.connectionService.createConnection(connectionDto);
   }
 
-  verifyToken(token: string): { aud: number } {
-    const decoded = this.JwtService.verify(token);
-    return decoded;
+  @Patch('/:connectionId')
+  async acceptConnection(
+    @Req() req: Request & { headers: { userId: number } },
+    @Param('connectionId') connectionId: number,
+  ) {
+    const connectionDto: ConnectionDto = {
+      userId: req.headers.userId,
+      connectionId: connectionId,
+    };
+    await this.connectionService.acceptConnection(connectionDto);
   }
 }

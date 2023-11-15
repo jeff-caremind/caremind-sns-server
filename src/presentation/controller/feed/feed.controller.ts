@@ -5,11 +5,12 @@ import {
   Inject,
   Param,
   Post,
-  Headers,
   HttpException,
   HttpStatus,
   Put,
   Delete,
+  UseInterceptors,
+  Req,
 } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { JwtService } from '@nestjs/jwt';
@@ -24,8 +25,10 @@ import {
   FeedCommentDto,
   FeedDeleteDto,
 } from 'src/domain/service/dto/feed.dto';
+import { AuthInterceptor } from 'src/domain/interactor/interceptor/auth.interceptor';
 
 @Controller('/feed')
+@UseInterceptors(AuthInterceptor)
 export class FeedController {
   constructor(
     @Inject(FEED_SERVICE) private readonly feedService: IFeedService,
@@ -46,11 +49,10 @@ export class FeedController {
   async createComment(
     @Body() body: any,
     @Param('feedId') feedId: number,
-    @Headers('authorization') token: string,
+    @Req() req: Request & { headers: { userId: number } },
   ): Promise<void> {
-    const decoded = this.verifyToken(token);
     const feedCommentDto: FeedCommentDto = {
-      userId: decoded.aud,
+      userId: req.headers.userId,
       feedId: Number(feedId),
       content: body.content,
     };
@@ -60,11 +62,10 @@ export class FeedController {
   @Post('/:feedId/like')
   async createLike(
     @Param('feedId') feedId: string,
-    @Headers('authorization') token: string,
+    @Req() req: Request & { headers: { userId: number } },
   ): Promise<void> {
-    const decodedToken = this.verifyToken(token);
     const feedLikeDto: FeedLikeDto = {
-      likerId: decodedToken.aud,
+      likerId: req.headers.userId,
       likedFeedId: parseInt(feedId),
     };
     return await this.feedService.createLike(feedLikeDto);
@@ -73,13 +74,12 @@ export class FeedController {
   @Post()
   async createFeed(
     @Body() body: Partial<FeedCreateDto>,
-    @Headers('authorization') token: string,
+    @Req() req: Request & { headers: { userId: number } },
   ): Promise<void> {
     if (!body.content && !body.images && !body.video)
       throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
-    const decodedToken = this.verifyToken(token);
     const feedCreateDto: FeedCreateDto = {
-      userId: decodedToken.aud,
+      userId: req.headers.userId,
       content: body.content,
       images: body.images,
       video: body.video,
@@ -89,27 +89,25 @@ export class FeedController {
 
   @Put('/:feedId')
   async updateFeed(
-    @Headers('authorization') token: string,
     @Param('feedId') feedId: number,
-    @Body() body: Partial<FeedCreateDto>,
+    @Body() body: FeedCreateDto,
+    @Req() req: Request & { headers: { userId: number } },
   ) {
-    const decoded = this.verifyToken(token);
     const feedUpdateDto: FeedCreateDto = {
       ...body,
-      userId: decoded.aud,
+      userId: req.headers.userId,
     };
     return await this.feedService.updateFeed(Number(feedId), feedUpdateDto);
   }
 
   @Delete('/:feedId/comment/:commentId')
   async deleteComment(
-    @Headers('authorization') token: string,
+    @Req() req: Request & { headers: { userId: number } },
     @Param('feedId') feedId: number,
     @Param('commentId') commentId: number,
   ): Promise<void> {
-    const decoded = this.verifyToken(token);
     const feedCommentDeleteDto = {
-      userId: decoded.aud,
+      userId: req.headers.userId,
       feedId: Number(feedId),
       commentId: Number(commentId),
     };
@@ -118,16 +116,15 @@ export class FeedController {
 
   @Put('/:feedId/comment/:commentId')
   async updateComment(
-    @Headers('authorization') token: string,
+    @Req() req: Request & { headers: { userId: number } },
     @Param('feedId') feedId: number,
     @Param('commentId') commentId: number,
     @Body() body: Partial<FeedCommentDto>,
   ): Promise<void> {
-    const decoded = this.verifyToken(token);
     if (!body.content)
       throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
     const feedCommentDto: FeedCommentDto = {
-      userId: decoded.aud,
+      userId: req.headers.userId,
       feedId: feedId,
       content: body.content,
     };
@@ -139,12 +136,11 @@ export class FeedController {
 
   @Delete('/:feedId/like')
   async deleteLike(
-    @Headers('authorization') token: string,
+    @Req() req: Request & { headers: { userId: number } },
     @Param('feedId') feedId: number,
   ) {
-    const decoded = this.verifyToken(token);
     const feedLikeDto: FeedLikeDto = {
-      likerId: decoded.aud,
+      likerId: req.headers.userId,
       likedFeedId: Number(feedId),
     };
     return await this.feedService.deleteLike(feedLikeDto);
@@ -152,12 +148,11 @@ export class FeedController {
 
   @Delete('/:feedId')
   async deleteFeed(
-    @Headers('authorization') token: string,
+    @Req() req: Request & { headers: { userId: number } },
     @Param('feedId') feedId: number,
   ) {
-    const decoded = this.verifyToken(token);
     const feedDeleteDto: FeedDeleteDto = {
-      userId: Number(decoded.aud),
+      userId: Number(req.headers.userId),
       feedId: feedId,
     };
     return await this.feedService.deleteFeed(feedDeleteDto);

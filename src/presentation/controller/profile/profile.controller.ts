@@ -1,4 +1,11 @@
-import { Controller, Get, Inject, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Inject,
+  Param,
+  UseInterceptors,
+} from '@nestjs/common';
+import { AuthInterceptor } from 'src/domain/interactor/interceptor/auth.interceptor';
 
 import { PROFILE_SERVICE } from 'src/domain/service/ioc';
 import { IProfileService } from 'src/domain/service/profile/profile.service.interface';
@@ -9,6 +16,7 @@ import { ProfileProjectVo } from 'src/infra/data/typeorm/vo/profile_project.vo';
 import { ProfileWebsiteVo } from 'src/infra/data/typeorm/vo/profile_website.vo';
 
 @Controller('/profile')
+@UseInterceptors(AuthInterceptor)
 export class ProfileController {
   constructor(
     @Inject(PROFILE_SERVICE) private readonly profileService: IProfileService,
