@@ -7,7 +7,7 @@ import { AuthInterceptor } from 'src/domain/interactor/interceptor/auth.intercep
 
 @Module({
   imports: [RepositoryModule],
-  providers: [IOC.ProfileService, AuthInterceptor],
+  providers: [IOC.ProfileService, IOC.UserService, AuthInterceptor],
   controllers: [ProfileController],
 })
 export class ProfileModule {}

@@ -7,7 +7,7 @@ import { AuthInterceptor } from 'src/domain/interactor/interceptor/auth.intercep
 
 @Module({
   imports: [RepositoryModule],
-  providers: [IOC.FeedService, AuthInterceptor],
+  providers: [IOC.FeedService, IOC.UserService, AuthInterceptor],
   controllers: [FeedController],
 })
 export class FeedModule {}
