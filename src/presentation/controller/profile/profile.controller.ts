@@ -5,8 +5,8 @@ import {
   Param,
   UseInterceptors,
 } from '@nestjs/common';
-import { AuthInterceptor } from 'src/domain/interactor/interceptor/auth.interceptor';
 
+import { AuthInterceptor } from 'src/domain/interactor/interceptor/auth.interceptor';
 import { PROFILE_SERVICE } from 'src/domain/service/ioc';
 import { IProfileService } from 'src/domain/service/profile/profile.service.interface';
 import { ProfileVo } from 'src/infra/data/typeorm/vo/profile.vo';
