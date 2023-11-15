@@ -11,7 +11,6 @@ import {
 import { IFeedRepository } from 'src/domain/interactor/data/repository/feed.repository.interface';
 import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
 import { UserVo } from 'src/infra/data/typeorm/vo/user.vo';
-import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
 import {
   LoginResponseDto,
   SignUpRequestDto,
@@ -27,10 +26,6 @@ export class UserServiceImpl implements IUserService {
 
   async getAll(): Promise<UserVo[]> {
     return await this.userRepository.findAll();
-  }
-
-  async getFeedsBy(): Promise<FeedVo[]> {
-    return await this.feedRepository.findAll();
   }
 
   async signUp(userData: SignUpRequestDto): Promise<void> {
@@ -68,5 +63,9 @@ export class UserServiceImpl implements IUserService {
     });
     this.userRepository.findOneByEmail(email);
     return { token: token, user: userInfo };
+  }
+
+  async getOne(userId: number): Promise<UserVo | null> {
+    return this.userRepository.findOneById(userId);
   }
 }
