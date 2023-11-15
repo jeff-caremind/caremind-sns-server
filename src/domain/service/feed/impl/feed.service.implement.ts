@@ -5,7 +5,6 @@ import {
   FEED_COMMENT_REPOSITORY,
   FEED_LIKE_REPOSITORY,
   FEED_REPOSITORY,
-  FEED_TAG_REPOSITORY,
   FEED_VIDEO_REPOSITORY,
   TAG_REPOSITORY,
   USER_REPOSITORY,
@@ -15,7 +14,6 @@ import { IUserRepository } from 'src/domain/interactor/data/repository/user.repo
 import { IFeedCommentRepository } from 'src/domain/interactor/data/repository/feed_comment.repository.interface';
 import { IFeedLikeRepository } from 'src/domain/interactor/data/repository/feed_like.repository.interface';
 import { IFeedVideoRepository } from 'src/domain/interactor/data/repository/feed_video.repository.interface';
-import { IFeedTagRepository } from 'src/domain/interactor/data/repository/feed_tag.repository.interface';
 import { FeedCommentVo } from 'src/infra/data/typeorm/vo/feed_comment.vo';
 import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
 import { FeedVideoVo } from 'src/infra/data/typeorm/vo/feed_video.vo';
@@ -44,8 +42,6 @@ export class FeedServiceImpl implements IFeedService {
     private readonly feedCommentRepository: IFeedCommentRepository,
     @Inject(FEED_VIDEO_REPOSITORY)
     private readonly feedVideoRepository: IFeedVideoRepository,
-    @Inject(FEED_TAG_REPOSITORY)
-    private readonly feedTagRepository: IFeedTagRepository,
     @Inject(TAG_REPOSITORY)
     private readonly tagRepository: ITagRepository,
   ) {}
