@@ -8,6 +8,7 @@ import {
   Post,
   HttpException,
   HttpStatus,
+  Put,
 } from '@nestjs/common';
 import {
   ProfileDto,
@@ -184,6 +185,67 @@ export class ProfileController {
     return await this.profileService.createProfileWebsite(
       profileWebsiteDto,
       profileId,
+    );
+  }
+
+  @Put('/:profileId')
+  async updateProfile(
+    @Headers('authorization') token: string,
+    @Param('profileId') profileId: number,
+    @Body() body: Partial<ProfileDto>,
+  ): Promise<void> {
+    const decodedToken = this.verifyToken(token);
+    const profileUpdateDto: ProfileDto = {
+      ...body,
+      userId: decodedToken.aud,
+    };
+    return await this.profileService.updateProfile(profileUpdateDto, profileId);
+  }
+
+  @Put('/:profileId/project/:projectId')
+  async updateProfileProject(
+    @Headers('authorization') token: string,
+    @Param('profileId') profileId: number,
+    @Param('projectId') projectId: number,
+    @Body() body: Partial<ProfileProjectDto>,
+  ): Promise<void> {
+    const decodedToken = this.verifyToken(token);
+    const profileProjectUpdateDto: ProfileProjectDto = {
+      title: body.title!,
+      description: body.description,
+      startDate: body.startDate!,
+      endDate: body.endDate,
+      projectImages: body.projectImages,
+      projectCategory: body.projectCategory,
+      userId: decodedToken.aud,
+    };
+    return await this.profileService.updateProfileProject(
+      profileProjectUpdateDto,
+      Number(profileId),
+      Number(projectId),
+    );
+  }
+
+  @Put('/:profileId/experience/:experienceId')
+  async updateProfileExperience(
+    @Headers('authorization') token: string,
+    @Param('profileId') profileId: number,
+    @Param('experienceId') experienceId: number,
+    @Body() body: Partial<ProfileExperienceDto>,
+  ): Promise<void> {
+    const decodedToken = this.verifyToken(token);
+    const profileExperienceUpdateDto: ProfileExperienceDto = {
+      position: body.position!,
+      description: body.description,
+      startDate: body.startDate!,
+      endDate: body.endDate,
+      experienceCompany: body.experienceCompany,
+      userId: decodedToken.aud,
+    };
+    return await this.profileService.updateProfileExperience(
+      profileExperienceUpdateDto,
+      Number(profileId),
+      Number(experienceId),
     );
   }
 

@@ -4,4 +4,5 @@ export interface IProfileRepository {
   findProfileByProfileId(profileId: number): Promise<ProfileVo | null>;
   findProfileIdByUserId(userId: number): Promise<ProfileVo | null>;
   create(profile: ProfileVo): Promise<void>;
+  update(updatedprofile: ProfileVo): Promise<void>;
 }

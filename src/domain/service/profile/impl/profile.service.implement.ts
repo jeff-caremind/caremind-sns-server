@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  ConsoleLogger,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 import { IProfileService } from '../profile.service.interface';
@@ -271,6 +277,145 @@ export class ProfileServiceImpl implements IProfileService {
     if (url) profileWebsite.url = url;
 
     return await this.profileWebsiteRepository.create(profileWebsite);
+  }
+
+  async updateProfile(
+    profileUpdateDto: ProfileDto,
+    profileId: number,
+  ): Promise<void> {
+    const { userId, jobDescription, about, location, address } =
+      profileUpdateDto;
+
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profile = await this.profileRepository.findProfileByProfileId(
+      Number(profileId),
+    );
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+
+    if (jobDescription) profile.jobDescription = jobDescription;
+    if (about) profile.about = about;
+    if (location) profile.location = location;
+    if (address) profile.address = address;
+
+    await this.profileRepository.update(profile);
+  }
+
+  async updateProfileProject(
+    profileProjectUpdateDto: ProfileProjectDto,
+    profileId: number,
+    projectId: number,
+  ): Promise<void> {
+    const {
+      userId,
+      title,
+      description,
+      startDate,
+      endDate,
+      projectImages,
+      projectCategory,
+    } = profileProjectUpdateDto;
+
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profile = await this.profileRepository.findProfileByProfileId(
+      Number(profileId),
+    );
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+
+    const projectsByProfileId =
+      await this.profileProjectRepository.findProjectByProfileId(
+        Number(profileId),
+      );
+
+    if (!projectsByProfileId)
+      throw new HttpException('PROJECT_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const projectExists = projectsByProfileId.some(
+      (project) => project.id === projectId,
+    );
+    if (!projectExists)
+      throw new HttpException('PROJECT_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const project = await this.profileProjectRepository.findProjectByProjectId(
+      Number(projectId),
+    );
+    if (!project)
+      throw new HttpException('PROJECT_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    if (title) project.title = title;
+    if (description) project.description = description;
+    if (startDate) project.startDate = startDate;
+    if (endDate) project.endDate = endDate;
+    if (projectImages)
+      project.projectImage = this.createImageVos(projectImages);
+    if (projectCategory)
+      project.projectCategory = this.createCategoryVos(projectCategory);
+
+    return await this.profileProjectRepository.update(project);
+  }
+
+  async updateProfileExperience(
+    profileExperienceUpdateDto: ProfileExperienceDto,
+    profileId: number,
+    experienceId: number,
+  ): Promise<void> {
+    const {
+      userId,
+      position,
+      description,
+      startDate,
+      endDate,
+      experienceCompany,
+    } = profileExperienceUpdateDto;
+
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profile = await this.profileRepository.findProfileByProfileId(
+      Number(profileId),
+    );
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+
+    const experiencesByProfileId =
+      await this.profileExperienceRepository.findExperienceByProfileId(
+        Number(profileId),
+      );
+
+    if (!experiencesByProfileId)
+      throw new HttpException('EXPERIENCE_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const experienceExists = experiencesByProfileId.some(
+      (experience) => experience.id === experienceId,
+    );
+    if (!experienceExists)
+      throw new HttpException('EXPERIENCE_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const experience =
+      await this.profileExperienceRepository.findExperienceByExperienceId(
+        Number(experienceId),
+      );
+    if (!experience)
+      throw new HttpException('EXPERIENCE_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    if (position) experience.position = position;
+    if (description) experience.description = description;
+    if (startDate) experience.startDate = startDate;
+    if (endDate) experience.endDate = endDate;
+    if (experienceCompany) experience.experienceCompany = experienceCompany;
+
+    return await this.profileExperienceRepository.update(experience);
   }
 
   private createImageVos(images: string[]): ProjectImageVo[] {

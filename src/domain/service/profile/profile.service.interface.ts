@@ -37,4 +37,15 @@ export interface IProfileService {
     profileEducationDto: ProfileEducationDto,
     profileId: number,
   ): Promise<void>;
+  updateProfile(profileUpdateDto: ProfileDto, profileId: number): Promise<void>;
+  updateProfileProject(
+    profileProjectUpdateDto: ProfileProjectDto,
+    profileId: number,
+    projectId: number,
+  ): Promise<void>;
+  updateProfileExperience(
+    profileExperienceUpdateDto: ProfileExperienceDto,
+    profileId: number,
+    experienceId: number,
+  ): Promise<void>;
 }

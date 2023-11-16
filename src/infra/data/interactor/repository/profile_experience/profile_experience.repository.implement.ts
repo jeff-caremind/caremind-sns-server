@@ -30,4 +30,23 @@ export class ProfileExperienceRepositoryImpl
   async create(profileExperience: ProfileExperienceVo): Promise<void> {
     await this.profileExperienceTypeormRepository.save(profileExperience);
   }
+
+  async findExperienceByExperienceId(
+    experienceId: number,
+  ): Promise<ProfileExperienceVo | null> {
+    const eachExperience =
+      await this.profileExperienceTypeormRepository.findOne({
+        relations: {
+          experienceCompany: true,
+        },
+        where: {
+          id: experienceId,
+        },
+      });
+    return eachExperience;
+  }
+
+  async update(experience: ProfileExperienceVo): Promise<void> {
+    await this.profileExperienceTypeormRepository.save(experience);
+  }
 }
