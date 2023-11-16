@@ -8,6 +8,8 @@ import { UserServiceImpl } from '../user/impl/user.service.implement';
 import { FeedServiceImpl } from '../feed/impl/feed.service.implement';
 import { ProfileServiceImpl } from '../profile/impl/profile.service.implement';
 import { ConnectionServiceImpl } from '../connection/impl/connection.service.implement';
+import { ISecurityService } from '../security/security.service.interface';
+import { SecurityServiceImpl } from '../security/impl/security.service.implement';
 
 export const FEED_SERVICE = Symbol.for('FEED_SERVICE');
 export const FeedService: Provider<IFeedService> = {
@@ -31,4 +33,10 @@ export const CONNECTION_SERVICE = Symbol.for('CONNECTION_SERVICE');
 export const ConnectionService: Provider<IConnectionService> = {
   provide: CONNECTION_SERVICE,
   useClass: ConnectionServiceImpl,
+};
+
+export const SECURITY_SERVICE = Symbol.for('SECURITY_SERVICE');
+export const SecurityService: Provider<ISecurityService> = {
+  provide: SECURITY_SERVICE,
+  useClass: SecurityServiceImpl,
 };

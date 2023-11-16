@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 
 import { IFeedService } from 'src/domain/service/feed/feed.service.interface';
-import { FEED_SERVICE } from 'src/domain/service/ioc';
+import { FEED_SERVICE, SECURITY_SERVICE } from 'src/domain/service/ioc';
 import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
 import {
   FeedLikeDto,
@@ -25,14 +25,15 @@ import {
 } from 'src/domain/service/dto/feed.dto';
 import { AuthInterceptor } from 'src/domain/interactor/interceptor/auth.interceptor';
 import { AppRequest } from 'src/type/app_request';
-import { SecurityServiceImpl } from 'src/domain/service/security/impl/security.service.implement';
+import { ISecurityService } from 'src/domain/service/security/security.service.interface';
 
 @Controller('/feed')
 @UseInterceptors(AuthInterceptor)
 export class FeedController {
   constructor(
     @Inject(FEED_SERVICE) private readonly feedService: IFeedService,
-    private readonly securityService: SecurityServiceImpl,
+    @Inject(SECURITY_SERVICE)
+    private readonly securityService: ISecurityService,
   ) {}
 
   @Get('/:feedId')

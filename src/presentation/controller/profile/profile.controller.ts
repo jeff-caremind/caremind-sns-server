@@ -18,21 +18,22 @@ import {
 } from 'src/domain/service/dto/profile.dto';
 
 import { AuthInterceptor } from 'src/domain/interactor/interceptor/auth.interceptor';
-import { PROFILE_SERVICE } from 'src/domain/service/ioc';
+import { PROFILE_SERVICE, SECURITY_SERVICE } from 'src/domain/service/ioc';
 import { IProfileService } from 'src/domain/service/profile/profile.service.interface';
+import { ISecurityService } from 'src/domain/service/security/security.service.interface';
 import { ProfileVo } from 'src/infra/data/typeorm/vo/profile.vo';
 import { ProfileEducationVo } from 'src/infra/data/typeorm/vo/profile_education.vo';
 import { ProfileExperienceVo } from 'src/infra/data/typeorm/vo/profile_experience.vo';
 import { ProfileProjectVo } from 'src/infra/data/typeorm/vo/profile_project.vo';
 import { ProfileWebsiteVo } from 'src/infra/data/typeorm/vo/profile_website.vo';
-import { SecurityServiceImpl } from 'src/domain/service/security/impl/security.service.implement';
 
 @Controller('/profile')
 @UseInterceptors(AuthInterceptor)
 export class ProfileController {
   constructor(
     @Inject(PROFILE_SERVICE) private readonly profileService: IProfileService,
-    private readonly securityService: SecurityServiceImpl,
+    @Inject(SECURITY_SERVICE)
+    private readonly securityService: ISecurityService,
   ) {}
 
   @Get('/profileId')
