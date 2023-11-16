@@ -7,10 +7,8 @@ import {
   HttpStatus,
   Inject,
 } from '@nestjs/common';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { USER_SERVICE } from 'src/domain/service/ioc';
 import { SecurityServiceImpl } from 'src/domain/service/security/impl/security.service.implement';
 import { IUserService } from 'src/domain/service/user/user.service.interface';
@@ -18,7 +16,6 @@ import { IUserService } from 'src/domain/service/user/user.service.interface';
 @Injectable()
 export class AuthInterceptor implements NestInterceptor {
   constructor(
-    // private readonly JwtService: JwtService,
     private readonly securityService: SecurityServiceImpl,
     @Inject(USER_SERVICE) private readonly userService: IUserService,
   ) {}
@@ -34,8 +31,8 @@ export class AuthInterceptor implements NestInterceptor {
       const user = await this.userService.getOne(userId);
       if (!user)
         throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
-      req.headers['userId'] = String(userId);
-      return next.handle();
+      this.securityService.setUserId(userId);
+      return next.handle().pipe(tap(() => this.securityService.setUserId(0)));
     } catch (error) {
       throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
     }

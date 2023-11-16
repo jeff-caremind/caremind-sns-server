@@ -25,12 +25,14 @@ import {
 } from 'src/domain/service/dto/feed.dto';
 import { AuthInterceptor } from 'src/domain/interactor/interceptor/auth.interceptor';
 import { AppRequest } from 'src/type/app_request';
+import { SecurityServiceImpl } from 'src/domain/service/security/impl/security.service.implement';
 
 @Controller('/feed')
 @UseInterceptors(AuthInterceptor)
 export class FeedController {
   constructor(
     @Inject(FEED_SERVICE) private readonly feedService: IFeedService,
+    private readonly securityService: SecurityServiceImpl,
   ) {}
 
   @Get('/:feedId')
@@ -47,10 +49,9 @@ export class FeedController {
   async createComment(
     @Body() body: any,
     @Param('feedId') feedId: number,
-    @Req() req: AppRequest,
   ): Promise<void> {
     const feedCommentDto: FeedCommentDto = {
-      userId: req.headers.userId,
+      userId: this.securityService.getUserId(),
       feedId: Number(feedId),
       content: body.content,
     };
@@ -58,26 +59,20 @@ export class FeedController {
   }
 
   @Post('/:feedId/like')
-  async createLike(
-    @Param('feedId') feedId: string,
-    @Req() req: AppRequest,
-  ): Promise<void> {
+  async createLike(@Param('feedId') feedId: string): Promise<void> {
     const feedLikeDto: FeedLikeDto = {
-      likerId: req.headers.userId,
+      likerId: this.securityService.getUserId(),
       likedFeedId: parseInt(feedId),
     };
     return await this.feedService.createLike(feedLikeDto);
   }
 
   @Post()
-  async createFeed(
-    @Body() body: Partial<FeedCreateDto>,
-    @Req() req: AppRequest,
-  ): Promise<void> {
+  async createFeed(@Body() body: Partial<FeedCreateDto>): Promise<void> {
     if (!body.content && !body.images && !body.video)
       throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
     const feedCreateDto: FeedCreateDto = {
-      userId: req.headers.userId,
+      userId: this.securityService.getUserId(),
       content: body.content,
       images: body.images,
       video: body.video,
@@ -89,11 +84,10 @@ export class FeedController {
   async updateFeed(
     @Param('feedId') feedId: number,
     @Body() body: FeedCreateDto,
-    @Req() req: AppRequest,
   ) {
     const feedUpdateDto: FeedCreateDto = {
       ...body,
-      userId: Number(req.headers.userId),
+      userId: this.securityService.getUserId(),
     };
     return await this.feedService.updateFeed(Number(feedId), feedUpdateDto);
   }
@@ -105,7 +99,7 @@ export class FeedController {
     @Param('commentId') commentId: number,
   ): Promise<void> {
     const feedCommentDeleteDto = {
-      userId: req.headers.userId,
+      userId: this.securityService.getUserId(),
       feedId: Number(feedId),
       commentId: Number(commentId),
     };
@@ -114,7 +108,6 @@ export class FeedController {
 
   @Put('/:feedId/comment/:commentId')
   async updateComment(
-    @Req() req: AppRequest,
     @Param('feedId') feedId: number,
     @Param('commentId') commentId: number,
     @Body() body: Partial<FeedCommentDto>,
@@ -122,7 +115,7 @@ export class FeedController {
     if (!body.content)
       throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
     const feedCommentDto: FeedCommentDto = {
-      userId: req.headers.userId,
+      userId: this.securityService.getUserId(),
       feedId: feedId,
       content: body.content,
     };
@@ -133,18 +126,18 @@ export class FeedController {
   }
 
   @Delete('/:feedId/like')
-  async deleteLike(@Req() req: AppRequest, @Param('feedId') feedId: number) {
+  async deleteLike(@Param('feedId') feedId: number) {
     const feedLikeDto: FeedLikeDto = {
-      likerId: req.headers.userId,
+      likerId: this.securityService.getUserId(),
       likedFeedId: Number(feedId),
     };
     return await this.feedService.deleteLike(feedLikeDto);
   }
 
   @Delete('/:feedId')
-  async deleteFeed(@Req() req: AppRequest, @Param('feedId') feedId: number) {
+  async deleteFeed(@Param('feedId') feedId: number) {
     const feedDeleteDto: FeedDeleteDto = {
-      userId: Number(req.headers.userId),
+      userId: Number(this.securityService.getUserId()),
       feedId: feedId,
     };
     return await this.feedService.deleteFeed(feedDeleteDto);

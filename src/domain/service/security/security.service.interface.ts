@@ -1,5 +1,8 @@
 import { TokenPayload } from 'src/type/token_payload';
 
-export interface IsecurityService {
+export interface ISecurityService {
   verify(token: string): TokenPayload;
+  sign(payload: TokenPayload): string;
+  setUserId(userId: number | undefined): void;
+  getUserId(): number | undefined;
 }
