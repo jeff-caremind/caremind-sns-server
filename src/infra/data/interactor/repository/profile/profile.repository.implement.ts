@@ -14,8 +14,13 @@ export class ProfileRepositoryImpl implements IProfileRepository {
 
   async findProfileByProfileId(profileId: number): Promise<ProfileVo | null> {
     return await this.profileTypeormRepository.findOne({
+      relations: {
+        user: true,
+      },
       select: {
         user: {
+          id: true,
+          name: true,
           email: true,
           profileImage: true,
         },
@@ -24,5 +29,19 @@ export class ProfileRepositoryImpl implements IProfileRepository {
         id: profileId,
       },
     });
+  }
+  async findProfileIdByUserId(userId: number): Promise<ProfileVo | null> {
+    return await this.profileTypeormRepository.findOne({
+      select: {
+        id: true,
+      },
+      where: {
+        user: { id: userId },
+      },
+    });
+  }
+
+  async create(profile: ProfileVo): Promise<void> {
+    await this.profileTypeormRepository.save(profile);
   }
 }

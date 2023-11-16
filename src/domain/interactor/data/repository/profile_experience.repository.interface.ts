@@ -4,4 +4,5 @@ export interface IProfileExperienceRepository {
   findExperienceByProfileId(
     profileId: number,
   ): Promise<ProfileExperienceVo[] | null>;
+  create(profileExperience: ProfileExperienceVo): Promise<void>;
 }

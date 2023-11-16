@@ -13,6 +13,8 @@ import { ProfileExperienceVo } from '../../vo/profile_experience.vo';
 import { ProfileEducationVo } from '../../vo/profile_education.vo';
 import { ProfileWebsiteVo } from '../../vo/profile_website.vo';
 import { UserConnectionVo } from '../../vo/user_connection.vo';
+import { FeedTagVo } from '../../vo/feed_tag.vo';
+import { TagVo } from '../../vo/tag.vo';
 
 export const FEED_TYPEORM_REPOSITORY = Symbol.for('FEED_TYPEORM_REPOSITORY');
 export const FeedTypeormRepository: Provider<Repository<FeedVo>> = {
@@ -54,6 +56,15 @@ export const FEED_VIDEO_TYPEORM_REPOSITORY = Symbol.for(
 export const FeedVideoTypeormRepository: Provider<Repository<FeedVideoVo>> = {
   provide: FEED_VIDEO_TYPEORM_REPOSITORY,
   useFactory: (dataSource: DataSource) => dataSource.getRepository(FeedVideoVo),
+  inject: [DATA_SOURCE],
+};
+
+export const FEED_TAG_TYPEORM_REPOSITORY = Symbol.for(
+  'FEED_TAG_TYPEORM_REPOSITORY',
+);
+export const FeedTagTypeormRepository: Provider<Repository<FeedTagVo>> = {
+  provide: FEED_TAG_TYPEORM_REPOSITORY,
+  useFactory: (dataSource: DataSource) => dataSource.getRepository(FeedTagVo),
   inject: [DATA_SOURCE],
 };
 
@@ -123,5 +134,12 @@ export const UserConnectionTypeormRepository: Provider<
   provide: USER_CONNECTION_TYPEORM_REPOSITORY,
   useFactory: (dataSource: DataSource) =>
     dataSource.getRepository(UserConnectionVo),
+  inject: [DATA_SOURCE],
+};
+
+export const TAG_TYPEORM_REPOSITORY = Symbol.for('TAG_TYPEORM_REPOSITORY');
+export const TagTypeormRepository: Provider<Repository<TagVo>> = {
+  provide: TAG_TYPEORM_REPOSITORY,
+  useFactory: (dataSource: DataSource) => dataSource.getRepository(TagVo),
   inject: [DATA_SOURCE],
 };

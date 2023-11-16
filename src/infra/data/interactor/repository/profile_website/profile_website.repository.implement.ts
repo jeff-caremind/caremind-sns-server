@@ -19,4 +19,8 @@ export class ProfileWebsiteRepositoryImpl implements IProfileWebsiteRepository {
       },
     });
   }
+
+  async create(profileWebsite: ProfileWebsiteVo): Promise<void> {
+    await this.profileWebsiteTypeormRepository.save(profileWebsite);
+  }
 }
