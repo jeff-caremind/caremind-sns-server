@@ -9,6 +9,7 @@ import {
   SignUpRequestDto,
 } from 'src/domain/service/dto/user.dto';
 import { SecurityServiceImpl } from '../../security/impl/security.service.implement';
+import { UserVo } from 'src/infra/data/typeorm/vo/user.vo';
 
 @Injectable()
 export class UserServiceImpl implements IUserService {
