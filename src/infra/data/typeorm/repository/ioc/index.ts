@@ -18,7 +18,8 @@ import { UserConnectionVo } from '../../vo/user_connection.vo';
 export const FEED_TYPEORM_REPOSITORY = Symbol.for('FEED_TYPEORM_REPOSITORY');
 export const FeedTypeormRepository: Provider<IFeedTypeormRepository> = {
   provide: FEED_TYPEORM_REPOSITORY,
-  useFactory: FeedTypeormRepositoryFactory,
+  useFactory: (dataSource: DataSource) =>
+    FeedTypeormRepositoryFactory.getRepository(dataSource),
   inject: [DATA_SOURCE],
 };
 
