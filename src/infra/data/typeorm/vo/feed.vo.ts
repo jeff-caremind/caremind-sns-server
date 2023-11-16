@@ -57,7 +57,7 @@ export class FeedVo extends BaseEntity {
   @OneToMany(() => FeedTagVo, (feedTag) => feedTag.feed, {
     cascade: true,
   })
-  tags: FeedTagVo[];
+  feedTags: FeedTagVo[];
 
   @CreateDateColumn({
     type: 'timestamp',

@@ -1,7 +1,8 @@
+import { FeedQueryDto } from 'src/domain/service/dto/feed.dto';
 import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
 
 export interface IFeedRepository {
-  findAll(): Promise<FeedVo[]>;
+  findAll(queryDto: FeedQueryDto): Promise<FeedVo[]>;
   findOneById(feedId: number): Promise<FeedVo | null>;
   findOneWithAuthorAndTagsById(feedId: number): Promise<FeedVo | null>;
   create(feed: FeedVo): Promise<void>;

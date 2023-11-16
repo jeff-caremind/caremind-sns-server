@@ -4,12 +4,13 @@ import {
   FeedsDto,
   FeedCreateDto,
   FeedCommentDto,
+  FeedQueryDto,
   FeedCommentDeleteDto,
   FeedDeleteDto,
 } from '../dto/feed.dto';
 
 export interface IFeedService {
-  getAll(): Promise<FeedsDto>;
+  getList(queryDto: FeedQueryDto): Promise<FeedsDto>;
   createComment(feedCommentDto: FeedCommentDto): Promise<void>;
   createLike(feedLikeDto: FeedLikeDto): Promise<void>;
   createFeed(feedCreateDto: FeedCreateDto): Promise<void>;

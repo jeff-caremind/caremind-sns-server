@@ -2,24 +2,26 @@ import { Provider } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 
 import { DATA_SOURCE } from '../../config/typeorm.config';
-import { FeedVo } from '../../vo/feed.vo';
+import { FeedTypeormRepositoryFactory } from '../factory/feed/feed.typeorm.repository.factory';
+import { IFeedTypeormRepository } from '../../../interactor/repository/feed/orm_interface/feed.typeorm.repository.interface';
 import { UserVo } from '../../vo/user.vo';
-import { FeedCommentVo } from '../../vo/feed_comment.vo';
-import { FeedLikeVo } from '../../vo/feed_like.vo';
 import { FeedVideoVo } from '../../vo/feed_video.vo';
+import { FeedLikeVo } from '../../vo/feed_like.vo';
+import { FeedCommentVo } from '../../vo/feed_comment.vo';
 import { ProfileVo } from '../../vo/profile.vo';
 import { ProfileProjectVo } from '../../vo/profile_project.vo';
-import { ProfileExperienceVo } from '../../vo/profile_experience.vo';
 import { ProfileEducationVo } from '../../vo/profile_education.vo';
+import { ProfileExperienceVo } from '../../vo/profile_experience.vo';
 import { ProfileWebsiteVo } from '../../vo/profile_website.vo';
 import { UserConnectionVo } from '../../vo/user_connection.vo';
 import { FeedTagVo } from '../../vo/feed_tag.vo';
 import { TagVo } from '../../vo/tag.vo';
 
 export const FEED_TYPEORM_REPOSITORY = Symbol.for('FEED_TYPEORM_REPOSITORY');
-export const FeedTypeormRepository: Provider<Repository<FeedVo>> = {
+export const FeedTypeormRepository: Provider<IFeedTypeormRepository> = {
   provide: FEED_TYPEORM_REPOSITORY,
-  useFactory: (dataSource: DataSource) => dataSource.getRepository(FeedVo),
+  useFactory: (dataSource: DataSource) =>
+    FeedTypeormRepositoryFactory.getRepository(dataSource),
   inject: [DATA_SOURCE],
 };
 
