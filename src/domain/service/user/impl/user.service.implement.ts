@@ -10,8 +10,6 @@ import {
 } from 'src/infra/data/interactor/repository/ioc';
 import { IFeedRepository } from 'src/domain/interactor/data/repository/feed.repository.interface';
 import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
-import { UserVo } from 'src/infra/data/typeorm/vo/user.vo';
-import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
 import {
   LoginResponseDto,
   SignUpRequestDto,
@@ -24,14 +22,6 @@ export class UserServiceImpl implements IUserService {
     @Inject(FEED_REPOSITORY) private readonly feedRepository: IFeedRepository,
     private readonly JwtService: JwtService,
   ) {}
-
-  async getAll(): Promise<UserVo[]> {
-    return await this.userRepository.findAll();
-  }
-
-  async getFeedsBy(): Promise<FeedVo[]> {
-    return await this.feedRepository.findAll();
-  }
 
   async signUp(userData: SignUpRequestDto): Promise<void> {
     // 이메일 : ., @ 포함 필수, 2자 이상

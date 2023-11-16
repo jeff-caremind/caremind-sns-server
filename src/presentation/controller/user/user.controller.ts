@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Get,
   Inject,
   Post,
   HttpException,
@@ -13,7 +12,6 @@ import { Request } from 'express';
 
 import { USER_SERVICE } from 'src/domain/service/ioc';
 import { IUserService } from 'src/domain/service/user/user.service.interface';
-import { UserVo } from 'src/infra/data/typeorm/vo/user.vo';
 import {
   LoginResponseDto,
   SignUpRequestDto,
@@ -24,11 +22,6 @@ export class UserController {
   constructor(
     @Inject(USER_SERVICE) private readonly userService: IUserService,
   ) {}
-
-  @Get()
-  async getAll(): Promise<UserVo[]> {
-    return await this.userService.getAll();
-  }
 
   @Post('/signup')
   async signUp(@Body() userData: SignUpRequestDto): Promise<void> {

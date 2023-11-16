@@ -26,6 +26,7 @@ import {
   FeedsDto,
   FeedCreateDto,
   FeedCommentDto,
+  FeedQueryDto,
   FeedCommentDeleteDto,
   FeedDeleteDto,
 } from '../../dto/feed.dto';
@@ -46,16 +47,16 @@ export class FeedServiceImpl implements IFeedService {
     private readonly tagRepository: ITagRepository,
   ) {}
 
-  async getAll() {
-    const feeds = await this.feedRepository.findAll();
-    const feedsList: FeedsDto = feeds.map((feed) => {
+  async getList(queryDto: FeedQueryDto) {
+    const data = await this.feedRepository.findAll(queryDto);
+    const feeds: FeedsDto = data.map((feed) => {
       return {
         ...feed,
         likesCount: feed.likes.length,
         commentsCount: feed.comments.length,
       };
     });
-    return feedsList;
+    return feeds;
   }
 
   async createLike(feedLikeDto: FeedLikeDto): Promise<void> {
@@ -92,7 +93,7 @@ export class FeedServiceImpl implements IFeedService {
     if (content) {
       const rawTags = this.extractTags(content);
       tags = await this.createFeedTagVos(feed, rawTags);
-      feed.tags = tags;
+      feed.feedTags = tags;
     }
     return await this.feedRepository.create(feed);
   }
@@ -129,7 +130,7 @@ export class FeedServiceImpl implements IFeedService {
       // 모든 태그 추출
       const rawTagsFromContent: string[] = this.extractTags(content);
       // 현재 태그 확인
-      const originalFeedTagVos = feed.tags;
+      const originalFeedTagVos = feed.feedTags;
       // 업데이트된 피드에 남아있는 태그
       const remainingTagsInUpdatedFeed = originalFeedTagVos.filter(
         (feedTagVo: FeedTagVo) =>
@@ -149,7 +150,7 @@ export class FeedServiceImpl implements IFeedService {
         addedTags,
         remainingTagsInUpdatedFeed,
       );
-      feed.tags = updatedFeedTags;
+      feed.feedTags = updatedFeedTags;
     }
     await this.feedRepository.update(feed);
   }
