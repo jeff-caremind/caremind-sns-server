@@ -25,4 +25,8 @@ export class ProfileProjectRepositoryImpl implements IProfileProjectRepository {
 
     return project;
   }
+
+  async create(profileProject: ProfileProjectVo): Promise<void> {
+    await this.profileProjectTypeormRepository.save(profileProject);
+  }
 }
