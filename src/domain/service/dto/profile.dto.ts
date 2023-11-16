@@ -1,3 +1,4 @@
+import { EducationInstituteVo } from 'src/infra/data/typeorm/vo/education_institute.vo';
 import { ExperienceCompanyVo } from 'src/infra/data/typeorm/vo/experience_company.vo';
 
 export type ProfileDto = {
@@ -25,4 +26,19 @@ export type ProfileExperienceDto = {
   startDate: Date;
   endDate?: Date | null;
   experienceCompany?: ExperienceCompanyVo;
+};
+
+export type ProfileEducationDto = {
+  userId: number;
+  course: string; // 학과, 전공 설명 입력
+  description?: string; // 추가 정보
+  startDate: Date;
+  endDate?: Date | null;
+  educationInstitute: EducationInstituteVo;
+};
+
+export type ProfileWebsiteDto = {
+  userId: number;
+  type: string;
+  url: string;
 };

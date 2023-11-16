@@ -5,11 +5,14 @@ import { ProfileProjectVo } from 'src/infra/data/typeorm/vo/profile_project.vo';
 import { ProfileWebsiteVo } from 'src/infra/data/typeorm/vo/profile_website.vo';
 import {
   ProfileDto,
+  ProfileEducationDto,
   ProfileExperienceDto,
   ProfileProjectDto,
+  ProfileWebsiteDto,
 } from '../dto/profile.dto';
 
 export interface IProfileService {
+  getProfileId(userId: number): Promise<ProfileVo | null>;
   getUserProfile(profileId: number): Promise<ProfileVo | null>;
   getProfileProject(profileId: number): Promise<ProfileProjectVo[] | null>;
   getProfileExperience(
@@ -24,6 +27,14 @@ export interface IProfileService {
   ): Promise<void>;
   createProfileExperience(
     profileExperienceDto: ProfileExperienceDto,
+    profileId: number,
+  ): Promise<void>;
+  createProfileWebsite(
+    profileWebsiteDto: ProfileWebsiteDto,
+    profileId: number,
+  ): Promise<void>;
+  createProfileEducation(
+    profileEducationDto: ProfileEducationDto,
     profileId: number,
   ): Promise<void>;
 }

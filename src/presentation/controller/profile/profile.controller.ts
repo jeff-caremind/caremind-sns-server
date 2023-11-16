@@ -11,8 +11,10 @@ import {
 } from '@nestjs/common';
 import {
   ProfileDto,
+  ProfileEducationDto,
   ProfileExperienceDto,
   ProfileProjectDto,
+  ProfileWebsiteDto,
 } from 'src/domain/service/dto/profile.dto';
 
 import { PROFILE_SERVICE } from 'src/domain/service/ioc';
@@ -31,6 +33,15 @@ export class ProfileController {
     @Inject(PROFILE_SERVICE) private readonly profileService: IProfileService,
     private readonly JwtService: JwtService,
   ) {}
+
+  @Get('/profileId')
+  async getProfileId(
+    @Headers('authorization') token: string,
+  ): Promise<ProfileVo | null> {
+    const decodedToken = this.verifyToken(token);
+    const userId = decodedToken.aud;
+    return await this.profileService.getProfileId(userId);
+  }
 
   @Get('/:profileId')
   async getUserProfile(
@@ -89,7 +100,7 @@ export class ProfileController {
     @Body() body: Partial<ProfileProjectDto>,
     @Headers('authorization') token: string,
   ): Promise<void> {
-    if (!body.title && !body.startDate)
+    if (!body.title || !body.startDate)
       throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
     const decodedToken = this.verifyToken(token);
     const profileProjectDto: ProfileProjectDto = {
@@ -114,7 +125,7 @@ export class ProfileController {
     @Body() body: Partial<ProfileExperienceDto>,
     @Headers('authorization') token: string,
   ): Promise<void> {
-    if (!body.position && !body.startDate)
+    if (!body.position || !body.startDate)
       throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
     const decodedToken = this.verifyToken(token);
     const profileExperienceDto: ProfileExperienceDto = {
@@ -128,6 +139,50 @@ export class ProfileController {
 
     return await this.profileService.createProfileExperience(
       profileExperienceDto,
+      profileId,
+    );
+  }
+
+  @Post('/:profileId/education')
+  async createProfileEducation(
+    @Param('profileId') profileId: number,
+    @Body() body: Partial<ProfileEducationDto>,
+    @Headers('authorization') token: string,
+  ): Promise<void> {
+    if (!body.course || !body.startDate)
+      throw new HttpException('KEY_ERROR', HttpStatus.NOT_FOUND);
+    const decodedToken = this.verifyToken(token);
+    const profileEducationDto: ProfileEducationDto = {
+      userId: decodedToken.aud,
+      course: body.course!, // 학과, 전공 설명 입력
+      description: body.description, // 추가 정보
+      startDate: body.startDate!,
+      endDate: body.endDate,
+      educationInstitute: body.educationInstitute!,
+    };
+    return await this.profileService.createProfileEducation(
+      profileEducationDto,
+      profileId,
+    );
+  }
+
+  @Post('/:profileId/website')
+  async createProfileWebsite(
+    @Param('profileId') profileId: number,
+    @Body() body: Partial<ProfileWebsiteDto>,
+    @Headers('authorization') token: string,
+  ): Promise<void> {
+    if (!body.type || !body.url)
+      throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
+    const decodedToken = this.verifyToken(token);
+    const profileWebsiteDto: ProfileWebsiteDto = {
+      userId: decodedToken.aud,
+      type: body.type!,
+      url: body.url!,
+    };
+
+    return await this.profileService.createProfileWebsite(
+      profileWebsiteDto,
       profileId,
     );
   }

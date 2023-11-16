@@ -22,8 +22,10 @@ import { IProfileWebsiteRepository } from 'src/domain/interactor/data/repository
 import { ProfileWebsiteVo } from 'src/infra/data/typeorm/vo/profile_website.vo';
 import {
   ProfileDto,
+  ProfileEducationDto,
   ProfileExperienceDto,
   ProfileProjectDto,
+  ProfileWebsiteDto,
 } from '../../dto/profile.dto';
 import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
 import { ProjectImageVo } from 'src/infra/data/typeorm/vo/project_image.vo';
@@ -50,6 +52,10 @@ export class ProfileServiceImpl implements IProfileService {
 
     @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
   ) {}
+
+  async getProfileId(userId: number): Promise<ProfileVo | null> {
+    return await this.profileRepository.findProfileIdByUserId(userId);
+  }
 
   async getUserProfile(profileId: number): Promise<ProfileVo | null> {
     const profile = await this.profileRepository.findProfileByProfileId(
@@ -148,16 +154,16 @@ export class ProfileServiceImpl implements IProfileService {
     const user = await this.userRepository.findOneById(userId);
     if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
 
-    const profileIdByUserId =
-      await this.profileRepository.findProfileIdByUserId(user.id);
-    if (profileIdByUserId === null) {
-      return;
-    }
-    if (Number(profileId) !== profileIdByUserId.id)
-      throw new HttpException('PROFILE_NOT_MATCHED', HttpStatus.NOT_ACCEPTABLE);
+    const profile = await this.profileRepository.findProfileByProfileId(
+      Number(profileId),
+    );
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
 
     const profileProject = new ProfileProjectVo();
-    if (profileIdByUserId) profileProject.profile = profileIdByUserId;
+    if (profile) profileProject.profile = profile;
     if (title) profileProject.title = title;
     if (description) profileProject.description = description;
     if (startDate) profileProject.startDate = startDate;
@@ -185,25 +191,15 @@ export class ProfileServiceImpl implements IProfileService {
     const user = await this.userRepository.findOneById(userId);
     if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
 
-    const profileIdByUserId =
-      await this.profileRepository.findProfileIdByUserId(user.id);
-    if (profileIdByUserId === null) {
-      return;
-    }
-    if (Number(profileId) !== profileIdByUserId.id)
-      throw new HttpException('PROFILE_NOT_MATCHED', HttpStatus.NOT_ACCEPTABLE);
-
-    const profileExperience = new ProfileExperienceVo();
-
     const profile = await this.profileRepository.findProfileByProfileId(
       Number(profileId),
     );
-
     if (!profile)
       throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
-    if (profile.id !== Number(profileId))
-      throw new HttpException('PROFILE_NOT_MATCHED', HttpStatus.NOT_ACCEPTABLE);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
 
+    const profileExperience = new ProfileExperienceVo();
     if (profile) profileExperience.profile = profile;
     if (position) profileExperience.position = position;
     if (description) profileExperience.description = description;
@@ -214,6 +210,67 @@ export class ProfileServiceImpl implements IProfileService {
         this.createExperienceCompany(experienceCompany);
 
     return await this.profileExperienceRepository.create(profileExperience);
+  }
+
+  async createProfileEducation(
+    profileEducationDto: ProfileEducationDto,
+    profileId: number,
+  ): Promise<void> {
+    const {
+      userId,
+      course,
+      description,
+      startDate,
+      endDate,
+      educationInstitute,
+    } = profileEducationDto;
+
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profile = await this.profileRepository.findProfileByProfileId(
+      Number(profileId),
+    );
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+
+    const profileEducation = new ProfileEducationVo();
+    if (profile) profileEducation.profile = profile;
+    if (course) profileEducation.course = course;
+    if (description) profileEducation.description = description;
+    if (startDate) profileEducation.startDate = startDate;
+    if (endDate) profileEducation.endDate = endDate;
+    if (educationInstitute)
+      profileEducation.educationInstitute = educationInstitute;
+
+    return this.profileEducationRepository.create(profileEducation);
+  }
+
+  async createProfileWebsite(
+    profileWebsiteDto: ProfileWebsiteDto,
+    profileId: number,
+  ): Promise<void> {
+    const { userId, type, url } = profileWebsiteDto;
+
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profile = await this.profileRepository.findProfileByProfileId(
+      Number(profileId),
+    );
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+
+    const profileWebsite = new ProfileWebsiteVo();
+    if (profile) profileWebsite.profile = profile;
+    if (type) profileWebsite.type = type;
+    if (url) profileWebsite.url = url;
+
+    return await this.profileWebsiteRepository.create(profileWebsite);
   }
 
   private createImageVos(images: string[]): ProjectImageVo[] {

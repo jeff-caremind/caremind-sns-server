@@ -26,4 +26,8 @@ export class ProfileEducationRepositoryImpl
       },
     });
   }
+
+  async create(profileEducation: ProfileEducationVo): Promise<void> {
+    await this.profileEducationTypeormRepository.save(profileEducation);
+  }
 }
