@@ -10,7 +10,6 @@ import {
   Put,
   Delete,
   UseInterceptors,
-  Req,
 } from '@nestjs/common';
 
 import { IFeedService } from 'src/domain/service/feed/feed.service.interface';
@@ -24,7 +23,6 @@ import {
   FeedDeleteDto,
 } from 'src/domain/service/dto/feed.dto';
 import { AuthInterceptor } from 'src/domain/interactor/interceptor/auth.interceptor';
-import { AppRequest } from 'src/type/app_request';
 import { SecurityServiceImpl } from 'src/domain/service/security/impl/security.service.implement';
 
 @Controller('/feed')
@@ -94,7 +92,6 @@ export class FeedController {
 
   @Delete('/:feedId/comment/:commentId')
   async deleteComment(
-    @Req() req: AppRequest,
     @Param('feedId') feedId: number,
     @Param('commentId') commentId: number,
   ): Promise<void> {
