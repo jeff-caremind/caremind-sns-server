@@ -11,6 +11,8 @@ import { IProfileExperienceRepository } from 'src/domain/interactor/data/reposit
 import { IProfileEducationRepository } from 'src/domain/interactor/data/repository/profile_education.repository.interface';
 import { IProfileWebsiteRepository } from 'src/domain/interactor/data/repository/profile_website.repository.interface';
 import { IUserConnectionRepository } from 'src/domain/interactor/data/repository/user_connection.repository.interface';
+import { IFeedTagRepository } from 'src/domain/interactor/data/repository/feed_tag.repository.interface';
+import { ITagRepository } from 'src/domain/interactor/data/repository/tag.repository.interface';
 import { FeedRepositoryImpl } from '../feed/feed.repository.implement';
 import { UserRepositoryImpl } from '../user/user.repository.implement';
 import { FeedCommentRepositoryImpl } from '../feed_comment/feed_comment.repository.implement';
@@ -22,6 +24,8 @@ import { ProfileExperienceRepositoryImpl } from '../profile_experience/profile_e
 import { ProfileEducationRepositoryImpl } from '../profile_education/profile_education.repository.implement';
 import { ProfileWebsiteRepositoryImpl } from '../profile_website/profile_website.repository.implement';
 import { UserConnectionRepositoryImpl } from '../user_connection/user_connection.repository.implement';
+import { FeedTagRepositoryImpl } from '../feed_tag/feed_tag.repository.implement';
+import { TagRepositoryImpl } from '../tag/tag.repository.implement';
 
 export const FEED_REPOSITORY = Symbol.for('FEED_REPOSITORY');
 export const FeedRepository: Provider<IFeedRepository> = {
@@ -51,6 +55,12 @@ export const FEED_VIDEO_REPOSITORY = Symbol.for('FEED_VIDEO_REPOSITORY');
 export const FeedVideoRepository: Provider<IFeedVideoRepository> = {
   provide: FEED_VIDEO_REPOSITORY,
   useClass: FeedVideoRepositoryImpl,
+};
+
+export const FEED_TAG_REPOSITORY = Symbol.for('FEED_TAG_REPOSITORY');
+export const FeedTagRepository: Provider<IFeedTagRepository> = {
+  provide: FEED_TAG_REPOSITORY,
+  useClass: FeedTagRepositoryImpl,
 };
 
 export const PROFILE_REPOSITORY = Symbol.for('PROFILE_REPOSITORY');
@@ -99,4 +109,10 @@ export const USER_CONNECTION_REPOSITORY = Symbol.for(
 export const UserConnectionRepository: Provider<IUserConnectionRepository> = {
   provide: USER_CONNECTION_REPOSITORY,
   useClass: UserConnectionRepositoryImpl,
+};
+
+export const TAG_REPOSITORY = Symbol.for('TAG_REPOSITORY');
+export const TagRepository: Provider<ITagRepository> = {
+  provide: TAG_REPOSITORY,
+  useClass: TagRepositoryImpl,
 };
