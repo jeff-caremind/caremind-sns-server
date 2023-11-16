@@ -8,6 +8,7 @@ import {
   HttpException,
   HttpStatus,
   Put,
+  Query,
   Delete,
   UseInterceptors,
 } from '@nestjs/common';
@@ -20,7 +21,9 @@ import {
   FeedsDto,
   FeedCreateDto,
   FeedCommentDto,
+  FeedQueryDto,
   FeedDeleteDto,
+  SortParam,
 } from 'src/domain/service/dto/feed.dto';
 import { AuthInterceptor } from 'src/domain/interactor/interceptor/auth.interceptor';
 import { SecurityServiceImpl } from 'src/domain/service/security/impl/security.service.implement';
@@ -39,8 +42,21 @@ export class FeedController {
   }
 
   @Get()
-  async getAll(): Promise<FeedsDto> {
-    return await this.feedService.getAll();
+  async getList(
+    @Query('sort') sort: SortParam,
+    @Query('search') search: string,
+    @Query('tag') tag: string,
+    @Query('offset') offset: number,
+    @Query('limit') limit: number,
+  ): Promise<FeedsDto> {
+    const queryDto: FeedQueryDto = {
+      sort: sort,
+      search: search,
+      tag: tag,
+      offset: Number(offset),
+      limit: Number(limit),
+    };
+    return await this.feedService.getList(queryDto);
   }
 
   @Post('/:feedId/comment')

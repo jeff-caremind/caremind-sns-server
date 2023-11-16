@@ -41,6 +41,16 @@ export type FeedCommentDto = {
   content: string;
 };
 
+export type FeedQueryDto = {
+  sort: SortParam;
+  search: string;
+  tag: string;
+  limit: number;
+  offset: number;
+};
+
+export type SortParam = 'recent' | 'trending';
+
 export type FeedCommentDeleteDto = {
   userId: number;
   feedId: number;

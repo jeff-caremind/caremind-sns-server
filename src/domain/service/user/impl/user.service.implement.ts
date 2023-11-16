@@ -4,7 +4,6 @@ import * as bcrypt from 'bcrypt';
 import { IUserService } from '../user.service.interface';
 import { USER_REPOSITORY } from 'src/infra/data/interactor/repository/ioc';
 import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
-import { UserVo } from 'src/infra/data/typeorm/vo/user.vo';
 import {
   LoginResponseDto,
   SignUpRequestDto,
@@ -17,10 +16,6 @@ export class UserServiceImpl implements IUserService {
     @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
     private readonly securityService: SecurityServiceImpl,
   ) {}
-
-  async getAll(): Promise<UserVo[]> {
-    return await this.userRepository.findAll();
-  }
 
   async signUp(userData: SignUpRequestDto): Promise<void> {
     // 이메일 : ., @ 포함 필수, 2자 이상
