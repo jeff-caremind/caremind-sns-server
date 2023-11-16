@@ -30,6 +30,7 @@ export class ProfileEducationVo extends BaseEntity {
     type: 'varchar',
     length: 1000,
     default: '',
+    nullable: true,
   })
   description: string; // 추가 정보
 
@@ -64,7 +65,9 @@ export class ProfileEducationVo extends BaseEntity {
   })
   profile: ProfileVo;
 
-  @ManyToOne(() => EducationInstituteVo)
+  @ManyToOne(() => EducationInstituteVo, {
+    cascade: true,
+  })
   @JoinColumn()
   educationInstitute: EducationInstituteVo;
 }

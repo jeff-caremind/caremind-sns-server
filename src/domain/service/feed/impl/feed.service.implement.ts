@@ -6,17 +6,21 @@ import {
   FEED_LIKE_REPOSITORY,
   FEED_REPOSITORY,
   FEED_VIDEO_REPOSITORY,
+  TAG_REPOSITORY,
   USER_REPOSITORY,
 } from 'src/infra/data/interactor/repository/ioc';
 import { IFeedRepository } from 'src/domain/interactor/data/repository/feed.repository.interface';
 import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
 import { IFeedCommentRepository } from 'src/domain/interactor/data/repository/feed_comment.repository.interface';
 import { IFeedLikeRepository } from 'src/domain/interactor/data/repository/feed_like.repository.interface';
+import { IFeedVideoRepository } from 'src/domain/interactor/data/repository/feed_video.repository.interface';
 import { FeedCommentVo } from 'src/infra/data/typeorm/vo/feed_comment.vo';
 import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
 import { FeedVideoVo } from 'src/infra/data/typeorm/vo/feed_video.vo';
 import { FeedImageVo } from 'src/infra/data/typeorm/vo/feed_image.vo';
 import { FeedLikeVo } from 'src/infra/data/typeorm/vo/feed_like.vo';
+import { FeedTagVo } from 'src/infra/data/typeorm/vo/feed_tag.vo';
+import { TagVo } from 'src/infra/data/typeorm/vo/tag.vo';
 import {
   FeedLikeDto,
   FeedsDto,
@@ -26,9 +30,7 @@ import {
   FeedCommentDeleteDto,
   FeedDeleteDto,
 } from '../../dto/feed.dto';
-import { FeedTagVo } from 'src/infra/data/typeorm/vo/feed_tag.vo';
-import { TagVo } from 'src/infra/data/typeorm/vo/tag.vo';
-import { IFeedVideoRepository } from 'src/domain/interactor/data/repository/feed_video.repository.interface';
+import { ITagRepository } from 'src/domain/interactor/data/repository/tag.repository.interface';
 
 @Injectable()
 export class FeedServiceImpl implements IFeedService {
@@ -41,6 +43,8 @@ export class FeedServiceImpl implements IFeedService {
     private readonly feedCommentRepository: IFeedCommentRepository,
     @Inject(FEED_VIDEO_REPOSITORY)
     private readonly feedVideoRepository: IFeedVideoRepository,
+    @Inject(TAG_REPOSITORY)
+    private readonly tagRepository: ITagRepository,
   ) {}
 
   async getList(queryDto: FeedQueryDto) {
@@ -76,7 +80,7 @@ export class FeedServiceImpl implements IFeedService {
     return await this.feedLikeRepository.create(newFeedLike);
   }
 
-  async createFeed(feedCreateDto: FeedCreateDto) {
+  async createFeed(feedCreateDto: FeedCreateDto): Promise<void> {
     const { userId, content, images, video } = feedCreateDto;
     const user = await this.userRepository.findOneById(userId);
     if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
@@ -88,8 +92,8 @@ export class FeedServiceImpl implements IFeedService {
     let tags: FeedTagVo[];
     if (content) {
       const rawTags = this.extractTags(content);
-      tags = this.createFeedTagVos(feed, rawTags);
-      feed.feedTags = tags;
+      tags = await this.createFeedTagVos(feed, rawTags);
+      feed.tags = tags;
     }
     return await this.feedRepository.create(feed);
   }
@@ -123,17 +127,28 @@ export class FeedServiceImpl implements IFeedService {
     if (images) feed.images = this.createImageVos(images);
     if (video) feed.video = this.createVideoVo(video);
     if (content) {
-      const rawTags: string[] = this.extractTags(content);
-      const feedTagVos = feed.feedTags;
-      const remainingTags = feedTagVos.filter((feedTagVo: FeedTagVo) =>
-        rawTags.includes(feedTagVo.tag.tag),
+      // 모든 태그 추출
+      const rawTagsFromContent: string[] = this.extractTags(content);
+      // 현재 태그 확인
+      const originalFeedTagVos = feed.tags;
+      // 업데이트된 피드에 남아있는 태그
+      const remainingTagsInUpdatedFeed = originalFeedTagVos.filter(
+        (feedTagVo: FeedTagVo) =>
+          rawTagsFromContent.includes(feedTagVo.tag.tag),
       );
-      const existingTags: string[] = feedTagVos.map((item) => item.tag.tag);
-      const addedTags = rawTags.filter((tag) => !existingTags.includes(tag));
-      const updatedFeedTags = this.createFeedTagVos(
+      // 피드에 있던 태그들의 string만 추출
+      const originalFeedTagStrings: string[] = originalFeedTagVos.map(
+        (item) => item.tag.tag,
+      );
+      // 업데이트되면서 피드에 추가된 태그
+      const addedTags = rawTagsFromContent.filter(
+        (tag) => !originalFeedTagStrings.includes(tag),
+      );
+      // 업데이트된 태그들
+      const updatedFeedTags = await this.createFeedTagVos(
         feed,
         addedTags,
-        remainingTags,
+        remainingTagsInUpdatedFeed,
       );
       feed.feedTags = updatedFeedTags;
     }
@@ -225,20 +240,25 @@ export class FeedServiceImpl implements IFeedService {
     return content.match(hashtagRegex) || [];
   }
 
-  private createFeedTagVos(
+  private async createFeedTagVos(
     feed: FeedVo,
-    tags: string[],
-    existingTags: FeedTagVo[] = [],
-  ): FeedTagVo[] {
-    return existingTags.concat(
-      tags.map((item) => {
+    newTags: string[],
+    remainingTagsInUpdatedFeed: FeedTagVo[] = [],
+  ): Promise<FeedTagVo[]> {
+    const existingTagVosOnDb = await this.tagRepository.findAll(newTags);
+    const existingTagStringsOnDb = existingTagVosOnDb.map((item) => item.tag);
+
+    const newTagVos: FeedTagVo[] = [];
+    newTags.forEach((item) => {
+      if (!existingTagStringsOnDb.includes(item)) {
         const tagVo = new TagVo();
         tagVo.tag = item;
         const feedTagVo = new FeedTagVo();
         feedTagVo.tag = tagVo;
         feedTagVo.feed = feed;
-        return feedTagVo;
-      }),
-    );
+        newTagVos.push(feedTagVo);
+      }
+    });
+    return remainingTagsInUpdatedFeed.concat(newTagVos);
   }
 }

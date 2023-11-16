@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 import { IProfileService } from '../profile.service.interface';
@@ -8,6 +8,7 @@ import {
   PROFILE_PROJECT_REPOSITORY,
   PROFILE_REPOSITORY,
   PROFILE_WEBSITE_REPOSITORY,
+  USER_REPOSITORY,
 } from 'src/infra/data/interactor/repository/ioc';
 import { IProfileRepository } from 'src/domain/interactor/data/repository/profile.repository.interface';
 import { ProfileVo } from 'src/infra/data/typeorm/vo/profile.vo';
@@ -19,6 +20,17 @@ import { IProfileEducationRepository } from 'src/domain/interactor/data/reposito
 import { ProfileEducationVo } from 'src/infra/data/typeorm/vo/profile_education.vo';
 import { IProfileWebsiteRepository } from 'src/domain/interactor/data/repository/profile_website.repository.interface';
 import { ProfileWebsiteVo } from 'src/infra/data/typeorm/vo/profile_website.vo';
+import {
+  ProfileDto,
+  ProfileEducationDto,
+  ProfileExperienceDto,
+  ProfileProjectDto,
+  ProfileWebsiteDto,
+} from '../../dto/profile.dto';
+import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
+import { ProjectImageVo } from 'src/infra/data/typeorm/vo/project_image.vo';
+import { ProjectCategoryVo } from 'src/infra/data/typeorm/vo/project_category.vo';
+import { ExperienceCompanyVo } from 'src/infra/data/typeorm/vo/experience_company.vo';
 
 @Injectable()
 export class ProfileServiceImpl implements IProfileService {
@@ -37,7 +49,13 @@ export class ProfileServiceImpl implements IProfileService {
 
     @Inject(PROFILE_WEBSITE_REPOSITORY)
     private readonly profileWebsiteRepository: IProfileWebsiteRepository,
+
+    @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
   ) {}
+
+  async getProfileId(userId: number): Promise<ProfileVo | null> {
+    return await this.profileRepository.findProfileIdByUserId(userId);
+  }
 
   async getUserProfile(profileId: number): Promise<ProfileVo | null> {
     const profile = await this.profileRepository.findProfileByProfileId(
@@ -103,5 +121,180 @@ export class ProfileServiceImpl implements IProfileService {
         Number(profileId),
       );
     return profileWebsite;
+  }
+
+  async createProfile(profileDto: ProfileDto): Promise<void> {
+    const { userId, jobDescription, about, location, address } = profileDto;
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profile = new ProfileVo();
+    profile.user = user;
+    if (jobDescription) profile.jobDescription = jobDescription;
+    if (about) profile.about = about;
+    if (location) profile.location = location;
+    if (address) profile.address = address;
+
+    return await this.profileRepository.create(profile);
+  }
+
+  async createProfileProject(
+    profileProjectDto: ProfileProjectDto,
+    profileId: number,
+  ): Promise<void> {
+    const {
+      userId,
+      title,
+      description,
+      startDate,
+      endDate,
+      projectImages,
+      projectCategory,
+    } = profileProjectDto;
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profile = await this.profileRepository.findProfileByProfileId(
+      Number(profileId),
+    );
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+
+    const profileProject = new ProfileProjectVo();
+    if (profile) profileProject.profile = profile;
+    if (title) profileProject.title = title;
+    if (description) profileProject.description = description;
+    if (startDate) profileProject.startDate = startDate;
+    if (endDate) profileProject.endDate = endDate;
+    if (projectImages)
+      profileProject.projectImage = this.createImageVos(projectImages);
+    if (projectCategory)
+      profileProject.projectCategory = this.createCategoryVos(projectCategory);
+
+    return await this.profileProjectRepository.create(profileProject);
+  }
+
+  async createProfileExperience(
+    profileExperienceDto: ProfileExperienceDto,
+    profileId: number,
+  ) {
+    const {
+      userId,
+      position,
+      description,
+      startDate,
+      endDate,
+      experienceCompany,
+    } = profileExperienceDto;
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profile = await this.profileRepository.findProfileByProfileId(
+      Number(profileId),
+    );
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+
+    const profileExperience = new ProfileExperienceVo();
+    if (profile) profileExperience.profile = profile;
+    if (position) profileExperience.position = position;
+    if (description) profileExperience.description = description;
+    if (startDate) profileExperience.startDate = startDate;
+    if (endDate) profileExperience.endDate = endDate;
+    if (experienceCompany)
+      profileExperience.experienceCompany =
+        this.createExperienceCompany(experienceCompany);
+
+    return await this.profileExperienceRepository.create(profileExperience);
+  }
+
+  async createProfileEducation(
+    profileEducationDto: ProfileEducationDto,
+    profileId: number,
+  ): Promise<void> {
+    const {
+      userId,
+      course,
+      description,
+      startDate,
+      endDate,
+      educationInstitute,
+    } = profileEducationDto;
+
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profile = await this.profileRepository.findProfileByProfileId(
+      Number(profileId),
+    );
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+
+    const profileEducation = new ProfileEducationVo();
+    if (profile) profileEducation.profile = profile;
+    if (course) profileEducation.course = course;
+    if (description) profileEducation.description = description;
+    if (startDate) profileEducation.startDate = startDate;
+    if (endDate) profileEducation.endDate = endDate;
+    if (educationInstitute)
+      profileEducation.educationInstitute = educationInstitute;
+
+    return this.profileEducationRepository.create(profileEducation);
+  }
+
+  async createProfileWebsite(
+    profileWebsiteDto: ProfileWebsiteDto,
+    profileId: number,
+  ): Promise<void> {
+    const { userId, type, url } = profileWebsiteDto;
+
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profile = await this.profileRepository.findProfileByProfileId(
+      Number(profileId),
+    );
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+
+    const profileWebsite = new ProfileWebsiteVo();
+    if (profile) profileWebsite.profile = profile;
+    if (type) profileWebsite.type = type;
+    if (url) profileWebsite.url = url;
+
+    return await this.profileWebsiteRepository.create(profileWebsite);
+  }
+
+  private createImageVos(images: string[]): ProjectImageVo[] {
+    return images.map((item) => {
+      const imageVo = new ProjectImageVo();
+      imageVo.image = item;
+      return imageVo;
+    });
+  }
+
+  private createCategoryVos(category: string): ProjectCategoryVo {
+    const categoryVo = new ProjectCategoryVo();
+    categoryVo.title = category;
+    return categoryVo;
+  }
+
+  private createExperienceCompany(
+    company: ExperienceCompanyVo,
+  ): ExperienceCompanyVo {
+    const companyVo = new ExperienceCompanyVo();
+    companyVo.name = company.name;
+    companyVo.logo = company.logo;
+    companyVo.location = company.location;
+
+    return companyVo;
   }
 }

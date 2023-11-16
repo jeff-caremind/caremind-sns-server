@@ -22,12 +22,15 @@ export class ProfileVo extends BaseEntity {
     type: 'varchar',
     length: 500,
     default: '',
+    nullable: true,
   })
   jobDescription: string;
 
   @Column({
     type: 'varchar',
     length: 500,
+    default: '',
+    nullable: true,
   })
   about: string;
 
@@ -35,6 +38,7 @@ export class ProfileVo extends BaseEntity {
     type: 'varchar',
     length: 100,
     default: '',
+    nullable: true,
   })
   location: string;
 
@@ -42,8 +46,16 @@ export class ProfileVo extends BaseEntity {
     type: 'varchar',
     length: 200,
     default: '',
+    nullable: true,
   })
   address: string;
+
+  @Column({
+    type: 'varchar',
+    length: 2000,
+    default: '',
+  })
+  profileBackImage: string;
 
   @CreateDateColumn({
     type: 'timestamp',
