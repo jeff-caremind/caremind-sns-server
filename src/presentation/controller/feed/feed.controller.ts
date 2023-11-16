@@ -93,7 +93,7 @@ export class FeedController {
   ) {
     const feedUpdateDto: FeedCreateDto = {
       ...body,
-      userId: req.headers.userId,
+      userId: Number(req.headers.userId),
     };
     return await this.feedService.updateFeed(Number(feedId), feedUpdateDto);
   }

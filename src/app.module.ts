@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
 
 import { FeedModule } from './domain/service/module/feed.module';
 import { UserModule } from './domain/service/module/user.module';
@@ -13,16 +12,11 @@ import { AuthModule } from './domain/service/module/auth.module';
     ConfigModule.forRoot({
       envFilePath: '.development.env',
     }),
-    JwtModule.register({
-      global: true,
-      secret: process.env.JWT_SECRET_KEY,
-      signOptions: { expiresIn: '12h' },
-    }),
+    AuthModule,
     FeedModule,
     UserModule,
     ProfileModule,
     ConnectionModule,
-    AuthModule,
   ],
 })
 export class AppModule {}

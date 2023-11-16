@@ -12,12 +12,14 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
 import { USER_SERVICE } from 'src/domain/service/ioc';
+import { SecurityServiceImpl } from 'src/domain/service/security/impl/security.service.implement';
 import { IUserService } from 'src/domain/service/user/user.service.interface';
 
 @Injectable()
 export class AuthInterceptor implements NestInterceptor {
   constructor(
-    private readonly JwtService: JwtService,
+    // private readonly JwtService: JwtService,
+    private readonly securityService: SecurityServiceImpl,
     @Inject(USER_SERVICE) private readonly userService: IUserService,
   ) {}
   async intercept(
@@ -27,12 +29,12 @@ export class AuthInterceptor implements NestInterceptor {
     const req: Request = context.switchToHttp().getRequest();
     const token = req.headers['authorization'];
     try {
-      const decoded = this.JwtService.verify(token!);
+      const decoded = this.securityService.verify(token!);
       const userId = decoded.aud;
       const user = await this.userService.getOne(userId);
       if (!user)
         throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
-      req.headers['userId'] = userId;
+      req.headers['userId'] = String(userId);
       return next.handle();
     } catch (error) {
       throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
