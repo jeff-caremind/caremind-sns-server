@@ -9,15 +9,14 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { Observable, tap } from 'rxjs';
-import { SECURITY_SERVICE, USER_SERVICE } from 'src/domain/service/ioc';
-import { ISecurityService } from 'src/domain/service/security/security.service.interface';
+import { USER_SERVICE } from 'src/domain/service/ioc';
+import { SecurityServiceImpl } from 'src/domain/service/security/impl/security.service.implement';
 import { IUserService } from 'src/domain/service/user/user.service.interface';
 
 @Injectable()
 export class AuthInterceptor implements NestInterceptor {
   constructor(
-    @Inject(SECURITY_SERVICE)
-    private readonly securityService: ISecurityService,
+    private readonly securityService: SecurityServiceImpl,
     @Inject(USER_SERVICE) private readonly userService: IUserService,
   ) {}
   async intercept(

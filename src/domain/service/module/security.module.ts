@@ -2,7 +2,6 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { SecurityServiceImpl } from '../security/impl/security.service.implement';
-import * as IOC from '../ioc';
 
 @Module({})
 export class SecurityModule {
@@ -24,8 +23,8 @@ export class SecurityModule {
           inject: [ConfigService],
         }),
       ],
-      providers: [IOC.SecurityService, SecurityServiceImpl],
-      exports: [IOC.SecurityService, SecurityServiceImpl],
+      providers: [SecurityServiceImpl],
+      exports: [SecurityServiceImpl],
     };
   }
 }

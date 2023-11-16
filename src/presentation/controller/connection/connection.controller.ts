@@ -10,20 +10,19 @@ import {
 } from '@nestjs/common';
 
 import { IConnectionService } from 'src/domain/service/connection/connection.service.interface';
-import { ISecurityService } from 'src/domain/service/security/security.service.interface';
-import { CONNECTION_SERVICE, SECURITY_SERVICE } from 'src/domain/service/ioc';
+import { CONNECTION_SERVICE } from 'src/domain/service/ioc';
 import {
   ConnectionDto,
   ConnectionWithUsersDto,
 } from 'src/domain/service/dto/connection.dto';
+import { SecurityServiceImpl } from 'src/domain/service/security/impl/security.service.implement';
 
 @Controller('/connection')
 export class ConnectionController {
   constructor(
     @Inject(CONNECTION_SERVICE)
     private readonly connectionService: IConnectionService,
-    @Inject(SECURITY_SERVICE)
-    private readonly securityService: ISecurityService,
+    private readonly securityService: SecurityServiceImpl,
   ) {}
 
   @Get('/connected')

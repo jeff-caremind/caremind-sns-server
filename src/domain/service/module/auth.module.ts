@@ -13,7 +13,7 @@ import { SecurityModule } from './security.module';
       expiresIn: '12h',
     }),
   ],
-  providers: [AuthInterceptor, IOC.UserService, SecurityModule],
+  providers: [AuthInterceptor, IOC.UserService],
   exports: [AuthInterceptor, IOC.UserService, SecurityModule],
 })
 export class AuthModule {}
