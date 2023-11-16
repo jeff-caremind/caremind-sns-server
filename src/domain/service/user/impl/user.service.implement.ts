@@ -1,7 +1,5 @@
 import { Inject, Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { JwtService } from '@nestjs/jwt';
 
 import { IUserService } from '../user.service.interface';
 import { USER_REPOSITORY } from 'src/infra/data/interactor/repository/ioc';

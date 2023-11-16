@@ -5,7 +5,6 @@ import {
   Inject,
   Param,
   UseInterceptors,
-  Headers,
   Post,
   HttpException,
   HttpStatus,
@@ -26,23 +25,19 @@ import { ProfileEducationVo } from 'src/infra/data/typeorm/vo/profile_education.
 import { ProfileExperienceVo } from 'src/infra/data/typeorm/vo/profile_experience.vo';
 import { ProfileProjectVo } from 'src/infra/data/typeorm/vo/profile_project.vo';
 import { ProfileWebsiteVo } from 'src/infra/data/typeorm/vo/profile_website.vo';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { JwtService } from '@nestjs/jwt';
+import { SecurityServiceImpl } from 'src/domain/service/security/impl/security.service.implement';
 
 @Controller('/profile')
 @UseInterceptors(AuthInterceptor)
 export class ProfileController {
   constructor(
     @Inject(PROFILE_SERVICE) private readonly profileService: IProfileService,
-    private readonly JwtService: JwtService,
+    private readonly securityService: SecurityServiceImpl,
   ) {}
 
   @Get('/profileId')
-  async getProfileId(
-    @Headers('authorization') token: string,
-  ): Promise<ProfileVo | null> {
-    const decodedToken = this.verifyToken(token);
-    const userId = decodedToken.aud;
+  async getProfileId(): Promise<ProfileVo | null> {
+    const userId = this.securityService.getUserId();
     return await this.profileService.getProfileId(userId);
   }
 
@@ -82,13 +77,10 @@ export class ProfileController {
   }
 
   @Post()
-  async createProfile(
-    @Body() body: Partial<ProfileDto>,
-    @Headers('authorization') token: string,
-  ): Promise<void> {
-    const decodedToken = this.verifyToken(token);
+  async createProfile(@Body() body: Partial<ProfileDto>): Promise<void> {
+    const userId = this.securityService.getUserId();
     const profileDto: ProfileDto = {
-      userId: decodedToken.aud,
+      userId: userId,
       jobDescription: body.jobDescription,
       about: body.about,
       location: body.location,
@@ -101,13 +93,12 @@ export class ProfileController {
   async createProfileProject(
     @Param('profileId') profileId: number,
     @Body() body: Partial<ProfileProjectDto>,
-    @Headers('authorization') token: string,
   ): Promise<void> {
     if (!body.title || !body.startDate)
       throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
-    const decodedToken = this.verifyToken(token);
+    const userId = this.securityService.getUserId();
     const profileProjectDto: ProfileProjectDto = {
-      userId: decodedToken.aud,
+      userId: userId,
       title: body.title!,
       description: body.description,
       startDate: body.startDate!,
@@ -126,13 +117,12 @@ export class ProfileController {
   async createProfileExperience(
     @Param('profileId') profileId: number,
     @Body() body: Partial<ProfileExperienceDto>,
-    @Headers('authorization') token: string,
   ): Promise<void> {
     if (!body.position || !body.startDate)
       throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
-    const decodedToken = this.verifyToken(token);
+    const userId = this.securityService.getUserId();
     const profileExperienceDto: ProfileExperienceDto = {
-      userId: decodedToken.aud,
+      userId: userId,
       position: body.position!,
       description: body.description,
       startDate: body.startDate!,
@@ -150,13 +140,12 @@ export class ProfileController {
   async createProfileEducation(
     @Param('profileId') profileId: number,
     @Body() body: Partial<ProfileEducationDto>,
-    @Headers('authorization') token: string,
   ): Promise<void> {
     if (!body.course || !body.startDate)
       throw new HttpException('KEY_ERROR', HttpStatus.NOT_FOUND);
-    const decodedToken = this.verifyToken(token);
+    const userId = this.securityService.getUserId();
     const profileEducationDto: ProfileEducationDto = {
-      userId: decodedToken.aud,
+      userId: userId,
       course: body.course!, // 학과, 전공 설명 입력
       description: body.description, // 추가 정보
       startDate: body.startDate!,
@@ -173,13 +162,12 @@ export class ProfileController {
   async createProfileWebsite(
     @Param('profileId') profileId: number,
     @Body() body: Partial<ProfileWebsiteDto>,
-    @Headers('authorization') token: string,
   ): Promise<void> {
     if (!body.type || !body.url)
       throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
-    const decodedToken = this.verifyToken(token);
+    const userId = this.securityService.getUserId();
     const profileWebsiteDto: ProfileWebsiteDto = {
-      userId: decodedToken.aud,
+      userId: userId,
       type: body.type!,
       url: body.url!,
     };
@@ -188,10 +176,5 @@ export class ProfileController {
       profileWebsiteDto,
       profileId,
     );
-  }
-
-  verifyToken(token: string): { aud: number } {
-    const decoded = this.JwtService.verify(token);
-    return decoded;
   }
 }
