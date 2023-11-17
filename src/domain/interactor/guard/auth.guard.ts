@@ -1,10 +1,20 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { SecurityServiceImpl } from 'src/domain/service/security/impl/security.service.implement';
+import { SECURITY_SERVICE } from 'src/domain/service/ioc';
+import { ISecurityService } from 'src/domain/service/security/security.service.interface';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly securityService: SecurityServiceImpl) {}
+  constructor(
+    @Inject(SECURITY_SERVICE)
+    private readonly securityService: ISecurityService,
+  ) {}
+
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {

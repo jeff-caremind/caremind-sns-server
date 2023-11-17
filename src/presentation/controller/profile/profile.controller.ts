@@ -24,7 +24,6 @@ import { ProfileEducationVo } from 'src/infra/data/typeorm/vo/profile_education.
 import { ProfileExperienceVo } from 'src/infra/data/typeorm/vo/profile_experience.vo';
 import { ProfileProjectVo } from 'src/infra/data/typeorm/vo/profile_project.vo';
 import { ProfileWebsiteVo } from 'src/infra/data/typeorm/vo/profile_website.vo';
-import { SecurityServiceImpl } from 'src/domain/service/security/impl/security.service.implement';
 import { AuthUser } from 'src/domain/interactor/decorator/auth.decorator';
 import { AuthGuard } from 'src/domain/interactor/guard/auth.guard';
 
@@ -33,7 +32,6 @@ import { AuthGuard } from 'src/domain/interactor/guard/auth.guard';
 export class ProfileController {
   constructor(
     @Inject(PROFILE_SERVICE) private readonly profileService: IProfileService,
-    private readonly securityService: SecurityServiceImpl,
   ) {}
 
   @Get('/profileId')

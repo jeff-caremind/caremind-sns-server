@@ -1,9 +1,11 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule, Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { SecurityServiceImpl } from '../security/impl/security.service.implement';
+import * as IOC from '../ioc';
 
 @Module({})
+@Global()
 export class SecurityModule {
   static register(options: {
     global: boolean;
@@ -23,8 +25,8 @@ export class SecurityModule {
           inject: [ConfigService],
         }),
       ],
-      providers: [SecurityServiceImpl],
-      exports: [SecurityServiceImpl],
+      providers: [IOC.SecurityService, SecurityServiceImpl],
+      exports: [IOC.SecurityService, SecurityServiceImpl],
     };
   }
 }
