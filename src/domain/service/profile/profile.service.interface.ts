@@ -48,4 +48,15 @@ export interface IProfileService {
     profileId: number,
     experienceId: number,
   ): Promise<void>;
+  updateProfileEducation(
+    profileEducationUpdateDto: ProfileEducationDto,
+    profileId: number,
+    educationId: number,
+  ): Promise<void>;
+
+  updateProfileWebsite(
+    profileWebsiteUpdateDto: ProfileWebsiteDto,
+    profileId: number,
+    websiteId: number,
+  ): Promise<void>;
 }

@@ -358,7 +358,8 @@ export class ProfileServiceImpl implements IProfileService {
     if (projectImages)
       project.projectImage = this.createImageVos(projectImages);
     if (projectCategory)
-      project.projectCategory = this.createCategoryVos(projectCategory);
+      project.projectCategory.title =
+        this.createCategoryVos(projectCategory).title;
 
     return await this.profileProjectRepository.update(project);
   }
@@ -413,9 +414,116 @@ export class ProfileServiceImpl implements IProfileService {
     if (description) experience.description = description;
     if (startDate) experience.startDate = startDate;
     if (endDate) experience.endDate = endDate;
-    if (experienceCompany) experience.experienceCompany = experienceCompany;
+    if (experienceCompany)
+      experience.experienceCompany.name = experienceCompany.name;
+    if (experienceCompany)
+      experience.experienceCompany.logo = experienceCompany.logo;
+    if (experienceCompany)
+      experience.experienceCompany.location = experienceCompany.location;
 
     return await this.profileExperienceRepository.update(experience);
+  }
+
+  async updateProfileEducation(
+    profileEducationUpdateDto: ProfileEducationDto,
+    profileId: number,
+    educationId: number,
+  ): Promise<void> {
+    const {
+      userId,
+      course,
+      description,
+      startDate,
+      endDate,
+      educationInstitute,
+    } = profileEducationUpdateDto;
+
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profile = await this.profileRepository.findProfileByProfileId(
+      Number(profileId),
+    );
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+
+    const educationsByProfileId =
+      await this.profileEducationRepository.findEducationByProfileId(
+        Number(profileId),
+      );
+
+    if (!educationsByProfileId)
+      throw new HttpException('EDUCATION_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const educationExists = educationsByProfileId.some(
+      (education) => education.id === educationId,
+    );
+    if (!educationExists)
+      throw new HttpException('EDUCATION_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const education =
+      await this.profileEducationRepository.findEducationByEducationId(
+        Number(educationId),
+      );
+    if (!education)
+      throw new HttpException('EDUCATION_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    if (course) education.course = course;
+    if (description) education.description = description;
+    if (startDate) education.startDate = startDate;
+    if (endDate) education.endDate = endDate;
+    if (educationInstitute)
+      education.educationInstitute.logo = educationInstitute.logo;
+    if (educationInstitute)
+      education.educationInstitute.name = educationInstitute.name;
+
+    return await this.profileEducationRepository.update(education);
+  }
+
+  async updateProfileWebsite(
+    profileWebsiteUpdateDto: ProfileWebsiteDto,
+    profileId: number,
+    websiteId: number,
+  ): Promise<void> {
+    const { userId, type, url } = profileWebsiteUpdateDto;
+
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profile = await this.profileRepository.findProfileByProfileId(
+      Number(profileId),
+    );
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+
+    const websitesByProfileId =
+      await this.profileWebsiteRepository.findWebsiteByProfileId(
+        Number(profileId),
+      );
+
+    if (!websitesByProfileId)
+      throw new HttpException('WEBSITE_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const websiteExists = websitesByProfileId.some(
+      (website) => website.id === websiteId,
+    );
+    if (!websiteExists)
+      throw new HttpException('WEBSITE_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const website = await this.profileWebsiteRepository.findWebsiteByWebsiteId(
+      Number(websiteId),
+    );
+    if (!website)
+      throw new HttpException('WEBSITE_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    if (type) website.type = type;
+    if (url) website.url = url;
+
+    return this.profileWebsiteRepository.update(website);
   }
 
   private createImageVos(images: string[]): ProjectImageVo[] {

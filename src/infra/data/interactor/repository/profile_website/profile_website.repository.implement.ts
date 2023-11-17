@@ -23,4 +23,18 @@ export class ProfileWebsiteRepositoryImpl implements IProfileWebsiteRepository {
   async create(profileWebsite: ProfileWebsiteVo): Promise<void> {
     await this.profileWebsiteTypeormRepository.save(profileWebsite);
   }
+
+  async findWebsiteByWebsiteId(
+    websiteId: number,
+  ): Promise<ProfileWebsiteVo | null> {
+    return await this.profileWebsiteTypeormRepository.findOne({
+      where: {
+        id: websiteId,
+      },
+    });
+  }
+
+  async update(website: ProfileWebsiteVo): Promise<void> {
+    await this.profileWebsiteTypeormRepository.save(website);
+  }
 }

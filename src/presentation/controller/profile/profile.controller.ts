@@ -249,6 +249,50 @@ export class ProfileController {
     );
   }
 
+  @Put('/:profileId/education/:educationId')
+  async updateProfileEducation(
+    @Headers('authorization') token: string,
+    @Param('profileId') profileId: number,
+    @Param('educationId') educationId: number,
+    @Body() body: Partial<ProfileEducationDto>,
+  ): Promise<void> {
+    const decodedToken = this.verifyToken(token);
+    const profileEducationUpdateDto: ProfileEducationDto = {
+      course: body.course!,
+      description: body.description,
+      startDate: body.startDate!,
+      endDate: body.endDate,
+      educationInstitute: body.educationInstitute!,
+      userId: decodedToken.aud,
+    };
+
+    return await this.profileService.updateProfileEducation(
+      profileEducationUpdateDto,
+      Number(profileId),
+      Number(educationId),
+    );
+  }
+
+  @Put('/:profileId/website/:websiteId')
+  async updateProfileWebsite(
+    @Headers('authorization') token: string,
+    @Param('profileId') profileId: number,
+    @Param('websiteId') websiteId: number,
+    @Body() body: Partial<ProfileWebsiteDto>,
+  ): Promise<void> {
+    const decodedToken = this.verifyToken(token);
+    const profileWebsiteUpdateDto: ProfileWebsiteDto = {
+      type: body.type!,
+      url: body.url!,
+      userId: decodedToken.aud,
+    };
+    return this.profileService.updateProfileWebsite(
+      profileWebsiteUpdateDto,
+      Number(profileId),
+      Number(websiteId),
+    );
+  }
+
   verifyToken(token: string): { aud: number } {
     const decoded = this.JwtService.verify(token);
     return decoded;

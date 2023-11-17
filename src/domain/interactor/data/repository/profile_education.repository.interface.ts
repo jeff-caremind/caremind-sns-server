@@ -5,4 +5,8 @@ export interface IProfileEducationRepository {
     profileId: number,
   ): Promise<ProfileEducationVo[] | null>;
   create(profileEducation: ProfileEducationVo): Promise<void>;
+  findEducationByEducationId(
+    educationId: number,
+  ): Promise<ProfileEducationVo | null>;
+  update(education: ProfileEducationVo): Promise<void>;
 }

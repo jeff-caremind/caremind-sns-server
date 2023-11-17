@@ -34,16 +34,14 @@ export class ProfileExperienceRepositoryImpl
   async findExperienceByExperienceId(
     experienceId: number,
   ): Promise<ProfileExperienceVo | null> {
-    const eachExperience =
-      await this.profileExperienceTypeormRepository.findOne({
-        relations: {
-          experienceCompany: true,
-        },
-        where: {
-          id: experienceId,
-        },
-      });
-    return eachExperience;
+    return await this.profileExperienceTypeormRepository.findOne({
+      relations: {
+        experienceCompany: true,
+      },
+      where: {
+        id: experienceId,
+      },
+    });
   }
 
   async update(experience: ProfileExperienceVo): Promise<void> {
