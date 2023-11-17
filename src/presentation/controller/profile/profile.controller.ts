@@ -4,10 +4,10 @@ import {
   Get,
   Inject,
   Param,
-  UseInterceptors,
   Post,
   HttpException,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ProfileDto,
@@ -17,7 +17,6 @@ import {
   ProfileWebsiteDto,
 } from 'src/domain/service/dto/profile.dto';
 
-import { AuthInterceptor } from 'src/domain/interactor/interceptor/auth.interceptor';
 import { PROFILE_SERVICE } from 'src/domain/service/ioc';
 import { IProfileService } from 'src/domain/service/profile/profile.service.interface';
 import { ProfileVo } from 'src/infra/data/typeorm/vo/profile.vo';
@@ -26,9 +25,11 @@ import { ProfileExperienceVo } from 'src/infra/data/typeorm/vo/profile_experienc
 import { ProfileProjectVo } from 'src/infra/data/typeorm/vo/profile_project.vo';
 import { ProfileWebsiteVo } from 'src/infra/data/typeorm/vo/profile_website.vo';
 import { SecurityServiceImpl } from 'src/domain/service/security/impl/security.service.implement';
+import { AuthUser } from 'src/domain/interactor/decorator/auth.decorator';
+import { AuthGuard } from 'src/domain/interactor/guard/auth.guard';
 
 @Controller('/profile')
-@UseInterceptors(AuthInterceptor)
+@UseGuards(AuthGuard)
 export class ProfileController {
   constructor(
     @Inject(PROFILE_SERVICE) private readonly profileService: IProfileService,
@@ -36,8 +37,7 @@ export class ProfileController {
   ) {}
 
   @Get('/profileId')
-  async getProfileId(): Promise<ProfileVo | null> {
-    const userId = this.securityService.getUserId();
+  async getProfileId(@AuthUser() userId: number): Promise<ProfileVo | null> {
     return await this.profileService.getProfileId(userId);
   }
 
@@ -77,8 +77,10 @@ export class ProfileController {
   }
 
   @Post()
-  async createProfile(@Body() body: Partial<ProfileDto>): Promise<void> {
-    const userId = this.securityService.getUserId();
+  async createProfile(
+    @AuthUser() userId: number,
+    @Body() body: Partial<ProfileDto>,
+  ): Promise<void> {
     const profileDto: ProfileDto = {
       userId: userId,
       jobDescription: body.jobDescription,
@@ -91,12 +93,12 @@ export class ProfileController {
 
   @Post('/:profileId/project')
   async createProfileProject(
+    @AuthUser() userId: number,
     @Param('profileId') profileId: number,
     @Body() body: Partial<ProfileProjectDto>,
   ): Promise<void> {
     if (!body.title || !body.startDate)
       throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
-    const userId = this.securityService.getUserId();
     const profileProjectDto: ProfileProjectDto = {
       userId: userId,
       title: body.title!,
@@ -115,12 +117,12 @@ export class ProfileController {
 
   @Post('/:profileId/experience')
   async createProfileExperience(
+    @AuthUser() userId: number,
     @Param('profileId') profileId: number,
     @Body() body: Partial<ProfileExperienceDto>,
   ): Promise<void> {
     if (!body.position || !body.startDate)
       throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
-    const userId = this.securityService.getUserId();
     const profileExperienceDto: ProfileExperienceDto = {
       userId: userId,
       position: body.position!,
@@ -138,12 +140,12 @@ export class ProfileController {
 
   @Post('/:profileId/education')
   async createProfileEducation(
+    @AuthUser() userId: number,
     @Param('profileId') profileId: number,
     @Body() body: Partial<ProfileEducationDto>,
   ): Promise<void> {
     if (!body.course || !body.startDate)
       throw new HttpException('KEY_ERROR', HttpStatus.NOT_FOUND);
-    const userId = this.securityService.getUserId();
     const profileEducationDto: ProfileEducationDto = {
       userId: userId,
       course: body.course!, // 학과, 전공 설명 입력
@@ -160,12 +162,12 @@ export class ProfileController {
 
   @Post('/:profileId/website')
   async createProfileWebsite(
+    @AuthUser() userId: number,
     @Param('profileId') profileId: number,
     @Body() body: Partial<ProfileWebsiteDto>,
   ): Promise<void> {
     if (!body.type || !body.url)
       throw new HttpException('KEY_ERROR', HttpStatus.BAD_REQUEST);
-    const userId = this.securityService.getUserId();
     const profileWebsiteDto: ProfileWebsiteDto = {
       userId: userId,
       type: body.type!,

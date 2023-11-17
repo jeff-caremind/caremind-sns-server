@@ -7,6 +7,7 @@ import {
   Body,
   Delete,
   Patch,
+  UseGuards,
 } from '@nestjs/common';
 
 import { IConnectionService } from 'src/domain/service/connection/connection.service.interface';
@@ -15,41 +16,39 @@ import {
   ConnectionDto,
   ConnectionWithUsersDto,
 } from 'src/domain/service/dto/connection.dto';
-import { SecurityServiceImpl } from 'src/domain/service/security/impl/security.service.implement';
+import { AuthUser } from 'src/domain/interactor/decorator/auth.decorator';
+import { AuthGuard } from 'src/domain/interactor/guard/auth.guard';
 
 @Controller('/connection')
+@UseGuards(AuthGuard)
 export class ConnectionController {
   constructor(
     @Inject(CONNECTION_SERVICE)
     private readonly connectionService: IConnectionService,
-    private readonly securityService: SecurityServiceImpl,
   ) {}
 
   @Get('/connected')
-  async getConnections() {
-    return await this.connectionService.getConnections(
-      this.securityService.getUserId(),
-    );
+  async getConnections(@AuthUser() userId: number) {
+    return await this.connectionService.getConnections(userId);
   }
 
   @Get('/sent')
-  async getSent() {
-    return await this.connectionService.getSent(
-      this.securityService.getUserId(),
-    );
+  async getSent(@AuthUser() userId: number) {
+    return await this.connectionService.getSent(userId);
   }
 
   @Get('/received')
-  async getReceived() {
-    return await this.connectionService.getReceived(
-      this.securityService.getUserId(),
-    );
+  async getReceived(@AuthUser() userId: number) {
+    return await this.connectionService.getReceived(userId);
   }
 
   @Delete('/:connectionId')
-  async deleteConnection(@Param('connectionId') connectionId: string) {
+  async deleteConnection(
+    @AuthUser() userId: number,
+    @Param('connectionId') connectionId: string,
+  ) {
     const connectionDto: ConnectionDto = {
-      userId: this.securityService.getUserId(),
+      userId: userId,
       connectionId: Number(connectionId),
     };
     return await this.connectionService.deleteConnection(connectionDto);
@@ -57,21 +56,25 @@ export class ConnectionController {
 
   @Post('/user/:userId')
   async createConnection(
-    @Param('userId') userId: number,
+    @AuthUser() userId: number,
+    @Param('userId') connectedUserId: number,
     @Body('message') message: string,
   ): Promise<void> {
     const connectionDto: ConnectionWithUsersDto = {
-      userId: this.securityService.getUserId(),
-      connectedUserId: Number(userId),
+      userId: userId,
+      connectedUserId: Number(connectedUserId),
       message: message,
     };
     return await this.connectionService.createConnection(connectionDto);
   }
 
   @Patch('/:connectionId')
-  async acceptConnection(@Param('connectionId') connectionId: number) {
+  async acceptConnection(
+    @AuthUser() userId: number,
+    @Param('connectionId') connectionId: number,
+  ) {
     const connectionDto: ConnectionDto = {
-      userId: this.securityService.getUserId(),
+      userId: userId,
       connectionId: connectionId,
     };
     await this.connectionService.acceptConnection(connectionDto);

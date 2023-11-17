@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import * as IOC from '../ioc';
-import { AuthInterceptor } from 'src/domain/interactor/interceptor/auth.interceptor';
 import { RepositoryModule } from 'src/infra/data/interactor/repository/module/repository.module';
 import { SecurityModule } from './security.module';
 
@@ -13,7 +12,7 @@ import { SecurityModule } from './security.module';
       expiresIn: '12h',
     }),
   ],
-  providers: [AuthInterceptor, IOC.UserService],
-  exports: [AuthInterceptor, IOC.UserService, SecurityModule],
+  providers: [IOC.UserService, SecurityModule],
+  exports: [IOC.UserService, SecurityModule],
 })
 export class AuthModule {}

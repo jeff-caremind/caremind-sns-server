@@ -8,16 +8,6 @@ import { TokenPayload } from 'src/type/token_payload';
 export class SecurityServiceImpl implements ISecurityService {
   constructor(private readonly JwtService: JwtService) {}
 
-  static userId: number;
-
-  setUserId(userId: number) {
-    SecurityServiceImpl.userId = userId;
-  }
-
-  getUserId() {
-    return SecurityServiceImpl.userId;
-  }
-
   verify(token: string): TokenPayload {
     return this.JwtService.verify(token);
   }
