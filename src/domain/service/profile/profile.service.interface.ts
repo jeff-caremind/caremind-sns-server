@@ -8,6 +8,7 @@ import {
   ProfileEducationDto,
   ProfileExperienceDto,
   ProfileProjectDto,
+  ProfileWebsiteDeleteDto,
   ProfileWebsiteDto,
 } from '../dto/profile.dto';
 
@@ -36,5 +37,8 @@ export interface IProfileService {
   createProfileEducation(
     profileEducationDto: ProfileEducationDto,
     profileId: number,
+  ): Promise<void>;
+  deleteProfileWebsite(
+    ProfileWebsiteDeleteDto: ProfileWebsiteDeleteDto,
   ): Promise<void>;
 }

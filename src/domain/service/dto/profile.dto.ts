@@ -42,3 +42,9 @@ export type ProfileWebsiteDto = {
   type: string;
   url: string;
 };
+
+export type ProfileWebsiteDeleteDto = {
+  userId: number;
+  profileId: number;
+  websiteId: number;
+};

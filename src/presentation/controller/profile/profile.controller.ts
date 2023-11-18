@@ -14,6 +14,7 @@ import {
   ProfileEducationDto,
   ProfileExperienceDto,
   ProfileProjectDto,
+  ProfileWebsiteDeleteDto,
   ProfileWebsiteDto,
 } from 'src/domain/service/dto/profile.dto';
 
@@ -194,13 +195,13 @@ export class ProfileController {
     @Param('websiteId') websiteId: number,
   ): Promise<void> {
     const decodedToken = this.verifyToken(token);
-    const ProfileWebsiteDeleteDto = {
+    const profileWebsiteDeleteDto: ProfileWebsiteDeleteDto = {
       userId: decodedToken.aud,
       profileId: Number(profileId),
       websiteId: Number(websiteId),
     };
     return await this.profileService.deleteProfileWebsite(
-      ProfileWebsiteDeleteDto,
+      profileWebsiteDeleteDto,
     );
   }
 

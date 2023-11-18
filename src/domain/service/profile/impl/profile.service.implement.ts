@@ -25,6 +25,7 @@ import {
   ProfileEducationDto,
   ProfileExperienceDto,
   ProfileProjectDto,
+  ProfileWebsiteDeleteDto,
   ProfileWebsiteDto,
 } from '../../dto/profile.dto';
 import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
@@ -272,6 +273,55 @@ export class ProfileServiceImpl implements IProfileService {
 
     return await this.profileWebsiteRepository.create(profileWebsite);
   }
+
+  async deleteProfileWebsite(
+    profileWebsiteDeleteDto: ProfileWebsiteDeleteDto,
+  ): Promise<void> {
+    const { userId, profileId, websiteId } = profileWebsiteDeleteDto;
+
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profile = await this.profileRepository.findProfileByProfileId(
+      Number(profileId),
+    );
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+
+    const websitesByProfileId =
+      await this.profileWebsiteRepository.findWebsiteByProfileId(profileId);
+
+    if (!websitesByProfileId)
+      throw new HttpException('WEBSITE_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const websiteExists = websitesByProfileId.some(
+      (website) => website.id === websiteId,
+    );
+    if (!websiteExists)
+      throw new HttpException('WEBSITE_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const website =
+      await this.profileWebsiteRepository.findWebsiteByWebsiteId(websiteId);
+
+    return await this.profileWebsiteRepository.remove(website);
+  }
+
+  // async deleteComment(
+  //   feedCommentDeleteDto: FeedCommentDeleteDto,
+  // ): Promise<void> {
+  //   const { userId, feedId, commentId } = feedCommentDeleteDto;
+  //   const user = await this.userRepository.findOneById(userId);
+  //   if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+  //   const feed = await this.feedRepository.findOneById(feedId);
+  //   if (!feed)
+  //     throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+  //   const comment = await this.feedCommentRepository.findOneById(commentId);
+  //   if (!comment)
+  //     throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
+  //   return await this.feedCommentRepository.remove(comment);
+  // }
 
   private createImageVos(images: string[]): ProjectImageVo[] {
     return images.map((item) => {
