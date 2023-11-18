@@ -25,8 +25,44 @@ export class FeedTypeormRepositoryFactory {
   ): IFeedTypeormRepository {
     return repository.extend({
       findWithFeedQuery: async (queryDto: FeedQueryDto) => {
+        // const userId = queryDto.userId;
         const userId = 2;
-        let queryParameters: number[] = [];
+        let queryParameters: (number | undefined)[] = [];
+        let queryWhereString: string = ``;
+        const whereConditions = [];
+        if (queryDto.search) {
+          whereConditions.push(`feed.content LIKE '%${queryDto.search}%'`);
+        }
+        if (queryDto.tag) {
+          whereConditions.push(`feed_tags.tags LIKE '%${queryDto.tag}%'`);
+        }
+        if (whereConditions.length > 0)
+          queryWhereString = `WHERE ${whereConditions.join(' AND ')}`;
+        const feedTagQueryJoinString = `
+          LEFT JOIN (
+            SELECT
+              GROUP_CONCAT(
+                tag.tag
+              ) AS tags,
+              feed_tag.feedId
+            FROM tag
+            LEFT JOIN feed_tag ON feed_tag.tagId = tag.id
+            GROUP BY feed_tag.feedId
+          ) feed_tags ON feed.id = feed_tags.feedId
+          `;
+
+        let queryOrderByString: string = ``;
+        if (queryDto.sort === 'recent') {
+          queryOrderByString = `ORDER BY createdAt DESC`;
+        } else if (queryDto.sort === 'trending') {
+          queryOrderByString = `ORDER BY date DESC, connectedUserReactions DESC`;
+        }
+
+        let queryOffsetLimitString: string = ``;
+        if (queryDto.limit)
+          queryOffsetLimitString += `LIMIT ${queryDto.limit}`;
+        if (queryDto.offset)
+          queryOffsetLimitString += ` OFFSET ${queryDto.offset}`;
 
         const connectedUserQuerySrting = `
           SELECT
@@ -47,6 +83,8 @@ export class FeedTypeormRepositoryFactory {
         const feedLikeQuerySelectString = `
           feed_like_json.likes,
           feed_like_json.likesCount,
+          feed_like_json.connectedLikers,
+          feed_like_json.connectedLikersCount,
           `;
         const feedLikeQueryJoinString = `
           LEFT JOIN (
@@ -63,7 +101,11 @@ export class FeedTypeormRepositoryFactory {
                 )
               ) AS likes,
               feed_like.likedFeedId AS feedId,
-              COUNT(feed_like.id) AS likesCount
+              COUNT(feed_like.id) AS likesCount,
+              GROUP_CONCAT(
+                connected_liker.name
+              ) AS connectedLikers,
+              COUNT(connected_liker.id) AS connectedLikersCount
             FROM feed_like
             LEFT JOIN user liker ON feed_like.likerId = liker.id
             LEFT JOIN (${connectedUserQuerySrting}) connected_liker ON liker.id = connected_liker.id
@@ -74,6 +116,8 @@ export class FeedTypeormRepositoryFactory {
         const feedCommentQuerySelectString = `
           feed_comment_json.comments,
           feed_comment_json.commentsCount,
+          feed_comment_json.connectedCommenters,
+          feed_comment_json.connectedCommentersCount,
           `;
         const feedCommentQueryJoinString = `
           LEFT JOIN (
@@ -93,7 +137,11 @@ export class FeedTypeormRepositoryFactory {
                 )
               ) AS comments,
               feed_comment.commentedFeedId AS feedId,
-              COUNT(feed_comment.id) AS commentsCount
+              COUNT(feed_comment.id) AS commentsCount,
+              GROUP_CONCAT(
+                connected_commenter.name
+              ) AS connectedCommenters,
+              COUNT(connected_commenter.id) AS connectedCommentersCount
             FROM feed_comment
             LEFT JOIN user commenter ON commenter.id = feed_comment.commenterId
             LEFT JOIN (
@@ -110,16 +158,22 @@ export class FeedTypeormRepositoryFactory {
             feed.id,
             feed.content,
             feed.createdAt,
-            feed.updatedAt
+            feed.updatedAt,
+            feed_tags.tags,
+            DATE(feed.createdAt) AS date,
+            (feed_comment_json.connectedCommentersCount + feed_like_json.connectedLikersCount) AS connectedUserReactions
           FROM feed
           LEFT JOIN user feed_author ON feed.authorId = feed_author.id
           ${feedLikeQueryJoinString}
           ${feedCommentQueryJoinString}
+          ${feedTagQueryJoinString}
+          ${queryWhereString}
+          ${queryOrderByString}
+          ${queryOffsetLimitString}
           ;
         `;
 
         return await repository.query(queryString, queryParameters);
-
       },
       findOneWithRelationsById: async (feedId: number) => {
         const [feed] = await repository.find({
