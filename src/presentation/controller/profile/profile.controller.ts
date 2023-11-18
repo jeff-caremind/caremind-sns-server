@@ -187,6 +187,38 @@ export class ProfileController {
     );
   }
 
+  @Delete('/:profileId/website/:websiteId')
+  async deleteProfileWebsite(
+    @Headers('authorization') token: string,
+    @Param('profileId') profileId: number,
+    @Param('websiteId') websiteId: number,
+  ): Promise<void> {
+    const decodedToken = this.verifyToken(token);
+    const ProfileWebsiteDeleteDto = {
+      userId: decodedToken.aud,
+      profileId: Number(profileId),
+      websiteId: Number(websiteId),
+    };
+    return await this.profileService.deleteProfileWebsite(
+      ProfileWebsiteDeleteDto,
+    );
+  }
+
+  // @Delete('/:feedId/comment/:commentId')
+  // async deleteComment(
+  //   @Headers('authorization') token: string,
+  //   @Param('feedId') feedId: number,
+  //   @Param('commentId') commentId: number,
+  // ): Promise<void> {
+  //   const decoded = this.verifyToken(token);
+  //   const feedCommentDeleteDto = {
+  //     userId: decoded.aud,
+  //     feedId: Number(feedId),
+  //     commentId: Number(commentId),
+  //   };
+  //   return await this.feedService.deleteComment(feedCommentDeleteDto);
+  // }
+
   verifyToken(token: string): { aud: number } {
     const decoded = this.JwtService.verify(token);
     return decoded;
