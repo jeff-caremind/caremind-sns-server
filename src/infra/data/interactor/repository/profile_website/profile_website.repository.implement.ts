@@ -24,8 +24,14 @@ export class ProfileWebsiteRepositoryImpl implements IProfileWebsiteRepository {
     await this.profileWebsiteTypeormRepository.save(profileWebsite);
   }
 
-  async findOneById(websiteId: number): Promise<void> {
-    await this.profileWebsiteTypeormRepository.remove(website);
+  async findWebsiteByWebsiteId(
+    websiteId: number,
+  ): Promise<ProfileWebsiteVo | null> {
+    return await this.profileWebsiteTypeormRepository.findOne({
+      where: {
+        id: websiteId,
+      },
+    });
   }
 
   async remove(website: ProfileWebsiteVo): Promise<void> {

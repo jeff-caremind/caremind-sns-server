@@ -48,3 +48,9 @@ export type ProfileWebsiteDeleteDto = {
   profileId: number;
   websiteId: number;
 };
+
+export type ProfileEducationDeleteDto = {
+  userId: number;
+  profileId: number;
+  educationId: number;
+};

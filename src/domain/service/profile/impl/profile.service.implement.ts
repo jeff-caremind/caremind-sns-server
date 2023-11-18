@@ -22,6 +22,7 @@ import { IProfileWebsiteRepository } from 'src/domain/interactor/data/repository
 import { ProfileWebsiteVo } from 'src/infra/data/typeorm/vo/profile_website.vo';
 import {
   ProfileDto,
+  ProfileEducationDeleteDto,
   ProfileEducationDto,
   ProfileExperienceDto,
   ProfileProjectDto,
@@ -282,9 +283,8 @@ export class ProfileServiceImpl implements IProfileService {
     const user = await this.userRepository.findOneById(userId);
     if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
 
-    const profile = await this.profileRepository.findProfileByProfileId(
-      Number(profileId),
-    );
+    const profile =
+      await this.profileRepository.findProfileByProfileId(profileId);
     if (!profile)
       throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
     if (profile.user.id !== Number(userId))
@@ -304,8 +304,47 @@ export class ProfileServiceImpl implements IProfileService {
 
     const website =
       await this.profileWebsiteRepository.findWebsiteByWebsiteId(websiteId);
+    if (!website)
+      throw new HttpException('WEBSITE_NOT_FOUND', HttpStatus.NOT_FOUND);
 
     return await this.profileWebsiteRepository.remove(website);
+  }
+
+  async deleteProfileEducation(
+    profileEducationDeleteDto: ProfileEducationDeleteDto,
+  ): Promise<void> {
+    const { userId, profileId, educationId } = profileEducationDeleteDto;
+
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profile =
+      await this.profileRepository.findProfileByProfileId(profileId);
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+
+    const educationsByProfileId =
+      await this.profileEducationRepository.findEducationByProfileId(profileId);
+
+    if (!educationsByProfileId)
+      throw new HttpException('EDUCATION_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const educationExists = educationsByProfileId.some(
+      (education) => education.id === educationId,
+    );
+    if (!educationExists)
+      throw new HttpException('EDUCATION_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const education =
+      await this.profileEducationRepository.findEducationByEducationId(
+        educationId,
+      );
+    if (!education)
+      throw new HttpException('EDUCATION_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    return await this.profileEducationRepository.remove(education);
   }
 
   // async deleteComment(

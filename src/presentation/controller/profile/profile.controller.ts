@@ -8,9 +8,11 @@ import {
   Post,
   HttpException,
   HttpStatus,
+  Delete,
 } from '@nestjs/common';
 import {
   ProfileDto,
+  ProfileEducationDeleteDto,
   ProfileEducationDto,
   ProfileExperienceDto,
   ProfileProjectDto,
@@ -185,6 +187,23 @@ export class ProfileController {
     return await this.profileService.createProfileWebsite(
       profileWebsiteDto,
       profileId,
+    );
+  }
+
+  @Delete('/:profileId/education/:educationId')
+  async deleteProfileEducation(
+    @Headers('authorization') token: string,
+    @Param('profileId') profileId: number,
+    @Param('educationId') educationId: number,
+  ): Promise<void> {
+    const decodedToken = this.verifyToken(token);
+    const profileEducationDeleteDto: ProfileEducationDeleteDto = {
+      userId: decodedToken.aud,
+      profileId: Number(profileId),
+      educationId: Number(educationId),
+    };
+    return await this.profileService.deleteProfileEducation(
+      profileEducationDeleteDto,
     );
   }
 
