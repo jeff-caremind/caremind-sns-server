@@ -38,7 +38,7 @@ export class ProjectImageVo extends BaseEntity {
   })
   updatedAt: Date;
 
-  @ManyToOne(() => ProfileProjectVo)
+  @ManyToOne(() => ProfileProjectVo, { onDelete: 'CASCADE' })
   @JoinColumn({
     name: 'projectId', // foreign key 이름
     referencedColumnName: 'id', // 외래 키가 참조할 column

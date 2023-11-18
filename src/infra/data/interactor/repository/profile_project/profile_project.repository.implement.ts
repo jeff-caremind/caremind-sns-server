@@ -29,4 +29,28 @@ export class ProfileProjectRepositoryImpl implements IProfileProjectRepository {
   async create(profileProject: ProfileProjectVo): Promise<void> {
     await this.profileProjectTypeormRepository.save(profileProject);
   }
+
+  async findProjectByProjectId(
+    projectId: number,
+  ): Promise<ProfileProjectVo | null> {
+    const eachProject = await this.profileProjectTypeormRepository.findOne({
+      relations: {
+        projectImage: true,
+        projectCategory: true,
+      },
+      where: {
+        id: projectId,
+      },
+    });
+
+    return eachProject;
+  }
+
+  async update(project: ProfileProjectVo): Promise<void> {
+    await this.profileProjectTypeormRepository.save(project);
+  }
+
+  async remove(project: ProfileProjectVo): Promise<void> {
+    await this.profileProjectTypeormRepository.remove(project);
+  }
 }

@@ -14,7 +14,9 @@ import {
   ProfileDto,
   ProfileEducationDeleteDto,
   ProfileEducationDto,
+  ProfileExperienceDeleteDto,
   ProfileExperienceDto,
+  ProfileProjectDeleteDto,
   ProfileProjectDto,
   ProfileWebsiteDeleteDto,
   ProfileWebsiteDto,
@@ -190,6 +192,44 @@ export class ProfileController {
     );
   }
 
+  @Delete('/:profileId/project/:projectId')
+  async deleteProfileProject(
+    @Headers('authorization') token: string,
+    @Param('profileId') profileId: number,
+    @Param('projectId') projectId: number,
+  ): Promise<void> {
+    const decodedToken = this.verifyToken(token);
+
+    const profileProjectDeleteDto: ProfileProjectDeleteDto = {
+      userId: decodedToken.aud,
+      profileId: Number(profileId),
+      projectId: Number(projectId),
+    };
+
+    return await this.profileService.deleteProfileProject(
+      profileProjectDeleteDto,
+    );
+  }
+
+  @Delete('/:profileId/experience/:experienceId')
+  async deleteProfileExperience(
+    @Headers('authorization') token: string,
+    @Param('profileId') profileId: number,
+    @Param('experienceId') experienceId: number,
+  ): Promise<void> {
+    const decodedToken = this.verifyToken(token);
+
+    const profileExperienceDeleteDto: ProfileExperienceDeleteDto = {
+      userId: decodedToken.aud,
+      profileId: Number(profileId),
+      experienceId: Number(experienceId),
+    };
+
+    return await this.profileService.deleteProfileExperience(
+      profileExperienceDeleteDto,
+    );
+  }
+
   @Delete('/:profileId/education/:educationId')
   async deleteProfileEducation(
     @Headers('authorization') token: string,
@@ -223,21 +263,6 @@ export class ProfileController {
       profileWebsiteDeleteDto,
     );
   }
-
-  // @Delete('/:feedId/comment/:commentId')
-  // async deleteComment(
-  //   @Headers('authorization') token: string,
-  //   @Param('feedId') feedId: number,
-  //   @Param('commentId') commentId: number,
-  // ): Promise<void> {
-  //   const decoded = this.verifyToken(token);
-  //   const feedCommentDeleteDto = {
-  //     userId: decoded.aud,
-  //     feedId: Number(feedId),
-  //     commentId: Number(commentId),
-  //   };
-  //   return await this.feedService.deleteComment(feedCommentDeleteDto);
-  // }
 
   verifyToken(token: string): { aud: number } {
     const decoded = this.JwtService.verify(token);

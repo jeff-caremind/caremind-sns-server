@@ -24,7 +24,9 @@ import {
   ProfileDto,
   ProfileEducationDeleteDto,
   ProfileEducationDto,
+  ProfileExperienceDeleteDto,
   ProfileExperienceDto,
+  ProfileProjectDeleteDto,
   ProfileProjectDto,
   ProfileWebsiteDeleteDto,
   ProfileWebsiteDto,
@@ -275,10 +277,10 @@ export class ProfileServiceImpl implements IProfileService {
     return await this.profileWebsiteRepository.create(profileWebsite);
   }
 
-  async deleteProfileWebsite(
-    profileWebsiteDeleteDto: ProfileWebsiteDeleteDto,
+  async deleteProfileProject(
+    profileProjectDeleteDto: ProfileProjectDeleteDto,
   ): Promise<void> {
-    const { userId, profileId, websiteId } = profileWebsiteDeleteDto;
+    const { userId, profileId, projectId } = profileProjectDeleteDto;
 
     const user = await this.userRepository.findOneById(userId);
     if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
@@ -290,24 +292,61 @@ export class ProfileServiceImpl implements IProfileService {
     if (profile.user.id !== Number(userId))
       throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
 
-    const websitesByProfileId =
-      await this.profileWebsiteRepository.findWebsiteByProfileId(profileId);
+    const projectsByProfileId =
+      await this.profileProjectRepository.findProjectByProfileId(profileId);
+    if (!projectsByProfileId)
+      throw new HttpException('PROJECT_NOT_FOUND', HttpStatus.NOT_FOUND);
 
-    if (!websitesByProfileId)
-      throw new HttpException('WEBSITE_NOT_FOUND', HttpStatus.NOT_FOUND);
-
-    const websiteExists = websitesByProfileId.some(
-      (website) => website.id === websiteId,
+    const projectExists = projectsByProfileId.some(
+      (project) => project.id === projectId,
     );
-    if (!websiteExists)
-      throw new HttpException('WEBSITE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (!projectExists)
+      throw new HttpException('PROJECT_NOT_FOUND', HttpStatus.NOT_FOUND);
 
-    const website =
-      await this.profileWebsiteRepository.findWebsiteByWebsiteId(websiteId);
-    if (!website)
-      throw new HttpException('WEBSITE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const project =
+      await this.profileProjectRepository.findProjectByProjectId(projectId);
+    if (!project)
+      throw new HttpException('PROJECT_NOT_FOUND', HttpStatus.NOT_FOUND);
 
-    return await this.profileWebsiteRepository.remove(website);
+    return await this.profileProjectRepository.remove(project);
+  }
+
+  async deleteProfileExperience(
+    profileExperienceDeleteDto: ProfileExperienceDeleteDto,
+  ): Promise<void> {
+    const { userId, profileId, experienceId } = profileExperienceDeleteDto;
+
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profile =
+      await this.profileRepository.findProfileByProfileId(profileId);
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+
+    const experiencesByProfileId =
+      await this.profileExperienceRepository.findExperienceByProfileId(
+        profileId,
+      );
+    if (!experiencesByProfileId)
+      throw new HttpException('EXPERIENCE_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const experienceExists = experiencesByProfileId.some(
+      (experience) => experience.id === experienceId,
+    );
+    if (!experienceExists)
+      throw new HttpException('EXPERIENCE_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const experience =
+      await this.profileExperienceRepository.findExperienceByExperienceId(
+        experienceId,
+      );
+    if (!experience)
+      throw new HttpException('EXPERIENCE_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    return await this.profileExperienceRepository.remove(experience);
   }
 
   async deleteProfileEducation(
@@ -347,20 +386,40 @@ export class ProfileServiceImpl implements IProfileService {
     return await this.profileEducationRepository.remove(education);
   }
 
-  // async deleteComment(
-  //   feedCommentDeleteDto: FeedCommentDeleteDto,
-  // ): Promise<void> {
-  //   const { userId, feedId, commentId } = feedCommentDeleteDto;
-  //   const user = await this.userRepository.findOneById(userId);
-  //   if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
-  //   const feed = await this.feedRepository.findOneById(feedId);
-  //   if (!feed)
-  //     throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
-  //   const comment = await this.feedCommentRepository.findOneById(commentId);
-  //   if (!comment)
-  //     throw new HttpException('CONTENT_NOT_FOUND', HttpStatus.NOT_FOUND);
-  //   return await this.feedCommentRepository.remove(comment);
-  // }
+  async deleteProfileWebsite(
+    profileWebsiteDeleteDto: ProfileWebsiteDeleteDto,
+  ): Promise<void> {
+    const { userId, profileId, websiteId } = profileWebsiteDeleteDto;
+
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profile =
+      await this.profileRepository.findProfileByProfileId(profileId);
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+
+    const websitesByProfileId =
+      await this.profileWebsiteRepository.findWebsiteByProfileId(profileId);
+
+    if (!websitesByProfileId)
+      throw new HttpException('WEBSITE_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const websiteExists = websitesByProfileId.some(
+      (website) => website.id === websiteId,
+    );
+    if (!websiteExists)
+      throw new HttpException('WEBSITE_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const website =
+      await this.profileWebsiteRepository.findWebsiteByWebsiteId(websiteId);
+    if (!website)
+      throw new HttpException('WEBSITE_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    return await this.profileWebsiteRepository.remove(website);
+  }
 
   private createImageVos(images: string[]): ProjectImageVo[] {
     return images.map((item) => {

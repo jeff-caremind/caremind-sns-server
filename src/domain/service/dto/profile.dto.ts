@@ -43,14 +43,23 @@ export type ProfileWebsiteDto = {
   url: string;
 };
 
-export type ProfileWebsiteDeleteDto = {
+export type ProfileDeleteDto = {
   userId: number;
   profileId: number;
-  websiteId: number;
 };
 
-export type ProfileEducationDeleteDto = {
-  userId: number;
-  profileId: number;
+export type ProfileProjectDeleteDto = ProfileDeleteDto & {
+  projectId: number;
+};
+
+export type ProfileExperienceDeleteDto = ProfileDeleteDto & {
+  experienceId: number;
+};
+
+export type ProfileEducationDeleteDto = ProfileDeleteDto & {
   educationId: number;
+};
+
+export type ProfileWebsiteDeleteDto = ProfileDeleteDto & {
+  websiteId: number;
 };
