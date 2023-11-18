@@ -25,29 +25,30 @@ export class FeedTypeormRepositoryFactory {
   ): IFeedTypeormRepository {
     return repository.extend({
       findWithFeedQuery: async (queryDto: FeedQueryDto) => {
-        // const queryOptions = this.queryOptionBuilder(queryDto);
-        // return await repository.find({
-        //   relations: this.feedFullRelations,
-        //   select: this.feedFullRelationsSelect,
-        //   ...queryOptions,
-        // });
         const userId = 2;
+        let queryParameters: number[] = [];
 
-        return await repository.query(
-          `
+        const connectedUserQuerySrting = `
           SELECT
-            feed.id,
-            feed.content,
-            feed.createdAt,
-            feed.updatedAt,
-            feed_like_json.likes,
-            feed_like_json.likesCount,
-            feed_comment_json.comments,
-            feed_comment_json.commentsCount
-
-
-          FROM feed
-          LEFT JOIN user feed_author ON feed.authorId = feed_author.id
+            connected_user.id,
+            connected_user.name
+          FROM user_connection
+          LEFT JOIN (
+            SELECT
+              user.id,
+              user.name
+            FROM user
+            WHERE user.id != ?
+          ) connected_user ON (
+            connected_user.id = user_connection.userId OR connected_user.id = user_connection.connectedUserId
+          )
+          WHERE user_connection.userId = ? OR user_connection.connectedUserId = ?
+        `;
+        const feedLikeQuerySelectString = `
+          feed_like_json.likes,
+          feed_like_json.likesCount,
+          `;
+        const feedLikeQueryJoinString = `
           LEFT JOIN (
             SELECT
               JSON_ARRAYAGG(
@@ -56,7 +57,8 @@ export class FeedTypeormRepositoryFactory {
                   'liker', JSON_OBJECT(
                     'id', liker.id,
                     'name', liker.name,
-                    'profileImage', liker.profileImage
+                    'profileImage', liker.profileImage,
+                    'connected', IF(connected_liker.id, true, false)
                   )
                 )
               ) AS likes,
@@ -64,9 +66,16 @@ export class FeedTypeormRepositoryFactory {
               COUNT(feed_like.id) AS likesCount
             FROM feed_like
             LEFT JOIN user liker ON feed_like.likerId = liker.id
+            LEFT JOIN (${connectedUserQuerySrting}) connected_liker ON liker.id = connected_liker.id
             GROUP BY feed_like.likedFeedId
           ) feed_like_json ON feed_like_json.feedId = feed.id
-
+          `;
+        queryParameters = queryParameters.concat([userId, userId, userId]);
+        const feedCommentQuerySelectString = `
+          feed_comment_json.comments,
+          feed_comment_json.commentsCount,
+          `;
+        const feedCommentQueryJoinString = `
           LEFT JOIN (
             SELECT
               JSON_ARRAYAGG(
@@ -78,7 +87,8 @@ export class FeedTypeormRepositoryFactory {
                   'commenter', JSON_OBJECT(
                     'id', commenter.id,
                     'name', commenter.name,
-                    'profileImage', commenter.profileImage
+                    'profileImage', commenter.profileImage,
+                    'connected', IF(connected_commenter.id, true, false)
                   )
                 )
               ) AS comments,
@@ -86,45 +96,30 @@ export class FeedTypeormRepositoryFactory {
               COUNT(feed_comment.id) AS commentsCount
             FROM feed_comment
             LEFT JOIN user commenter ON commenter.id = feed_comment.commenterId
+            LEFT JOIN (
+              ${connectedUserQuerySrting}
+            ) connected_commenter ON commenter.id = connected_commenter.id
             GROUP BY feed_comment.commentedFeedId
           ) feed_comment_json ON feed_comment_json.feedId = feed.id
-
+          `;
+        queryParameters = queryParameters.concat([userId, userId, userId]);
+        const queryString = `
+          SELECT
+            ${feedLikeQuerySelectString}
+            ${feedCommentQuerySelectString}
+            feed.id,
+            feed.content,
+            feed.createdAt,
+            feed.updatedAt
+          FROM feed
+          LEFT JOIN user feed_author ON feed.authorId = feed_author.id
+          ${feedLikeQueryJoinString}
+          ${feedCommentQueryJoinString}
           ;
-        `,
-          [userId],
-        );
+        `;
 
-        // const queryBuilder = repository
-        //   .createQueryBuilder('feed')
-        //   .leftJoin('feed.author', 'author')
-        //   .addSelect(['author.id', 'author.name', 'author.profileImage'])
-        //   .leftJoin('feed.likes', 'feed_like')
-        //   .addSelect(['feed_like.id'])
-        //   // .leftJoin('feed_like.liker', 'liker')
-        //   // .addSelect(['liker.id', 'liker.name'])
-        //   .addSelect('COUNT(feed_like.id)', 'feed.likesCount')
-        //   // .leftJoin('feed_like.liker', 'connectedLiker')
-        //   // .leftJoin(
-        //   //   'user_connection',
-        //   //   'connection',
-        //   //   'connection.userId = liker.id OR connection.connectedUserId = liker.id',
-        //   // )
-        //   // .addSelect(['connection.id', 'connection.isAccepted'])
-        //   .leftJoin('feed.comments', 'feed_comment')
-        //   .addSelect(['feed_comment.id', 'feed_comment.content'])
-        //   .leftJoin('feed_comment.commenter', 'commenter')
-        //   .addSelect(['commenter.id', 'commenter.name'])
-        //   // .where(
-        //   //   'connection.userId = :userId OR connection.connectedUserId = :userId',
-        //   //   { userId: userId },
-        //   // )
-        //   .groupBy('feed.id')
-        //   .addGroupBy('feed_like.id')
-        //   .addGroupBy('feed_comment.id')
-        //   // .addGroupBy('')
-        //   // .orderBy('COUNT(likesCount)', 'ASC')
-        //   .orderBy('feed.updatedAt', 'DESC')
-        // return await queryBuilder.getMany();
+        return await repository.query(queryString, queryParameters);
+
       },
       findOneWithRelationsById: async (feedId: number) => {
         const [feed] = await repository.find({
