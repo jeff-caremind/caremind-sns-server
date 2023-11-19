@@ -4,6 +4,7 @@ import { ProfileExperienceVo } from 'src/infra/data/typeorm/vo/profile_experienc
 import { ProfileProjectVo } from 'src/infra/data/typeorm/vo/profile_project.vo';
 import { ProfileWebsiteVo } from 'src/infra/data/typeorm/vo/profile_website.vo';
 import {
+  ProfileDeleteDto,
   ProfileDto,
   ProfileEducationDeleteDto,
   ProfileEducationDto,
@@ -54,4 +55,5 @@ export interface IProfileService {
   deleteProfileWebsite(
     ProfileWebsiteDeleteDto: ProfileWebsiteDeleteDto,
   ): Promise<void>;
+  deleteProfile(profileDeleteDto: ProfileDeleteDto): Promise<void>;
 }

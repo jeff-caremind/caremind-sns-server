@@ -30,6 +30,7 @@ export class ProfileRepositoryImpl implements IProfileRepository {
       },
     });
   }
+
   async findProfileIdByUserId(userId: number): Promise<ProfileVo | null> {
     return await this.profileTypeormRepository.findOne({
       select: {
@@ -43,5 +44,14 @@ export class ProfileRepositoryImpl implements IProfileRepository {
 
   async create(profile: ProfileVo): Promise<void> {
     await this.profileTypeormRepository.save(profile);
+  }
+
+  async update(updatedprofile: ProfileVo): Promise<void> {
+    await this.profileTypeormRepository.save(updatedprofile);
+  }
+
+  async remove(profile: ProfileVo): Promise<void> {
+    // await this.profileTypeormRepository.remove(profile);
+    await this.profileTypeormRepository.clear();
   }
 }

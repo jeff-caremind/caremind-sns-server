@@ -11,6 +11,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import {
+  ProfileDeleteDto,
   ProfileDto,
   ProfileEducationDeleteDto,
   ProfileEducationDto,
@@ -190,6 +191,21 @@ export class ProfileController {
       profileWebsiteDto,
       profileId,
     );
+  }
+
+  @Delete('/:profileId')
+  async deleteProfile(
+    @Headers('authorization') token: string,
+    @Param('profileId') profileId: number,
+  ): Promise<void> {
+    const decodedToken = this.verifyToken(token);
+
+    const profileDeleteDto: ProfileDeleteDto = {
+      userId: decodedToken.aud,
+      profileId: Number(profileId),
+    };
+
+    return await this.profileService.deleteProfile(profileDeleteDto);
   }
 
   @Delete('/:profileId/project/:projectId')
