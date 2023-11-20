@@ -10,6 +10,9 @@ import {
   HttpStatus,
   Put,
 } from '@nestjs/common';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { JwtService } from '@nestjs/jwt';
+
 import {
   ProfileDto,
   ProfileEducationDto,
@@ -17,7 +20,6 @@ import {
   ProfileProjectDto,
   ProfileWebsiteDto,
 } from 'src/domain/service/dto/profile.dto';
-
 import { PROFILE_SERVICE } from 'src/domain/service/ioc';
 import { IProfileService } from 'src/domain/service/profile/profile.service.interface';
 import { ProfileVo } from 'src/infra/data/typeorm/vo/profile.vo';
@@ -25,8 +27,6 @@ import { ProfileEducationVo } from 'src/infra/data/typeorm/vo/profile_education.
 import { ProfileExperienceVo } from 'src/infra/data/typeorm/vo/profile_experience.vo';
 import { ProfileProjectVo } from 'src/infra/data/typeorm/vo/profile_project.vo';
 import { ProfileWebsiteVo } from 'src/infra/data/typeorm/vo/profile_website.vo';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { JwtService } from '@nestjs/jwt';
 
 @Controller('/profile')
 export class ProfileController {

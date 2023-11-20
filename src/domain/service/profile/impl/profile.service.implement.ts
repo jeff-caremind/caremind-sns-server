@@ -1,10 +1,4 @@
-import {
-  ConsoleLogger,
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 import { IProfileService } from '../profile.service.interface';
@@ -26,6 +20,10 @@ import { IProfileEducationRepository } from 'src/domain/interactor/data/reposito
 import { ProfileEducationVo } from 'src/infra/data/typeorm/vo/profile_education.vo';
 import { IProfileWebsiteRepository } from 'src/domain/interactor/data/repository/profile_website.repository.interface';
 import { ProfileWebsiteVo } from 'src/infra/data/typeorm/vo/profile_website.vo';
+import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
+import { ProjectImageVo } from 'src/infra/data/typeorm/vo/project_image.vo';
+import { ProjectCategoryVo } from 'src/infra/data/typeorm/vo/project_category.vo';
+import { ExperienceCompanyVo } from 'src/infra/data/typeorm/vo/experience_company.vo';
 import {
   ProfileDto,
   ProfileEducationDto,
@@ -33,10 +31,6 @@ import {
   ProfileProjectDto,
   ProfileWebsiteDto,
 } from '../../dto/profile.dto';
-import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
-import { ProjectImageVo } from 'src/infra/data/typeorm/vo/project_image.vo';
-import { ProjectCategoryVo } from 'src/infra/data/typeorm/vo/project_category.vo';
-import { ExperienceCompanyVo } from 'src/infra/data/typeorm/vo/experience_company.vo';
 
 @Injectable()
 export class ProfileServiceImpl implements IProfileService {
