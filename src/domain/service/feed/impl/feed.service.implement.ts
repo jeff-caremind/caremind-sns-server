@@ -223,7 +223,7 @@ export class FeedServiceImpl implements IFeedService {
     if (feed.author.id !== userId)
       throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
     await this.feedRepository.remove(feed);
-    await this.feedVideoRepository.remove(feed.video);
+    if (feed.video) await this.feedVideoRepository.remove(feed.video);
   }
 
   private createImageVos(images: string[]): FeedImageVo[] {
