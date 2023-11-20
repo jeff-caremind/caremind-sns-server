@@ -25,6 +25,7 @@ import {
   FeedQueryDto,
   FeedDeleteDto,
   SortParam,
+  FeedsDto,
 } from 'src/domain/service/dto/feed.dto';
 
 @Controller('/feed')
