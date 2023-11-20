@@ -23,6 +23,13 @@ export class UserConnectionRepositoryImpl implements IUserConnectionRepository {
         },
         isAccepted: false,
       },
+      select: {
+        connectedUser: {
+          id: true,
+          name: true,
+          profileImage: true,
+        },
+      },
     });
   }
 

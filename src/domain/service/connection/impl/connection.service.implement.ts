@@ -45,7 +45,12 @@ export class ConnectionServiceImpl implements IConnectionService {
   }
 
   async getReceived(userId: number): Promise<UserConnectionVo[]> {
-    return await this.userConnectionRepository.findReceived(userId);
+    const connections =
+      await this.userConnectionRepository.findReceived(userId);
+    connections.forEach((item) => {
+      item.connectedUser = item.user;
+    });
+    return connections;
   }
 
   async deleteConnection(connectionDto: ConnectionDto): Promise<void> {
