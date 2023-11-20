@@ -47,6 +47,7 @@ export class FeedController {
     @Query('tag') tag: string,
     @Query('offset') offset: number,
     @Query('limit') limit: number,
+    @Headers('authorization') token: string,
   ): Promise<FeedsDto> {
     const queryDto: FeedQueryDto = {
       sort: sort,
@@ -55,6 +56,7 @@ export class FeedController {
       offset: Number(offset) || 0,
       limit: Number(limit) || 10,
     };
+    if (token) queryDto.userId = this.verifyToken(token).aud;
     return await this.feedService.getList(queryDto);
   }
 

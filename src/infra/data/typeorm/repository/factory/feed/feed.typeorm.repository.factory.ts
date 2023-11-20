@@ -104,7 +104,9 @@ export class FeedTypeormRepositoryFactory {
 
   private feedFullRelations: FindOptionsRelations<FeedVo> = {
     author: true,
-    likes: true,
+    likes: {
+      liker: true,
+    },
     images: true,
     video: true,
     comments: {
@@ -125,6 +127,14 @@ export class FeedTypeormRepositoryFactory {
     video: {
       id: true,
       videoUrl: true,
+    },
+    likes: {
+      id: true,
+      createdAt: true,
+      liker: {
+        id: true,
+        name: true,
+      },
     },
     comments: {
       id: true,
