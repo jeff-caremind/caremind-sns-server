@@ -23,12 +23,12 @@ import { FeedTagVo } from 'src/infra/data/typeorm/vo/feed_tag.vo';
 import { TagVo } from 'src/infra/data/typeorm/vo/tag.vo';
 import {
   FeedLikeDto,
-  FeedsDto,
   FeedCreateDto,
   FeedCommentDto,
   FeedQueryDto,
   FeedCommentDeleteDto,
   FeedDeleteDto,
+  FeedsDto,
 } from '../../dto/feed.dto';
 import { ITagRepository } from 'src/domain/interactor/data/repository/tag.repository.interface';
 

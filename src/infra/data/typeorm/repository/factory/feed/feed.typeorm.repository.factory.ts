@@ -25,8 +25,7 @@ export class FeedTypeormRepositoryFactory {
   ): IFeedTypeormRepository {
     return repository.extend({
       findWithFeedQuery: async (queryDto: FeedQueryDto) => {
-        // const userId = queryDto.userId;
-        const userId = 2;
+        const userId = queryDto.userId;
         let queryParameters: (number | undefined)[] = [];
         let queryWhereString: string = ``;
         const whereConditions = [];
@@ -59,8 +58,7 @@ export class FeedTypeormRepositoryFactory {
         }
 
         let queryOffsetLimitString: string = ``;
-        if (queryDto.limit)
-          queryOffsetLimitString += `LIMIT ${queryDto.limit}`;
+        if (queryDto.limit) queryOffsetLimitString += `LIMIT ${queryDto.limit}`;
         if (queryDto.offset)
           queryOffsetLimitString += ` OFFSET ${queryDto.offset}`;
 

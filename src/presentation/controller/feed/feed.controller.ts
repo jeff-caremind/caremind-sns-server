@@ -20,7 +20,6 @@ import { FEED_SERVICE } from 'src/domain/service/ioc';
 import { FeedVo } from 'src/infra/data/typeorm/vo/feed.vo';
 import {
   FeedLikeDto,
-  FeedsDto,
   FeedCreateDto,
   FeedCommentDto,
   FeedQueryDto,
