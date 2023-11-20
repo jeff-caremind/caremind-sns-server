@@ -14,6 +14,7 @@ export class FeedRepositoryImpl implements IFeedRepository {
   ) {}
 
   async findAll(queryDto: FeedQueryDto): Promise<FeedVo[]> {
+    console.log(queryDto);
     return this.feedTypeormRepository.findWithFeedQuery(queryDto);
   }
 

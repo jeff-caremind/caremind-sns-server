@@ -52,8 +52,8 @@ export class FeedController {
       sort: sort,
       search: search,
       tag: tag,
-      offset: Number(offset),
-      limit: Number(limit),
+      offset: Number(offset) || 0,
+      limit: Number(limit) || 10,
     };
     return await this.feedService.getList(queryDto);
   }

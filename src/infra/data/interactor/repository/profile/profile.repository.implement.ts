@@ -13,6 +13,7 @@ export class ProfileRepositoryImpl implements IProfileRepository {
   ) {}
 
   async findProfileByProfileId(profileId: number): Promise<ProfileVo | null> {
+    console.log('profileId', profileId);
     return await this.profileTypeormRepository.findOne({
       relations: {
         user: true,
