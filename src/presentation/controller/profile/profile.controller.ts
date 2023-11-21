@@ -10,8 +10,6 @@ import {
   UseGuards,
   Put,
 } from '@nestjs/common';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { JwtService } from '@nestjs/jwt';
 
 import {
   ProfileDto,
@@ -65,12 +63,10 @@ export class ProfileController {
 
   @Get('/:profileId/project/:projectId')
   async getOneProfileProject(
-    @Headers('authorization') token: string,
+    @AuthUser() userId: number,
     @Param('profileId') profileId: number,
     @Param('projectId') projectId: number,
   ): Promise<ProfileProjectVo | null> {
-    const decodedToken = this.verifyToken(token);
-    const userId = decodedToken.aud;
     return await this.profileService.getOneProfileProject(
       Number(userId),
       Number(profileId),
@@ -203,29 +199,27 @@ export class ProfileController {
       profileId,
     );
   }
-  
+
   @Put('/:profileId')
   async updateProfile(
-    @Headers('authorization') token: string,
+    @AuthUser() userId: number,
     @Param('profileId') profileId: number,
     @Body() body: Partial<ProfileDto>,
   ): Promise<void> {
-    const decodedToken = this.verifyToken(token);
     const profileUpdateDto: ProfileDto = {
       ...body,
-      userId: decodedToken.aud,
+      userId: userId,
     };
     return await this.profileService.updateProfile(profileUpdateDto, profileId);
   }
 
   @Put('/:profileId/project/:projectId')
   async updateProfileProject(
-    @Headers('authorization') token: string,
+    @AuthUser() userId: number,
     @Param('profileId') profileId: number,
     @Param('projectId') projectId: number,
     @Body() body: Partial<ProfileProjectDto>,
   ): Promise<void> {
-    const decodedToken = this.verifyToken(token);
     const profileProjectUpdateDto: ProfileProjectDto = {
       title: body.title!,
       description: body.description,
@@ -233,7 +227,7 @@ export class ProfileController {
       endDate: body.endDate,
       projectImages: body.projectImages,
       projectCategory: body.projectCategory,
-      userId: decodedToken.aud,
+      userId: userId,
     };
     return await this.profileService.updateProfileProject(
       profileProjectUpdateDto,
@@ -244,19 +238,18 @@ export class ProfileController {
 
   @Put('/:profileId/experience/:experienceId')
   async updateProfileExperience(
-    @Headers('authorization') token: string,
+    @AuthUser() userId: number,
     @Param('profileId') profileId: number,
     @Param('experienceId') experienceId: number,
     @Body() body: Partial<ProfileExperienceDto>,
   ): Promise<void> {
-    const decodedToken = this.verifyToken(token);
     const profileExperienceUpdateDto: ProfileExperienceDto = {
       position: body.position!,
       description: body.description,
       startDate: body.startDate!,
       endDate: body.endDate,
       experienceCompany: body.experienceCompany,
-      userId: decodedToken.aud,
+      userId: userId,
     };
     return await this.profileService.updateProfileExperience(
       profileExperienceUpdateDto,
@@ -267,19 +260,18 @@ export class ProfileController {
 
   @Put('/:profileId/education/:educationId')
   async updateProfileEducation(
-    @Headers('authorization') token: string,
+    @AuthUser() userId: number,
     @Param('profileId') profileId: number,
     @Param('educationId') educationId: number,
     @Body() body: Partial<ProfileEducationDto>,
   ): Promise<void> {
-    const decodedToken = this.verifyToken(token);
     const profileEducationUpdateDto: ProfileEducationDto = {
       course: body.course!,
       description: body.description,
       startDate: body.startDate!,
       endDate: body.endDate,
       educationInstitute: body.educationInstitute!,
-      userId: decodedToken.aud,
+      userId: userId,
     };
 
     return await this.profileService.updateProfileEducation(
@@ -291,16 +283,15 @@ export class ProfileController {
 
   @Put('/:profileId/website/:websiteId')
   async updateProfileWebsite(
-    @Headers('authorization') token: string,
+    @AuthUser() userId: number,
     @Param('profileId') profileId: number,
     @Param('websiteId') websiteId: number,
     @Body() body: Partial<ProfileWebsiteDto>,
   ): Promise<void> {
-    const decodedToken = this.verifyToken(token);
     const profileWebsiteUpdateDto: ProfileWebsiteDto = {
       type: body.type!,
       url: body.url!,
-      userId: decodedToken.aud,
+      userId: userId,
     };
     return this.profileService.updateProfileWebsite(
       profileWebsiteUpdateDto,
