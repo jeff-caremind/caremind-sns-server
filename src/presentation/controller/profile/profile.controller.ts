@@ -8,16 +8,22 @@ import {
   Post,
   HttpException,
   HttpStatus,
+  Delete,
   Put,
 } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { JwtService } from '@nestjs/jwt';
 
 import {
+  ProfileDeleteDto,
   ProfileDto,
+  ProfileEducationDeleteDto,
   ProfileEducationDto,
+  ProfileExperienceDeleteDto,
   ProfileExperienceDto,
+  ProfileProjectDeleteDto,
   ProfileProjectDto,
+  ProfileWebsiteDeleteDto,
   ProfileWebsiteDto,
 } from 'src/domain/service/dto/profile.dto';
 import { PROFILE_SERVICE } from 'src/domain/service/ioc';
@@ -313,6 +319,78 @@ export class ProfileController {
       profileWebsiteUpdateDto,
       Number(profileId),
       Number(websiteId),
+    );
+  }
+
+  @Delete('/:profileId/project/:projectId')
+  async deleteProfileProject(
+    @Headers('authorization') token: string,
+    @Param('profileId') profileId: number,
+    @Param('projectId') projectId: number,
+  ): Promise<void> {
+    const decodedToken = this.verifyToken(token);
+
+    const profileProjectDeleteDto: ProfileProjectDeleteDto = {
+      userId: decodedToken.aud,
+      profileId: Number(profileId),
+      projectId: Number(projectId),
+    };
+
+    return await this.profileService.deleteProfileProject(
+      profileProjectDeleteDto,
+    );
+  }
+
+  @Delete('/:profileId/experience/:experienceId')
+  async deleteProfileExperience(
+    @Headers('authorization') token: string,
+    @Param('profileId') profileId: number,
+    @Param('experienceId') experienceId: number,
+  ): Promise<void> {
+    const decodedToken = this.verifyToken(token);
+
+    const profileExperienceDeleteDto: ProfileExperienceDeleteDto = {
+      userId: decodedToken.aud,
+      profileId: Number(profileId),
+      experienceId: Number(experienceId),
+    };
+
+    return await this.profileService.deleteProfileExperience(
+      profileExperienceDeleteDto,
+    );
+  }
+
+  @Delete('/:profileId/education/:educationId')
+  async deleteProfileEducation(
+    @Headers('authorization') token: string,
+    @Param('profileId') profileId: number,
+    @Param('educationId') educationId: number,
+  ): Promise<void> {
+    const decodedToken = this.verifyToken(token);
+    const profileEducationDeleteDto: ProfileEducationDeleteDto = {
+      userId: decodedToken.aud,
+      profileId: Number(profileId),
+      educationId: Number(educationId),
+    };
+    return await this.profileService.deleteProfileEducation(
+      profileEducationDeleteDto,
+    );
+  }
+
+  @Delete('/:profileId/website/:websiteId')
+  async deleteProfileWebsite(
+    @Headers('authorization') token: string,
+    @Param('profileId') profileId: number,
+    @Param('websiteId') websiteId: number,
+  ): Promise<void> {
+    const decodedToken = this.verifyToken(token);
+    const profileWebsiteDeleteDto: ProfileWebsiteDeleteDto = {
+      userId: decodedToken.aud,
+      profileId: Number(profileId),
+      websiteId: Number(websiteId),
+    };
+    return await this.profileService.deleteProfileWebsite(
+      profileWebsiteDeleteDto,
     );
   }
 

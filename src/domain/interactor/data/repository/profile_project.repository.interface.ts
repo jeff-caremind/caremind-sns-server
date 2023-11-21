@@ -5,4 +5,5 @@ export interface IProfileProjectRepository {
   create(profileProject: ProfileProjectVo): Promise<void>;
   findProjectByProjectId(projectId: number): Promise<ProfileProjectVo | null>;
   update(project: ProfileProjectVo): Promise<void>;
+  remove(project: ProfileProjectVo): Promise<void>;
 }

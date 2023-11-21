@@ -30,6 +30,7 @@ export class ProfileRepositoryImpl implements IProfileRepository {
       },
     });
   }
+
   async findProfileIdByUserId(userId: number): Promise<ProfileVo | null> {
     return await this.profileTypeormRepository.findOne({
       select: {
@@ -45,7 +46,7 @@ export class ProfileRepositoryImpl implements IProfileRepository {
     await this.profileTypeormRepository.save(profile);
   }
 
-  async update(updatedProfile: ProfileVo): Promise<void> {
-    await this.profileTypeormRepository.save(updatedProfile);
+  async update(updatedprofile: ProfileVo): Promise<void> {
+    await this.profileTypeormRepository.save(updatedprofile);
   }
 }
