@@ -62,6 +62,9 @@ export class FeedTypeormRepositoryFactory {
       case 'recent': {
         queryOptions.order = {
           createdAt: 'DESC',
+          comments: {
+            createdAt: 'DESC',
+          },
         };
         break;
       }
@@ -69,6 +72,9 @@ export class FeedTypeormRepositoryFactory {
         // TODO: change logic to get trending feeds
         queryOptions.order = {
           createdAt: 'DESC',
+          comments: {
+            createdAt: 'DESC',
+          },
         };
         break;
       }

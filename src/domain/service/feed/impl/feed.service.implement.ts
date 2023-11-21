@@ -52,7 +52,7 @@ export class FeedServiceImpl implements IFeedService {
     const feeds: FeedsDto = data.map((feed) => {
       let isLiked = false;
       if (queryDto.userId) {
-        isLiked = feed.likes.some((like) => like.liker.id === queryDto.userId);
+        isLiked = feed.likes.some((like) => like.liker?.id === queryDto.userId);
       }
       return {
         ...feed,

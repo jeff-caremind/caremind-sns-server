@@ -50,7 +50,7 @@ export class FeedController {
     @Headers('authorization') token: string,
   ): Promise<FeedsDto> {
     const queryDto: FeedQueryDto = {
-      sort: sort,
+      sort: sort || 'recent',
       search: search,
       tag: tag,
       offset: Number(offset) || 0,
