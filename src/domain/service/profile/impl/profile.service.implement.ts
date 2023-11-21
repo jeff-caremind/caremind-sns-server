@@ -571,22 +571,6 @@ export class ProfileServiceImpl implements IProfileService {
     return this.profileWebsiteRepository.update(website);
   }
 
-  async deleteProfile(profileDeleteDto: ProfileDeleteDto): Promise<void> {
-    const { userId, profileId } = profileDeleteDto;
-
-    const user = await this.userRepository.findOneById(userId);
-    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
-
-    const profile =
-      await this.profileRepository.findProfileByProfileId(profileId);
-    if (!profile)
-      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
-    if (profile.user.id !== Number(userId))
-      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
-
-    return await this.profileRepository.remove(profile);
-  }
-
   async deleteProfileProject(
     profileProjectDeleteDto: ProfileProjectDeleteDto,
   ): Promise<void> {

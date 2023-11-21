@@ -15,7 +15,7 @@ const TypeormConfigProvider: Provider = {
       database: process.env.DATABASE_SCHEMA,
       entities: [__dirname + '/../**/*.vo{.ts,.js}'],
       synchronize: true,
-      logging: true,
+      // logging: true,
     });
 
     return dataSource.initialize();

@@ -68,7 +68,6 @@ export interface IProfileService {
     profileId: number,
     websiteId: number,
   ): Promise<void>;
-  deleteProfile(profileDeleteDto: ProfileDeleteDto): Promise<void>;
   deleteProfileProject(
     profileProjectDeleteDto: ProfileProjectDeleteDto,
   ): Promise<void>;
