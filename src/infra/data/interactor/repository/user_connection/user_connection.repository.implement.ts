@@ -125,4 +125,18 @@ export class UserConnectionRepositoryImpl implements IUserConnectionRepository {
       },
     });
   }
+
+  async findExistingConnection(
+    userId: number,
+    connectedUserId: number,
+  ): Promise<UserConnectionVo | null> {
+    return await this.userConnectionTypeormRepository.findOneBy({
+      user: {
+        id: userId,
+      },
+      connectedUser: {
+        id: connectedUserId,
+      },
+    });
+  }
 }
