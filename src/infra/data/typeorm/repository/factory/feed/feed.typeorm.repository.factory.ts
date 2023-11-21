@@ -21,20 +21,33 @@ export class FeedTypeormRepositoryFactory {
   static getRepository = (dataSource: DataSource): IFeedTypeormRepository => {
     const repository = dataSource.getRepository(FeedVo);
     const feedTypeormRepository =
-      new FeedTypeormRepositoryFactory().extendRepository(repository);
+      new FeedTypeormRepositoryFactory().extendRepository(
+        repository,
+        dataSource,
+      );
     return feedTypeormRepository;
   };
 
   private extendRepository(
     repository: Repository<FeedVo>,
+    dataSource: DataSource,
   ): IFeedTypeormRepository {
     return repository.extend({
       findWithFeedQuery: async (queryDto: FeedQueryDto) => {
         const { userId, sort, search, tag, offset, limit } = queryDto;
 
-        // const connectionSubQuery = repository
-        //   .createQueryBuilder('user_connection')
-        //   .leftJoin('user_connection.connectedUser', )
+        const connectionSubQuery = dataSource
+          .getRepository(UserConnectionVo)
+          .createQueryBuilder('user_connection')
+          .leftJoinAndSelect(
+            'user',
+            'connected_user',
+            'user_connection.userId = connected_user.id OR user_connection.connectedUserId = connected_user.id',
+          )
+          .where(
+            'connected_user.id != :userId AND (user_connection.userId = :userId OR user_connection.connectedUserId = :userId)',
+            { userId: userId },
+          );
 
         const queryBuilder = repository
           .createQueryBuilder('feed')
@@ -54,7 +67,28 @@ export class FeedTypeormRepositoryFactory {
           ])
           .leftJoin('feed.feedTags', 'feed_tag')
           .leftJoin('feed_tag.tag', 'tag')
-          .addSelect(['feed_tag.id', 'tag.tag', 'tag.id']);
+          .addSelect(['feed_tag.id', 'tag.tag', 'tag.id'])
+          .leftJoin(
+            `(${connectionSubQuery.getQuery()})`,
+            'liker_connection',
+            'liker_connection.connectedUserId = liker.id',
+            connectionSubQuery.getParameters(),
+          )
+          .addSelect(['liker_connection.id', 'liker_connection.createdAt']);
+        // .leftJoin(
+        //   'user_connection',
+        //   'liker_connection',
+        //   'liker_connection.userId = liker.id OR liker_connection.connectedUserId = liker.id',
+        // )
+        // .addSelect([
+        //   'liker_connection.id',
+        //   'liker_connection.userId',
+        //   'liker_connection.connectedUserId',
+        // ])
+        // .where(
+        //   '(liker_connection.userId = :userId OR liker_connection.connectedUserId = :userId) OR liker_connection.id = NULL',
+        //   { userId: userId },
+        // );
 
         if (search)
           queryBuilder.where('feed.content LIKE %:search%', { search: search });
@@ -142,9 +176,7 @@ export class FeedTypeormRepositoryFactory {
 
   private feedFullRelations: FindOptionsRelations<FeedVo> = {
     author: true,
-    likes: {
-      liker: true,
-    },
+    likes: true,
     images: true,
     video: true,
     comments: {
@@ -165,14 +197,6 @@ export class FeedTypeormRepositoryFactory {
     video: {
       id: true,
       videoUrl: true,
-    },
-    likes: {
-      id: true,
-      createdAt: true,
-      liker: {
-        id: true,
-        name: true,
-      },
     },
     comments: {
       id: true,
