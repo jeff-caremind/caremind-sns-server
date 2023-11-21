@@ -15,6 +15,11 @@ export interface IProfileService {
   getProfileId(userId: number): Promise<ProfileVo | null>;
   getUserProfile(profileId: number): Promise<ProfileVo | null>;
   getProfileProject(profileId: number): Promise<ProfileProjectVo[] | null>;
+  getOneProfileProject(
+    userId: number,
+    profileId: number,
+    projectId: number,
+  ): Promise<ProfileProjectVo | null>;
   getProfileExperience(
     profileId: number,
   ): Promise<ProfileExperienceVo[] | null>;
@@ -36,5 +41,26 @@ export interface IProfileService {
   createProfileEducation(
     profileEducationDto: ProfileEducationDto,
     profileId: number,
+  ): Promise<void>;
+  updateProfile(profileUpdateDto: ProfileDto, profileId: number): Promise<void>;
+  updateProfileProject(
+    profileProjectUpdateDto: ProfileProjectDto,
+    profileId: number,
+    projectId: number,
+  ): Promise<void>;
+  updateProfileExperience(
+    profileExperienceUpdateDto: ProfileExperienceDto,
+    profileId: number,
+    experienceId: number,
+  ): Promise<void>;
+  updateProfileEducation(
+    profileEducationUpdateDto: ProfileEducationDto,
+    profileId: number,
+    educationId: number,
+  ): Promise<void>;
+  updateProfileWebsite(
+    profileWebsiteUpdateDto: ProfileWebsiteDto,
+    profileId: number,
+    websiteId: number,
   ): Promise<void>;
 }

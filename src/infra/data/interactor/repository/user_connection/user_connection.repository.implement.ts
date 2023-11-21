@@ -23,6 +23,13 @@ export class UserConnectionRepositoryImpl implements IUserConnectionRepository {
         },
         isAccepted: false,
       },
+      select: {
+        connectedUser: {
+          id: true,
+          name: true,
+          profileImage: true,
+        },
+      },
     });
   }
 
@@ -115,6 +122,20 @@ export class UserConnectionRepositoryImpl implements IUserConnectionRepository {
           name: true,
           profileImage: true,
         },
+      },
+    });
+  }
+
+  async findExistingConnection(
+    userId: number,
+    connectedUserId: number,
+  ): Promise<UserConnectionVo | null> {
+    return await this.userConnectionTypeormRepository.findOneBy({
+      user: {
+        id: userId,
+      },
+      connectedUser: {
+        id: connectedUserId,
       },
     });
   }

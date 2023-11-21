@@ -50,10 +50,15 @@ export class FeedServiceImpl implements IFeedService {
   async getList(queryDto: FeedQueryDto) {
     const data = await this.feedRepository.findAll(queryDto);
     const feeds: FeedsDto = data.map((feed) => {
+      let isLiked = false;
+      if (queryDto.userId) {
+        isLiked = feed.likes.some((like) => like.liker?.id === queryDto.userId);
+      }
       return {
         ...feed,
         likesCount: feed.likes.length,
         commentsCount: feed.comments.length,
+        isLiked: isLiked,
       };
     });
     return feeds;
@@ -218,7 +223,7 @@ export class FeedServiceImpl implements IFeedService {
     if (feed.author.id !== userId)
       throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
     await this.feedRepository.remove(feed);
-    await this.feedVideoRepository.remove(feed.video);
+    if (feed.video) await this.feedVideoRepository.remove(feed.video);
   }
 
   private createImageVos(images: string[]): FeedImageVo[] {

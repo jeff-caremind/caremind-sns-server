@@ -45,7 +45,12 @@ export class ConnectionServiceImpl implements IConnectionService {
   }
 
   async getReceived(userId: number): Promise<UserConnectionVo[]> {
-    return await this.userConnectionRepository.findReceived(userId);
+    const connections =
+      await this.userConnectionRepository.findReceived(userId);
+    connections.forEach((item) => {
+      item.connectedUser = item.user;
+    });
+    return connections;
   }
 
   async deleteConnection(connectionDto: ConnectionDto): Promise<void> {
@@ -89,6 +94,16 @@ export class ConnectionServiceImpl implements IConnectionService {
     const followee = await this.userRepository.findOneById(connectedUserId);
     if (!followee)
       throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    const existingConnection =
+      await this.userConnectionRepository.findExistingConnection(
+        userId,
+        connectedUserId,
+      );
+    if (existingConnection)
+      throw new HttpException(
+        'DUPLICATE_USER_CONNECTION',
+        HttpStatus.BAD_REQUEST,
+      );
     const newConnection = new UserConnectionVo();
     newConnection.user = follower;
     newConnection.connectedUser = followee;

@@ -30,4 +30,21 @@ export class ProfileEducationRepositoryImpl
   async create(profileEducation: ProfileEducationVo): Promise<void> {
     await this.profileEducationTypeormRepository.save(profileEducation);
   }
+
+  async findEducationByEducationId(
+    educationId: number,
+  ): Promise<ProfileEducationVo | null> {
+    return await this.profileEducationTypeormRepository.findOne({
+      relations: {
+        educationInstitute: true,
+      },
+      where: {
+        id: educationId,
+      },
+    });
+  }
+
+  async update(education: ProfileEducationVo): Promise<void> {
+    await this.profileEducationTypeormRepository.save(education);
+  }
 }
