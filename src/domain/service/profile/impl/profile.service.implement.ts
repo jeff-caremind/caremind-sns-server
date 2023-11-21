@@ -20,6 +20,10 @@ import { IProfileEducationRepository } from 'src/domain/interactor/data/reposito
 import { ProfileEducationVo } from 'src/infra/data/typeorm/vo/profile_education.vo';
 import { IProfileWebsiteRepository } from 'src/domain/interactor/data/repository/profile_website.repository.interface';
 import { ProfileWebsiteVo } from 'src/infra/data/typeorm/vo/profile_website.vo';
+import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
+import { ProjectImageVo } from 'src/infra/data/typeorm/vo/project_image.vo';
+import { ProjectCategoryVo } from 'src/infra/data/typeorm/vo/project_category.vo';
+import { ExperienceCompanyVo } from 'src/infra/data/typeorm/vo/experience_company.vo';
 import {
   ProfileDeleteDto,
   ProfileDto,
@@ -32,10 +36,6 @@ import {
   ProfileWebsiteDeleteDto,
   ProfileWebsiteDto,
 } from '../../dto/profile.dto';
-import { IUserRepository } from 'src/domain/interactor/data/repository/user.repository.interface';
-import { ProjectImageVo } from 'src/infra/data/typeorm/vo/project_image.vo';
-import { ProjectCategoryVo } from 'src/infra/data/typeorm/vo/project_category.vo';
-import { ExperienceCompanyVo } from 'src/infra/data/typeorm/vo/experience_company.vo';
 
 @Injectable()
 export class ProfileServiceImpl implements IProfileService {
@@ -96,6 +96,45 @@ export class ProfileServiceImpl implements IProfileService {
     });
 
     return profileProject;
+  }
+
+  async getOneProfileProject(
+    userId: number,
+    profileId: number,
+    projectId: number,
+  ): Promise<ProfileProjectVo | null> {
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profile = await this.profileRepository.findProfileByProfileId(
+      Number(profileId),
+    );
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+
+    const projectsByProfileId =
+      await this.profileProjectRepository.findProjectByProfileId(
+        Number(profileId),
+      );
+
+    if (!projectsByProfileId)
+      throw new HttpException('PROJECT_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const projectExists = projectsByProfileId.some(
+      (project) => project.id === projectId,
+    );
+    if (!projectExists)
+      throw new HttpException('PROJECT_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const project = await this.profileProjectRepository.findProjectByProjectId(
+      Number(projectId),
+    );
+    if (!project)
+      throw new HttpException('PROJECT_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    return project;
   }
 
   async getProfileExperience(
@@ -276,6 +315,260 @@ export class ProfileServiceImpl implements IProfileService {
     if (url) profileWebsite.url = url;
 
     return await this.profileWebsiteRepository.create(profileWebsite);
+  }
+
+  async updateProfile(
+    profileUpdateDto: ProfileDto,
+    profileId: number,
+  ): Promise<void> {
+    const {
+      userId,
+      jobDescription,
+      about,
+      location,
+      address,
+      profileBackImage,
+    } = profileUpdateDto;
+
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profile = await this.profileRepository.findProfileByProfileId(
+      Number(profileId),
+    );
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+
+    if (jobDescription) profile.jobDescription = jobDescription;
+    if (about) profile.about = about;
+    if (location) profile.location = location;
+    if (address) profile.address = address;
+    if (profileBackImage) profile.profileBackImage = profileBackImage;
+
+    await this.profileRepository.update(profile);
+  }
+
+  async updateProfileProject(
+    profileProjectUpdateDto: ProfileProjectDto,
+    profileId: number,
+    projectId: number,
+  ): Promise<void> {
+    const {
+      userId,
+      title,
+      description,
+      startDate,
+      endDate,
+      projectImages,
+      projectCategory,
+    } = profileProjectUpdateDto;
+
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profile = await this.profileRepository.findProfileByProfileId(
+      Number(profileId),
+    );
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+
+    const projectsByProfileId =
+      await this.profileProjectRepository.findProjectByProfileId(
+        Number(profileId),
+      );
+
+    if (!projectsByProfileId)
+      throw new HttpException('PROJECT_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const projectExists = projectsByProfileId.some(
+      (project) => project.id === projectId,
+    );
+    if (!projectExists)
+      throw new HttpException('PROJECT_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const project = await this.profileProjectRepository.findProjectByProjectId(
+      Number(projectId),
+    );
+    if (!project)
+      throw new HttpException('PROJECT_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    if (title) project.title = title;
+    if (description) project.description = description;
+    if (startDate) project.startDate = startDate;
+    if (endDate) project.endDate = endDate;
+    if (projectImages)
+      project.projectImage = this.createImageVos(projectImages);
+    if (projectCategory)
+      project.projectCategory.title =
+        this.createCategoryVos(projectCategory).title;
+
+    return await this.profileProjectRepository.update(project);
+  }
+
+  async updateProfileExperience(
+    profileExperienceUpdateDto: ProfileExperienceDto,
+    profileId: number,
+    experienceId: number,
+  ): Promise<void> {
+    const {
+      userId,
+      position,
+      description,
+      startDate,
+      endDate,
+      experienceCompany,
+    } = profileExperienceUpdateDto;
+
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profile = await this.profileRepository.findProfileByProfileId(
+      Number(profileId),
+    );
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+
+    const experiencesByProfileId =
+      await this.profileExperienceRepository.findExperienceByProfileId(
+        Number(profileId),
+      );
+
+    if (!experiencesByProfileId)
+      throw new HttpException('EXPERIENCE_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const experienceExists = experiencesByProfileId.some(
+      (experience) => experience.id === experienceId,
+    );
+    if (!experienceExists)
+      throw new HttpException('EXPERIENCE_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const experience =
+      await this.profileExperienceRepository.findExperienceByExperienceId(
+        Number(experienceId),
+      );
+    if (!experience)
+      throw new HttpException('EXPERIENCE_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    if (position) experience.position = position;
+    if (description) experience.description = description;
+    if (startDate) experience.startDate = startDate;
+    if (endDate) experience.endDate = endDate;
+    if (experienceCompany)
+      experience.experienceCompany.name = experienceCompany.name;
+    if (experienceCompany)
+      experience.experienceCompany.logo = experienceCompany.logo;
+    if (experienceCompany)
+      experience.experienceCompany.location = experienceCompany.location;
+
+    return await this.profileExperienceRepository.update(experience);
+  }
+
+  async updateProfileEducation(
+    profileEducationUpdateDto: ProfileEducationDto,
+    profileId: number,
+    educationId: number,
+  ): Promise<void> {
+    const {
+      userId,
+      course,
+      description,
+      startDate,
+      endDate,
+      educationInstitute,
+    } = profileEducationUpdateDto;
+
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profile = await this.profileRepository.findProfileByProfileId(
+      Number(profileId),
+    );
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+
+    const educationsByProfileId =
+      await this.profileEducationRepository.findEducationByProfileId(
+        Number(profileId),
+      );
+
+    if (!educationsByProfileId)
+      throw new HttpException('EDUCATION_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const educationExists = educationsByProfileId.some(
+      (education) => education.id === educationId,
+    );
+    if (!educationExists)
+      throw new HttpException('EDUCATION_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const education =
+      await this.profileEducationRepository.findEducationByEducationId(
+        Number(educationId),
+      );
+    if (!education)
+      throw new HttpException('EDUCATION_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    if (course) education.course = course;
+    if (description) education.description = description;
+    if (startDate) education.startDate = startDate;
+    if (endDate) education.endDate = endDate;
+    if (educationInstitute)
+      education.educationInstitute.logo = educationInstitute.logo;
+    if (educationInstitute)
+      education.educationInstitute.name = educationInstitute.name;
+
+    return await this.profileEducationRepository.update(education);
+  }
+
+  async updateProfileWebsite(
+    profileWebsiteUpdateDto: ProfileWebsiteDto,
+    profileId: number,
+    websiteId: number,
+  ): Promise<void> {
+    const { userId, type, url } = profileWebsiteUpdateDto;
+
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profile = await this.profileRepository.findProfileByProfileId(
+      Number(profileId),
+    );
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+
+    const websitesByProfileId =
+      await this.profileWebsiteRepository.findWebsiteByProfileId(
+        Number(profileId),
+      );
+
+    if (!websitesByProfileId)
+      throw new HttpException('WEBSITE_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const websiteExists = websitesByProfileId.some(
+      (website) => website.id === websiteId,
+    );
+    if (!websiteExists)
+      throw new HttpException('WEBSITE_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const website = await this.profileWebsiteRepository.findWebsiteByWebsiteId(
+      Number(websiteId),
+    );
+    if (!website)
+      throw new HttpException('WEBSITE_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    if (type) website.type = type;
+    if (url) website.url = url;
+
+    return this.profileWebsiteRepository.update(website);
   }
 
   async deleteProfile(profileDeleteDto: ProfileDeleteDto): Promise<void> {

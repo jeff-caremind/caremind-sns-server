@@ -5,4 +5,5 @@ export interface IProfileWebsiteRepository {
   create(profileWebsite: ProfileWebsiteVo): Promise<void>;
   findWebsiteByWebsiteId(websiteId: number): Promise<ProfileWebsiteVo | null>;
   remove(website: ProfileWebsiteVo): Promise<void>;
+  update(website: ProfileWebsiteVo): Promise<void>;
 }

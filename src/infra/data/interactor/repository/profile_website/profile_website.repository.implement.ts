@@ -37,4 +37,8 @@ export class ProfileWebsiteRepositoryImpl implements IProfileWebsiteRepository {
   async remove(website: ProfileWebsiteVo): Promise<void> {
     await this.profileWebsiteTypeormRepository.remove(website);
   }
+
+  async update(website: ProfileWebsiteVo): Promise<void> {
+    await this.profileWebsiteTypeormRepository.save(website);
+  }
 }

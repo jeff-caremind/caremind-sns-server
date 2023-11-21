@@ -44,7 +44,8 @@ export class UserVo extends BaseEntity {
   @Column({
     type: 'varchar',
     length: 2000,
-    default: '',
+    default:
+      'https://littledeep.com/wp-content/uploads/2019/04/littledeep_person_style1.png',
   })
   profileImage: string;
 
