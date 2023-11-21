@@ -5,5 +5,5 @@ export interface IProfileRepository {
   findProfileIdByUserId(userId: number): Promise<ProfileVo | null>;
   create(profile: ProfileVo): Promise<void>;
   update(updatedprofile: ProfileVo): Promise<void>;
-  // remove(profile: ProfileVo): Promise<void>;
+  remove(profile: ProfileVo): Promise<void>;
 }

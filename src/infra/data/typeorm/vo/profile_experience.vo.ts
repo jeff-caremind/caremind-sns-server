@@ -57,7 +57,7 @@ export class ProfileExperienceVo extends BaseEntity {
   })
   updatedAt: Date;
 
-  @ManyToOne(() => ProfileVo)
+  @ManyToOne(() => ProfileVo, { cascade: true }) // 추가
   @JoinColumn({
     name: 'profileId',
     referencedColumnName: 'id',
