@@ -11,4 +11,8 @@ export interface IUserConnectionRepository {
     connectionId: number,
   ): Promise<UserConnectionVo | null>;
   create(connection: UserConnectionVo): Promise<void>;
+  findExistingConnection(
+    userId: number,
+    connectedUserId: number,
+  ): Promise<UserConnectionVo | null>;
 }
