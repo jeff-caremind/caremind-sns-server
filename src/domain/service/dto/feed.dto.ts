@@ -42,6 +42,7 @@ export type FeedCommentDto = {
 };
 
 export type FeedQueryDto = {
+  userId?: number;
   sort: SortParam;
   search: string;
   tag: string;
