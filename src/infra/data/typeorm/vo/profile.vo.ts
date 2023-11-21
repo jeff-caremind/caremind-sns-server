@@ -54,6 +54,7 @@ export class ProfileVo extends BaseEntity {
     type: 'varchar',
     length: 2000,
     default: '',
+    nullable: true,
   })
   profileBackImage: string;
 

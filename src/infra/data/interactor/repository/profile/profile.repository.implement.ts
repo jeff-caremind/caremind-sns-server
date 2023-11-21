@@ -44,4 +44,8 @@ export class ProfileRepositoryImpl implements IProfileRepository {
   async create(profile: ProfileVo): Promise<void> {
     await this.profileTypeormRepository.save(profile);
   }
+
+  async update(updatedProfile: ProfileVo): Promise<void> {
+    await this.profileTypeormRepository.save(updatedProfile);
+  }
 }
