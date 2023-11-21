@@ -44,6 +44,13 @@ export class ProfileController {
     return await this.profileService.getProfileId(userId);
   }
 
+  @Get('/user/:userId')
+  async getProfileByUserId(
+    @Param('userId') userId: number,
+  ): Promise<ProfileVo | null> {
+    return await this.profileService.getProfileId(Number(userId));
+  }
+
   @Get('/:profileId')
   async getUserProfile(
     @Param('profileId') profileId: number,
@@ -56,6 +63,21 @@ export class ProfileController {
     @Param('profileId') profileId: number,
   ): Promise<ProfileProjectVo[] | null> {
     return await this.profileService.getProfileProject(profileId);
+  }
+
+  @Get('/:profileId/project/:projectId')
+  async getOneProfileProject(
+    @Headers('authorization') token: string,
+    @Param('profileId') profileId: number,
+    @Param('projectId') projectId: number,
+  ): Promise<ProfileProjectVo | null> {
+    const decodedToken = this.verifyToken(token);
+    const userId = decodedToken.aud;
+    return await this.profileService.getOneProfileProject(
+      Number(userId),
+      Number(profileId),
+      Number(projectId),
+    );
   }
 
   @Get('/:profileId/experience')
@@ -91,6 +113,7 @@ export class ProfileController {
       about: body.about,
       location: body.location,
       address: body.address,
+      profileBackImage: body.profileBackImage,
     };
     return await this.profileService.createProfile(profileDto);
   }

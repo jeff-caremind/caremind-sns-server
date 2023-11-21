@@ -7,6 +7,7 @@ export type ProfileDto = {
   about?: string;
   location?: string;
   address?: string;
+  profileBackImage?: string;
 };
 
 export type ProfileProjectDto = {

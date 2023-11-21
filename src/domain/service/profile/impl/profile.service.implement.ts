@@ -54,7 +54,12 @@ export class ProfileServiceImpl implements IProfileService {
   ) {}
 
   async getProfileId(userId: number): Promise<ProfileVo | null> {
-    return await this.profileRepository.findProfileIdByUserId(userId);
+    const ProfileId =
+      await this.profileRepository.findProfileIdByUserId(userId);
+    if (!ProfileId) {
+      throw new HttpException('PROFILEID_NOT_FOUND', HttpStatus.NOT_FOUND);
+    }
+    return ProfileId;
   }
 
   async getUserProfile(profileId: number): Promise<ProfileVo | null> {
@@ -93,6 +98,45 @@ export class ProfileServiceImpl implements IProfileService {
     return profileProject;
   }
 
+  async getOneProfileProject(
+    userId: number,
+    profileId: number,
+    projectId: number,
+  ): Promise<ProfileProjectVo | null> {
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const profile = await this.profileRepository.findProfileByProfileId(
+      Number(profileId),
+    );
+    if (!profile)
+      throw new HttpException('PROFILE_NOT_FOUND', HttpStatus.NOT_FOUND);
+    if (profile.user.id !== Number(userId))
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+
+    const projectsByProfileId =
+      await this.profileProjectRepository.findProjectByProfileId(
+        Number(profileId),
+      );
+
+    if (!projectsByProfileId)
+      throw new HttpException('PROJECT_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const projectExists = projectsByProfileId.some(
+      (project) => project.id === projectId,
+    );
+    if (!projectExists)
+      throw new HttpException('PROJECT_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    const project = await this.profileProjectRepository.findProjectByProjectId(
+      Number(projectId),
+    );
+    if (!project)
+      throw new HttpException('PROJECT_NOT_FOUND', HttpStatus.NOT_FOUND);
+
+    return project;
+  }
+
   async getProfileExperience(
     profileId: number,
   ): Promise<ProfileExperienceVo[] | null> {
@@ -124,7 +168,14 @@ export class ProfileServiceImpl implements IProfileService {
   }
 
   async createProfile(profileDto: ProfileDto): Promise<void> {
-    const { userId, jobDescription, about, location, address } = profileDto;
+    const {
+      userId,
+      jobDescription,
+      about,
+      location,
+      address,
+      profileBackImage,
+    } = profileDto;
     const user = await this.userRepository.findOneById(userId);
     if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
 
@@ -134,6 +185,7 @@ export class ProfileServiceImpl implements IProfileService {
     if (about) profile.about = about;
     if (location) profile.location = location;
     if (address) profile.address = address;
+    if (profileBackImage) profile.profileBackImage = profileBackImage;
 
     return await this.profileRepository.create(profile);
   }
@@ -277,8 +329,14 @@ export class ProfileServiceImpl implements IProfileService {
     profileUpdateDto: ProfileDto,
     profileId: number,
   ): Promise<void> {
-    const { userId, jobDescription, about, location, address } =
-      profileUpdateDto;
+    const {
+      userId,
+      jobDescription,
+      about,
+      location,
+      address,
+      profileBackImage,
+    } = profileUpdateDto;
 
     const user = await this.userRepository.findOneById(userId);
     if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
@@ -295,6 +353,7 @@ export class ProfileServiceImpl implements IProfileService {
     if (about) profile.about = about;
     if (location) profile.location = location;
     if (address) profile.address = address;
+    if (profileBackImage) profile.profileBackImage = profileBackImage;
 
     await this.profileRepository.update(profile);
   }
