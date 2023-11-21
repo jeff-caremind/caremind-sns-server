@@ -7,6 +7,7 @@ import {
   Param,
   Body,
   Delete,
+  Patch,
 } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { JwtService } from '@nestjs/jwt';
@@ -70,6 +71,19 @@ export class ConnectionController {
       message: message,
     };
     return await this.connectionService.createConnection(connectionDto);
+  }
+
+  @Patch('/:connectionId')
+  async acceptConnection(
+    @Headers('authorization') token: string,
+    @Param('connectionId') connectionId: number,
+  ) {
+    const decoded = this.verifyToken(token);
+    const connectionDto: ConnectionDto = {
+      userId: decoded.aud,
+      connectionId: connectionId,
+    };
+    await this.connectionService.acceptConnection(connectionDto);
   }
 
   verifyToken(token: string): { aud: number } {
