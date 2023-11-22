@@ -15,7 +15,6 @@ import {
 import { JwtService } from '@nestjs/jwt';
 
 import {
-  ProfileDeleteDto,
   ProfileDto,
   ProfileEducationDeleteDto,
   ProfileEducationDto,
@@ -41,7 +40,7 @@ export class ProfileController {
     private readonly JwtService: JwtService,
   ) {}
 
-  @Get('/profileId')
+  @Get('/profileId') // 로그인 한 유저의 profileId 검색
   async getProfileId(
     @Headers('authorization') token: string,
   ): Promise<ProfileVo | null> {
@@ -50,7 +49,7 @@ export class ProfileController {
     return await this.profileService.getProfileId(userId);
   }
 
-  @Get('/user/:userId')
+  @Get('/user/:userId') // 선택한 유저(프로필 클릭)의 profileId 검색
   async getProfileByUserId(
     @Param('userId') userId: number,
   ): Promise<ProfileVo | null> {
@@ -72,14 +71,14 @@ export class ProfileController {
   }
 
   @Get('/:profileId/project/:projectId')
-  async getOneProfileProject(
+  async getOneProfileProjectByProjectId(
     @Headers('authorization') token: string,
     @Param('profileId') profileId: number,
     @Param('projectId') projectId: number,
   ): Promise<ProfileProjectVo | null> {
     const decodedToken = this.verifyToken(token);
     const userId = decodedToken.aud;
-    return await this.profileService.getOneProfileProject(
+    return await this.profileService.getOneProfileProjectByProjectId(
       Number(userId),
       Number(profileId),
       Number(projectId),
@@ -115,11 +114,7 @@ export class ProfileController {
     const decodedToken = this.verifyToken(token);
     const profileDto: ProfileDto = {
       userId: decodedToken.aud,
-      jobDescription: body.jobDescription,
-      about: body.about,
-      location: body.location,
-      address: body.address,
-      profileBackImage: body.profileBackImage,
+      ...body,
     };
     return await this.profileService.createProfile(profileDto);
   }

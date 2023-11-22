@@ -25,7 +25,6 @@ import { ProjectImageVo } from 'src/infra/data/typeorm/vo/project_image.vo';
 import { ProjectCategoryVo } from 'src/infra/data/typeorm/vo/project_category.vo';
 import { ExperienceCompanyVo } from 'src/infra/data/typeorm/vo/experience_company.vo';
 import {
-  ProfileDeleteDto,
   ProfileDto,
   ProfileEducationDeleteDto,
   ProfileEducationDto,
@@ -59,7 +58,12 @@ export class ProfileServiceImpl implements IProfileService {
   ) {}
 
   async getProfileId(userId: number): Promise<ProfileVo | null> {
-    return await this.profileRepository.findProfileIdByUserId(userId);
+    const ProfileId =
+      await this.profileRepository.findProfileIdByUserId(userId);
+    if (!ProfileId) {
+      throw new HttpException('PROFILEID_NOT_FOUND', HttpStatus.NOT_FOUND);
+    }
+    return ProfileId;
   }
 
   async getUserProfile(profileId: number): Promise<ProfileVo | null> {
@@ -98,7 +102,7 @@ export class ProfileServiceImpl implements IProfileService {
     return profileProject;
   }
 
-  async getOneProfileProject(
+  async getOneProfileProjectByProjectId(
     userId: number,
     profileId: number,
     projectId: number,
@@ -168,7 +172,14 @@ export class ProfileServiceImpl implements IProfileService {
   }
 
   async createProfile(profileDto: ProfileDto): Promise<void> {
-    const { userId, jobDescription, about, location, address } = profileDto;
+    const {
+      userId,
+      jobDescription,
+      about,
+      location,
+      address,
+      profileBackImage,
+    } = profileDto;
     const user = await this.userRepository.findOneById(userId);
     if (!user) throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
 
@@ -178,6 +189,7 @@ export class ProfileServiceImpl implements IProfileService {
     if (about) profile.about = about;
     if (location) profile.location = location;
     if (address) profile.address = address;
+    if (profileBackImage) profile.profileBackImage = profileBackImage;
 
     return await this.profileRepository.create(profile);
   }

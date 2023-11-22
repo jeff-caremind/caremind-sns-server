@@ -58,7 +58,7 @@ export class ProfileEducationVo extends BaseEntity {
   })
   updatedAt: Date;
 
-  @ManyToOne(() => ProfileVo, { cascade: true }) // 추가
+  @ManyToOne(() => ProfileVo)
   @JoinColumn({
     name: 'profileId', // foreign key 이름
     referencedColumnName: 'id', // 외래 키가 참조할 column
