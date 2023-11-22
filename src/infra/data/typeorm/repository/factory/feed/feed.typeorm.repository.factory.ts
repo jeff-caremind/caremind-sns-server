@@ -6,7 +6,6 @@ import {
   FindOptionsSelect,
   Like,
   Repository,
-  createQueryBuilder,
 } from 'typeorm';
 
 import { IFeedTypeormRepository } from 'src/infra/data/interactor/repository/feed/orm_interface/feed.typeorm.repository.interface';
@@ -53,7 +52,18 @@ export class FeedTypeormRepositoryFactory {
           .createQueryBuilder('feed')
           .leftJoin('feed.likes', 'feed_like')
           .leftJoin('feed_like.liker', 'liker')
-          .addSelect(['feed_like.id', 'liker.id', 'liker.name'])
+          .leftJoin(
+            `(${connectionSubQuery.getQuery()})`,
+            'liker_connection',
+            'liker_connection.connected_user_id = liker.id',
+            connectionSubQuery.getParameters(),
+          )
+          .addSelect([
+            'feed_like.id',
+            'liker.id',
+            'liker.name',
+            'liker_connection.user_connection_isAccepted AS liker_connected',
+          ])
           .leftJoin('feed.comments', 'comment')
           .leftJoin('comment.commenter', 'commenter')
           .addSelect([
@@ -67,28 +77,7 @@ export class FeedTypeormRepositoryFactory {
           ])
           .leftJoin('feed.feedTags', 'feed_tag')
           .leftJoin('feed_tag.tag', 'tag')
-          .addSelect(['feed_tag.id', 'tag.tag', 'tag.id'])
-          .leftJoin(
-            `(${connectionSubQuery.getQuery()})`,
-            'liker_connection',
-            'liker_connection.connectedUserId = liker.id',
-            connectionSubQuery.getParameters(),
-          )
-          .addSelect(['liker_connection.id', 'liker_connection.createdAt']);
-        // .leftJoin(
-        //   'user_connection',
-        //   'liker_connection',
-        //   'liker_connection.userId = liker.id OR liker_connection.connectedUserId = liker.id',
-        // )
-        // .addSelect([
-        //   'liker_connection.id',
-        //   'liker_connection.userId',
-        //   'liker_connection.connectedUserId',
-        // ])
-        // .where(
-        //   '(liker_connection.userId = :userId OR liker_connection.connectedUserId = :userId) OR liker_connection.id = NULL',
-        //   { userId: userId },
-        // );
+          .addSelect(['feed_tag.id', 'tag.tag', 'tag.id']);
 
         if (search)
           queryBuilder.where('feed.content LIKE %:search%', { search: search });
