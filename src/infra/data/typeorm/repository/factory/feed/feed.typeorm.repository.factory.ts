@@ -35,34 +35,15 @@ export class FeedTypeormRepositoryFactory {
       findWithFeedQuery: async (queryDto: FeedQueryDto) => {
         const { userId, sort, search, tag, offset, limit } = queryDto;
 
-        const connectionSubQuery = dataSource
-          .getRepository(UserConnectionVo)
-          .createQueryBuilder('user_connection')
-          .leftJoinAndSelect(
-            'user',
-            'connected_user',
-            'user_connection.userId = connected_user.id OR user_connection.connectedUserId = connected_user.id',
-          )
-          .where(
-            'connected_user.id != :userId AND (user_connection.userId = :userId OR user_connection.connectedUserId = :userId)',
-            { userId: userId },
-          );
-
         const queryBuilder = repository
           .createQueryBuilder('feed')
           .leftJoin('feed.likes', 'feed_like')
           .leftJoin('feed_like.liker', 'liker')
-          .leftJoin(
-            `(${connectionSubQuery.getQuery()})`,
-            'liker_connection',
-            'liker_connection.connected_user_id = liker.id',
-            connectionSubQuery.getParameters(),
-          )
           .addSelect([
             'feed_like.id',
             'liker.id',
             'liker.name',
-            'liker_connection.user_connection_isAccepted AS liker_connected',
+            'liker.profileImage',
           ])
           .leftJoin('feed.comments', 'comment')
           .leftJoin('comment.commenter', 'commenter')
@@ -80,7 +61,9 @@ export class FeedTypeormRepositoryFactory {
           .addSelect(['feed_tag.id', 'tag.tag', 'tag.id']);
 
         if (search)
-          queryBuilder.where('feed.content LIKE %:search%', { search: search });
+          queryBuilder.where('feed.content LIKE :search', {
+            search: `%${search}%`,
+          });
 
         if (tag) queryBuilder.where('tag.tag = :tag', { tag: tag });
 
