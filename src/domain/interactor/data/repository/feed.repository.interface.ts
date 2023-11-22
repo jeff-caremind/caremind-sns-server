@@ -13,8 +13,4 @@ export interface IFeedRepository {
     connectedUserIds: number[],
     limit: number,
   ): Promise<FeedVo[]>;
-  findUnconnectedUserRecentFeeds(
-    connectedUserIds: number[],
-    limit: number,
-  ): Promise<FeedVo[]>;
 }

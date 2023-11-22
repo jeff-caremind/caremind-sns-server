@@ -56,10 +56,8 @@ export class FeedServiceImpl implements IFeedService {
     const { userId, sort, limit } = queryDto;
     if (sort === 'trending') {
       // trending의 정의
-      // 최근 3일 이내의 게시글 중
+      // 연결된 유저들의 최근 게시글 중
       // connected user가 좋아요를 많이 누른 게시글을 우선 보여줌
-
-      // 문제점 : 페이지네이션 시 추가로 보여주는 데이터 처리가 곤란
 
       // 연결된 유저의 목록
       let connectedUserIds: number[] = [];
@@ -73,26 +71,13 @@ export class FeedServiceImpl implements IFeedService {
       }
 
       // 1. 연결된 유저의 피드
-      let connectedUserFeeds: FeedVo[] = [];
+      let feeds: FeedVo[] = [];
       if (connectedUserIds.length > 0) {
-        connectedUserFeeds =
-          await this.feedRepository.findConnectedUserRecentFeeds(
-            connectedUserIds,
-            limit,
-          );
+        feeds = await this.feedRepository.findConnectedUserRecentFeeds(
+          connectedUserIds,
+          limit,
+        );
       }
-
-      // 2. 연결되지 않은 유저의 피드
-      let unconnectedUserFeeds: FeedVo[] = [];
-      if (connectedUserFeeds.length < limit) {
-        unconnectedUserFeeds =
-          await this.feedRepository.findUnconnectedUserRecentFeeds(
-            connectedUserIds,
-            limit - connectedUserFeeds.length,
-          );
-      }
-      // 연결된 유저의 최신 피드
-      const feeds = connectedUserFeeds.concat(unconnectedUserFeeds);
 
       // feed에 loop를 줄이기 위해 object로 변경
       const feedsObject: Record<number, FeedWithRelationsAndCount> = {};
