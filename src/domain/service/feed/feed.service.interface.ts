@@ -6,6 +6,7 @@ import {
   FeedQueryDto,
   FeedCommentDeleteDto,
   FeedDeleteDto,
+  FeedsDto,
 } from '../dto/feed.dto';
 
 export interface IFeedService {
