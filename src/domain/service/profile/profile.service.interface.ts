@@ -4,7 +4,6 @@ import { ProfileExperienceVo } from 'src/infra/data/typeorm/vo/profile_experienc
 import { ProfileProjectVo } from 'src/infra/data/typeorm/vo/profile_project.vo';
 import { ProfileWebsiteVo } from 'src/infra/data/typeorm/vo/profile_website.vo';
 import {
-  ProfileDeleteDto,
   ProfileDto,
   ProfileEducationDeleteDto,
   ProfileEducationDto,
@@ -20,7 +19,7 @@ export interface IProfileService {
   getProfileId(userId: number): Promise<ProfileVo | null>;
   getUserProfile(profileId: number): Promise<ProfileVo | null>;
   getProfileProject(profileId: number): Promise<ProfileProjectVo[] | null>;
-  getOneProfileProject(
+  getOneProfileProjectByProjectId(
     userId: number,
     profileId: number,
     projectId: number,
