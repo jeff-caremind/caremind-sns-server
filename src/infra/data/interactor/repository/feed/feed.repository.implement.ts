@@ -49,4 +49,48 @@ export class FeedRepositoryImpl implements IFeedRepository {
   async remove(feed: FeedVo) {
     await this.feedTypeormRepository.remove(feed);
   }
+
+  async findConnectedUserRecentFeeds(
+    connectedUserIds: number[],
+    limit: number,
+  ): Promise<FeedVo[]> {
+    const feeds = await this.feedTypeormRepository
+      .createQueryBuilder('feed')
+      .leftJoin('feed.author', 'author')
+      .addSelect(['author.id', 'author.name', 'author.profileImage'])
+      .leftJoin('feed.images', 'feed_image')
+      .addSelect(['feed_image.id', 'feed_image.imageUrl'])
+      .leftJoin('feed.video', 'feed_video')
+      .addSelect(['feed_video.id', 'feed_video.videoUrl'])
+      .where(
+        'feed.createdAt > DATE_SUB(NOW(), INTERVAL 3 DAY) AND author.id IN (:connectedUserIds)',
+        { connectedUserIds: connectedUserIds },
+      )
+      .orderBy(`DATE_FORMAT(feed.createdAt, '%Y-%m-%d')`, 'DESC')
+      .limit(limit)
+      .getMany();
+    return feeds;
+  }
+
+  async findUnconnectedUserRecentFeeds(
+    connectedUserIds: number[],
+    limit: number,
+  ): Promise<FeedVo[]> {
+    const feeds = await this.feedTypeormRepository
+      .createQueryBuilder('feed')
+      .leftJoin('feed.author', 'author')
+      .addSelect(['author.id', 'author.name', 'author.profileImage'])
+      .leftJoin('feed.images', 'feed_image')
+      .addSelect(['feed_image.id', 'feed_image.imageUrl'])
+      .leftJoin('feed.video', 'feed_video')
+      .addSelect(['feed_video.id', 'feed_video.videoUrl'])
+      .where(
+        'feed.createdAt > DATE_SUB(NOW(), INTERVAL 3 DAY) AND author.id NOT IN (:connectedUserIds)',
+        { connectedUserIds: connectedUserIds },
+      )
+      .orderBy(`DATE_FORMAT(feed.createdAt, '%Y-%m-%d')`, 'DESC')
+      .limit(limit)
+      .getMany();
+    return feeds;
+  }
 }

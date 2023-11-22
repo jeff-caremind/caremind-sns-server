@@ -11,30 +11,21 @@ import {
 import { IFeedTypeormRepository } from 'src/infra/data/interactor/repository/feed/orm_interface/feed.typeorm.repository.interface';
 import { FeedVo } from '../../../vo/feed.vo';
 import { FeedQueryDto, SortParam } from 'src/domain/service/dto/feed.dto';
-import { FeedTagVo } from '../../../vo/feed_tag.vo';
-import { TagVo } from '../../../vo/tag.vo';
-import { UserConnectionVo } from '../../../vo/user_connection.vo';
-import { UserVo } from '../../../vo/user.vo';
 
 export class FeedTypeormRepositoryFactory {
   static getRepository = (dataSource: DataSource): IFeedTypeormRepository => {
     const repository = dataSource.getRepository(FeedVo);
     const feedTypeormRepository =
-      new FeedTypeormRepositoryFactory().extendRepository(
-        repository,
-        dataSource,
-      );
+      new FeedTypeormRepositoryFactory().extendRepository(repository);
     return feedTypeormRepository;
   };
 
   private extendRepository(
     repository: Repository<FeedVo>,
-    dataSource: DataSource,
   ): IFeedTypeormRepository {
     return repository.extend({
       findWithFeedQuery: async (queryDto: FeedQueryDto) => {
-        const { userId, sort, search, tag, offset, limit } = queryDto;
-
+        const { search, tag, offset, limit } = queryDto;
         const queryBuilder = repository
           .createQueryBuilder('feed')
           .leftJoin('feed.likes', 'feed_like')
@@ -59,15 +50,16 @@ export class FeedTypeormRepositoryFactory {
           .leftJoin('feed.feedTags', 'feed_tag')
           .leftJoin('feed_tag.tag', 'tag')
           .addSelect(['feed_tag.id', 'tag.tag', 'tag.id']);
-
         if (search)
           queryBuilder.where('feed.content LIKE :search', {
             search: `%${search}%`,
           });
-
         if (tag) queryBuilder.where('tag.tag = :tag', { tag: tag });
-
-        return await queryBuilder.skip(offset).limit(limit).getMany();
+        return await queryBuilder
+          .orderBy('feed.createdAt', 'DESC')
+          .skip(offset)
+          .limit(limit)
+          .getMany();
       },
       findOneWithRelationsById: async (feedId: number) => {
         const [feed] = await repository.find({

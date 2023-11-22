@@ -11,6 +11,7 @@ import {
 
 export interface IFeedService {
   getList(queryDto: FeedQueryDto): Promise<FeedsDto>;
+  getTrendingList(queryDto: FeedQueryDto): Promise<FeedsDto>;
   createComment(feedCommentDto: FeedCommentDto): Promise<void>;
   createLike(feedLikeDto: FeedLikeDto): Promise<void>;
   createFeed(feedCreateDto: FeedCreateDto): Promise<void>;
