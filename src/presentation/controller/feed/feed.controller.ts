@@ -57,8 +57,6 @@ export class FeedController {
       limit: Number(limit) || 10,
     };
     if (token) queryDto.userId = this.verifyToken(token).aud;
-    if (sort === 'trending')
-      return await this.feedService.getTrendingList(queryDto);
     return await this.feedService.getList(queryDto);
   }
 

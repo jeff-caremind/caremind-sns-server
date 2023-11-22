@@ -53,104 +53,107 @@ export class FeedServiceImpl implements IFeedService {
   ) {}
 
   async getList(queryDto: FeedQueryDto) {
-    const data = await this.feedRepository.findAll(queryDto);
-    const feeds: FeedsDto = data.map((feed: FeedWithRelationsAndCount) => {
-      let isLiked = false;
-      if (queryDto.userId) {
-        isLiked = feed.likes.some((like) => like.liker?.id === queryDto.userId);
+    const { userId, sort, limit } = queryDto;
+    if (sort === 'trending') {
+      // trending의 정의
+      // 최근 3일 이내의 게시글 중
+      // connected user가 좋아요를 많이 누른 게시글을 우선 보여줌
+
+      // 문제점 : 페이지네이션 시 추가로 보여주는 데이터 처리가 곤란
+
+      // 연결된 유저의 목록
+      let connectedUserIds: number[] = [];
+      if (userId) {
+        const connections = await this.userConnectionRepository.findConnections(
+          userId!,
+        );
+        connectedUserIds = connections.map((item) =>
+          item.user.id === userId ? item.connectedUser.id : item.user.id,
+        );
       }
 
-      feed.isLiked = isLiked;
-      feed.commentsCount = feed.comments.length;
-      feed.likesCount = feed.likes.length;
-
-      return feed;
-    });
-    return feeds;
-  }
-
-  async getTrendingList(queryDto: FeedQueryDto) {
-    // 연결된 유저들
-    let connectedUserIds: number[] = [];
-    if (queryDto.userId) {
-      const connections = await this.userConnectionRepository.findConnections(
-        queryDto.userId!,
-      );
-      connectedUserIds = connections.map((item) =>
-        item.user.id === queryDto.userId ? item.connectedUser.id : item.user.id,
-      );
-    }
-
-    // 1. 연결된 유저의 피드
-    let connectedUserFeeds: FeedVo[] = [];
-    if (connectedUserIds.length > 0) {
-      connectedUserFeeds =
-        await this.feedRepository.findConnectedUserRecentFeeds(
-          connectedUserIds,
-          queryDto.limit,
-        );
-    }
-
-    // 2. 연결되지 않은 유저의 피드 최소 2건
-    let unconnectedUserFeeds: FeedVo[] = [];
-    if (connectedUserFeeds.length < queryDto.limit) {
-      unconnectedUserFeeds =
-        await this.feedRepository.findUnconnectedUserRecentFeeds(
-          connectedUserIds,
-          queryDto.limit - connectedUserFeeds.length || 2,
-        );
-    }
-    const feeds = connectedUserFeeds.concat(unconnectedUserFeeds);
-
-    const feedsObject: Record<number, FeedWithRelationsAndCount> = {};
-    feeds.forEach((feed) => {
-      let isLiked = false;
-      if (queryDto.userId) {
-        isLiked = feed.likes.some((like) => like.liker?.id === queryDto.userId);
+      // 1. 연결된 유저의 피드
+      let connectedUserFeeds: FeedVo[] = [];
+      if (connectedUserIds.length > 0) {
+        connectedUserFeeds =
+          await this.feedRepository.findConnectedUserRecentFeeds(
+            connectedUserIds,
+            limit,
+          );
       }
-      const feedId = feed.id;
-      feedsObject[feedId] = feed;
-      feedsObject[feedId].likes = [];
-      feedsObject[feedId].comments = [];
-      feedsObject[feedId].likedConnectedUsers = [];
-      feedsObject[feedId].commentedConnectedUsers = [];
-      feedsObject[feedId].isLiked = isLiked;
-      feedsObject[feedId].likesCount = 0;
-      feedsObject[feedId].commentsCount = 0;
-    });
 
-    const feedIds = Object.keys(feedsObject);
+      // 2. 연결되지 않은 유저의 피드
+      let unconnectedUserFeeds: FeedVo[] = [];
+      if (connectedUserFeeds.length < limit) {
+        unconnectedUserFeeds =
+          await this.feedRepository.findUnconnectedUserRecentFeeds(
+            connectedUserIds,
+            limit - connectedUserFeeds.length,
+          );
+      }
+      // 연결된 유저의 최신 피드
+      const feeds = connectedUserFeeds.concat(unconnectedUserFeeds);
 
-    // 3. 연결된 유저의 좋아요 파악
-    const likes = await this.feedLikeRepository.findByFeedIds(feedIds);
-    likes.forEach((like) => {
-      const feedId = like.likedFeed.id;
-      feedsObject[feedId].likes.push(like);
-      feedsObject[feedId].likesCount! += 1;
-      if (connectedUserIds.includes(like.liker.id))
-        feedsObject[feedId].likedConnectedUsers?.push(like.liker.name);
-    });
+      // feed에 loop를 줄이기 위해 object로 변경
+      const feedsObject: Record<number, FeedWithRelationsAndCount> = {};
+      // FeedsDto 초기값 설정
+      feeds.forEach((feed) => {
+        const feedId = feed.id;
+        feedsObject[feedId] = feed;
+        feedsObject[feedId].likes = [];
+        feedsObject[feedId].comments = [];
+        feedsObject[feedId].likedConnectedUsers = [];
+        feedsObject[feedId].commentedConnectedUsers = [];
+        feedsObject[feedId].likesCount = 0;
+        feedsObject[feedId].commentsCount = 0;
+        feedsObject[feedId].isLiked = false;
+      });
 
-    // 4. 연결된 유저의 댓글 파악
-    const comments = await this.feedCommentRepository.findByFeedIds(feedIds);
-    comments.forEach((comment) => {
-      const feedId = comment.commentedFeed.id;
-      feedsObject[feedId].comments.push(comment);
-      feedsObject[feedId].commentsCount! += 1;
-      if (connectedUserIds.includes(comment.commenter.id))
-        feedsObject[feedId].commentedConnectedUsers?.push(
-          comment.commenter.name,
-        );
-    });
+      const feedIds = Object.keys(feedsObject);
 
-    // 5. 연결된 유저의 좋아요 수에 따라 정렬
-    const sortedFeeds = Object.values(feedsObject).sort((a, b) => {
-      const comparison =
-        b.likedConnectedUsers!.length - a.likedConnectedUsers!.length;
-      return comparison;
-    });
+      // 3. 연결된 유저의 좋아요 파악
+      const likes = await this.feedLikeRepository.findByFeedIds(feedIds);
+      likes.forEach((like) => {
+        const feedId = like.likedFeed.id;
+        feedsObject[feedId].likes.push(like);
+        feedsObject[feedId].likesCount! += 1;
+        if (connectedUserIds.includes(like.liker.id))
+          feedsObject[feedId].likedConnectedUsers?.push(like.liker.name);
+        if (like.liker.id === userId) feedsObject[feedId].isLiked = true;
+      });
 
-    return sortedFeeds;
+      // 4. 연결된 유저의 댓글 파악
+      const comments = await this.feedCommentRepository.findByFeedIds(feedIds);
+      comments.forEach((comment) => {
+        const feedId = comment.commentedFeed.id;
+        feedsObject[feedId].comments.push(comment);
+        feedsObject[feedId].commentsCount! += 1;
+        if (connectedUserIds.includes(comment.commenter.id))
+          feedsObject[feedId].commentedConnectedUsers?.push(
+            comment.commenter.name,
+          );
+      });
+
+      // 5. 연결된 유저의 좋아요 수에 따라 정렬
+      const sortedFeeds = Object.values(feedsObject).sort(
+        (a, b) => b.likedConnectedUsers!.length - a.likedConnectedUsers!.length,
+      );
+
+      return sortedFeeds;
+    } else {
+      const data = await this.feedRepository.findAll(queryDto);
+      const feeds: FeedsDto = data.map((feed: FeedWithRelationsAndCount) => {
+        let isLiked = false;
+        if (userId) {
+          isLiked = feed.likes.some((like) => like.liker?.id === userId);
+        }
+        feed.isLiked = isLiked;
+        feed.commentsCount = feed.comments.length;
+        feed.likesCount = feed.likes.length;
+        return feed;
+      });
+      return feeds;
+    }
   }
 
   async createLike(feedLikeDto: FeedLikeDto): Promise<void> {
