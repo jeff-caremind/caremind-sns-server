@@ -45,7 +45,12 @@ export class ProfileProjectRepositoryImpl implements IProfileProjectRepository {
 
     return eachProject;
   }
+
   async update(project: ProfileProjectVo): Promise<void> {
     await this.profileProjectTypeormRepository.save(project);
+  }
+
+  async remove(project: ProfileProjectVo): Promise<void> {
+    await this.profileProjectTypeormRepository.remove(project);
   }
 }

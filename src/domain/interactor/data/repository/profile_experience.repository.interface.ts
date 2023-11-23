@@ -9,4 +9,5 @@ export interface IProfileExperienceRepository {
     experienceId: number,
   ): Promise<ProfileExperienceVo | null>;
   update(experience: ProfileExperienceVo): Promise<void>;
+  remove(experience: ProfileExperienceVo): Promise<void>;
 }

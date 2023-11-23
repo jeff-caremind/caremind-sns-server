@@ -8,14 +8,19 @@ import {
   HttpException,
   HttpStatus,
   UseGuards,
+  Delete,
   Put,
 } from '@nestjs/common';
 
 import {
   ProfileDto,
+  ProfileEducationDeleteDto,
   ProfileEducationDto,
+  ProfileExperienceDeleteDto,
   ProfileExperienceDto,
+  ProfileProjectDeleteDto,
   ProfileProjectDto,
+  ProfileWebsiteDeleteDto,
   ProfileWebsiteDto,
 } from 'src/domain/service/dto/profile.dto';
 import { PROFILE_SERVICE } from 'src/domain/service/ioc';
@@ -40,7 +45,7 @@ export class ProfileController {
     return await this.profileService.getProfileId(userId);
   }
 
-  @Get('/user/:userId')
+  @Get('/user/:userId') // 선택한 유저(프로필 클릭)의 profileId 검색
   async getProfileByUserId(
     @Param('userId') userId: number,
   ): Promise<ProfileVo | null> {
@@ -62,12 +67,12 @@ export class ProfileController {
   }
 
   @Get('/:profileId/project/:projectId')
-  async getOneProfileProject(
+  async getOneProfileProjectByProjectId(
     @AuthUser() userId: number,
     @Param('profileId') profileId: number,
     @Param('projectId') projectId: number,
   ): Promise<ProfileProjectVo | null> {
-    return await this.profileService.getOneProfileProject(
+    return await this.profileService.getOneProfileProjectByProjectId(
       Number(userId),
       Number(profileId),
       Number(projectId),
@@ -298,5 +303,82 @@ export class ProfileController {
       Number(profileId),
       Number(websiteId),
     );
+  }
+
+  @Delete('/:profileId/project/:projectId')
+  async deleteProfileProject(
+    @Headers('authorization') token: string,
+    @Param('profileId') profileId: number,
+    @Param('projectId') projectId: number,
+  ): Promise<void> {
+    const decodedToken = this.verifyToken(token);
+
+    const profileProjectDeleteDto: ProfileProjectDeleteDto = {
+      userId: decodedToken.aud,
+      profileId: Number(profileId),
+      projectId: Number(projectId),
+    };
+
+    return await this.profileService.deleteProfileProject(
+      profileProjectDeleteDto,
+    );
+  }
+
+  @Delete('/:profileId/experience/:experienceId')
+  async deleteProfileExperience(
+    @Headers('authorization') token: string,
+    @Param('profileId') profileId: number,
+    @Param('experienceId') experienceId: number,
+  ): Promise<void> {
+    const decodedToken = this.verifyToken(token);
+
+    const profileExperienceDeleteDto: ProfileExperienceDeleteDto = {
+      userId: decodedToken.aud,
+      profileId: Number(profileId),
+      experienceId: Number(experienceId),
+    };
+
+    return await this.profileService.deleteProfileExperience(
+      profileExperienceDeleteDto,
+    );
+  }
+
+  @Delete('/:profileId/education/:educationId')
+  async deleteProfileEducation(
+    @Headers('authorization') token: string,
+    @Param('profileId') profileId: number,
+    @Param('educationId') educationId: number,
+  ): Promise<void> {
+    const decodedToken = this.verifyToken(token);
+    const profileEducationDeleteDto: ProfileEducationDeleteDto = {
+      userId: decodedToken.aud,
+      profileId: Number(profileId),
+      educationId: Number(educationId),
+    };
+    return await this.profileService.deleteProfileEducation(
+      profileEducationDeleteDto,
+    );
+  }
+
+  @Delete('/:profileId/website/:websiteId')
+  async deleteProfileWebsite(
+    @Headers('authorization') token: string,
+    @Param('profileId') profileId: number,
+    @Param('websiteId') websiteId: number,
+  ): Promise<void> {
+    const decodedToken = this.verifyToken(token);
+    const profileWebsiteDeleteDto: ProfileWebsiteDeleteDto = {
+      userId: decodedToken.aud,
+      profileId: Number(profileId),
+      websiteId: Number(websiteId),
+    };
+    return await this.profileService.deleteProfileWebsite(
+      profileWebsiteDeleteDto,
+    );
+  }
+
+  verifyToken(token: string): { aud: number } {
+    const decoded = this.JwtService.verify(token);
+    return decoded;
   }
 }

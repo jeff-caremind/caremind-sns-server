@@ -9,4 +9,5 @@ export interface IProfileEducationRepository {
     educationId: number,
   ): Promise<ProfileEducationVo | null>;
   update(education: ProfileEducationVo): Promise<void>;
+  remove(education: ProfileEducationVo): Promise<void>;
 }

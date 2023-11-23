@@ -47,4 +47,8 @@ export class ProfileEducationRepositoryImpl
   async update(education: ProfileEducationVo): Promise<void> {
     await this.profileEducationTypeormRepository.save(education);
   }
+
+  async remove(education: ProfileEducationVo): Promise<void> {
+    await this.profileEducationTypeormRepository.remove(education);
+  }
 }

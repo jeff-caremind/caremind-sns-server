@@ -47,4 +47,8 @@ export class ProfileExperienceRepositoryImpl
   async update(experience: ProfileExperienceVo): Promise<void> {
     await this.profileExperienceTypeormRepository.save(experience);
   }
+
+  async remove(experience: ProfileExperienceVo): Promise<void> {
+    await this.profileExperienceTypeormRepository.remove(experience);
+  }
 }
