@@ -307,14 +307,13 @@ export class ProfileController {
 
   @Delete('/:profileId/project/:projectId')
   async deleteProfileProject(
-    @Headers('authorization') token: string,
+    @AuthUser() userId: number,
     @Param('profileId') profileId: number,
     @Param('projectId') projectId: number,
   ): Promise<void> {
-    const decodedToken = this.verifyToken(token);
 
     const profileProjectDeleteDto: ProfileProjectDeleteDto = {
-      userId: decodedToken.aud,
+      userId: userId,
       profileId: Number(profileId),
       projectId: Number(projectId),
     };
@@ -326,14 +325,13 @@ export class ProfileController {
 
   @Delete('/:profileId/experience/:experienceId')
   async deleteProfileExperience(
-    @Headers('authorization') token: string,
+    @AuthUser() userId: number,
     @Param('profileId') profileId: number,
     @Param('experienceId') experienceId: number,
   ): Promise<void> {
-    const decodedToken = this.verifyToken(token);
 
     const profileExperienceDeleteDto: ProfileExperienceDeleteDto = {
-      userId: decodedToken.aud,
+      userId: userId,
       profileId: Number(profileId),
       experienceId: Number(experienceId),
     };
@@ -345,13 +343,12 @@ export class ProfileController {
 
   @Delete('/:profileId/education/:educationId')
   async deleteProfileEducation(
-    @Headers('authorization') token: string,
+    @AuthUser() userId: number,
     @Param('profileId') profileId: number,
     @Param('educationId') educationId: number,
   ): Promise<void> {
-    const decodedToken = this.verifyToken(token);
     const profileEducationDeleteDto: ProfileEducationDeleteDto = {
-      userId: decodedToken.aud,
+      userId: userId,
       profileId: Number(profileId),
       educationId: Number(educationId),
     };
@@ -362,23 +359,17 @@ export class ProfileController {
 
   @Delete('/:profileId/website/:websiteId')
   async deleteProfileWebsite(
-    @Headers('authorization') token: string,
+    @AuthUser() userId: number,
     @Param('profileId') profileId: number,
     @Param('websiteId') websiteId: number,
   ): Promise<void> {
-    const decodedToken = this.verifyToken(token);
     const profileWebsiteDeleteDto: ProfileWebsiteDeleteDto = {
-      userId: decodedToken.aud,
+      userId: userId,
       profileId: Number(profileId),
       websiteId: Number(websiteId),
     };
     return await this.profileService.deleteProfileWebsite(
       profileWebsiteDeleteDto,
     );
-  }
-
-  verifyToken(token: string): { aud: number } {
-    const decoded = this.JwtService.verify(token);
-    return decoded;
   }
 }
