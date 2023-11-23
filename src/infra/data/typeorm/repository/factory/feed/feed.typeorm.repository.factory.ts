@@ -1,16 +1,13 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
 import {
   DataSource,
-  FindManyOptions,
   FindOptionsRelations,
   FindOptionsSelect,
-  Like,
   Repository,
 } from 'typeorm';
 
 import { IFeedTypeormRepository } from 'src/infra/data/interactor/repository/feed/orm_interface/feed.typeorm.repository.interface';
 import { FeedVo } from '../../../vo/feed.vo';
-import { FeedQueryDto, SortParam } from 'src/domain/service/dto/feed.dto';
+import { FeedQueryDto } from 'src/domain/service/dto/feed.dto';
 
 export class FeedTypeormRepositoryFactory {
   static getRepository = (dataSource: DataSource): IFeedTypeormRepository => {
@@ -70,72 +67,6 @@ export class FeedTypeormRepositoryFactory {
         return feed;
       },
     });
-  }
-
-  private queryOptionBuilder(queryDto: FeedQueryDto) {
-    const { sort, search, tag, offset, limit } = queryDto;
-    const queryOptions: FindManyOptions<FeedVo> = {};
-    if (sort) this.getSortOptions(sort, queryOptions);
-    if (search) this.getSearchOptions(search, queryOptions);
-    if (limit) queryOptions.take = limit;
-    if (offset) queryOptions.skip = offset;
-    if (tag) this.getTagOptions(tag, queryOptions);
-    return queryOptions;
-  }
-
-  private getSortOptions(
-    sort: SortParam,
-    queryOptions: FindManyOptions<FeedVo>,
-  ) {
-    switch (sort) {
-      case 'recent': {
-        queryOptions.order = {
-          createdAt: 'DESC',
-          comments: {
-            createdAt: 'DESC',
-          },
-        };
-        break;
-      }
-      case 'trending': {
-        // TODO: change logic to get trending feeds
-        queryOptions.select = {};
-        queryOptions.order = {
-          createdAt: 'DESC',
-          comments: {
-            createdAt: 'DESC',
-          },
-        };
-        break;
-      }
-      default: {
-        throw new HttpException('INVALID_INPUT', HttpStatus.BAD_REQUEST);
-      }
-    }
-    return queryOptions;
-  }
-
-  private getSearchOptions(
-    search: string,
-    queryOptions: FindManyOptions<FeedVo>,
-  ) {
-    queryOptions.where = {
-      ...queryOptions.where,
-      content: Like(`%${search}%`),
-    };
-    return queryOptions;
-  }
-
-  private getTagOptions(tag: string, queryOptions: FindManyOptions<FeedVo>) {
-    queryOptions.where = {
-      ...queryOptions.where,
-      feedTags: {
-        tag: {
-          tag: tag,
-        },
-      },
-    };
-    return queryOptions;
   }
 
   private feedFullRelations: FindOptionsRelations<FeedVo> = {
